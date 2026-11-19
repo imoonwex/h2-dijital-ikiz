@@ -89,6 +89,12 @@ main.wrap { padding-block: 18px 40px; display: grid; gap: 18px; }
 .seg button { flex: 1; background: var(--surface); color: var(--fg); border: 0; border-right: 1px solid var(--line); padding: 8px 6px; font: 600 .9rem var(--font-body); cursor: pointer; }
 .seg button:last-child { border-right: 0; }
 .seg button.on { background: var(--accent); color: var(--accent-fg); }
+.field { display: flex; align-items: center; justify-content: space-between; gap: 10px; font-size: .92rem; }
+.field select { flex: 1; max-width: 190px; background: var(--surface); color: var(--fg); border: 1px solid var(--line); border-radius: 8px; padding: 7px 8px; font: 600 .9rem var(--font-body); }
+.fc-read { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; text-align: center; }
+.fc-read div { border: 1px solid var(--line); border-radius: 8px; padding: 6px 4px; }
+.fc-read span { display: block; font-size: .75rem; color: var(--muted); }
+.fc-read b { font-family: var(--font-data); font-weight: 400; font-size: 1.1rem; }
 .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
 .btn { background: var(--surface-2); color: var(--fg); border: 1px solid var(--line); border-radius: 7px; padding: 7px 12px; font: 600 .88rem var(--font-body); cursor: pointer; }
 .btn:hover { border-color: var(--accent); }
@@ -274,9 +280,17 @@ footer.wrap { padding-block: 0 28px; color: var(--muted); font-size: .8rem; }
             <circle r="7" fill="#d4dae0" stroke="#5a646e" stroke-width="2"/>
           </g>
           <text id="rpmTxt" x="504" y="176" text-anchor="middle" class="lbl-tick">0 rpm</text>
-          <circle cx="504" cy="210" r="14" fill="#eef1f4" stroke="#7d8994" stroke-width="2"/>
-          <path d="M494,210 L514,210 M504,200 L504,220" stroke="#7d8994" stroke-width="2"/>
-          <text x="504" y="244" text-anchor="middle" class="lbl-small" data-i18n="motorLbl">Motor</text>
+          <g id="motorSym">
+            <circle cx="504" cy="210" r="14" fill="#eef1f4" stroke="#7d8994" stroke-width="2"/>
+            <path d="M494,210 L514,210 M504,200 L504,220" stroke="#7d8994" stroke-width="2"/>
+          </g>
+          <!-- yük direnci sembolü (direnç seçilince görünür) -->
+          <g id="resSym" display="none">
+            <path d="M478,210 H486 M522,210 H530" stroke="#5a646e" stroke-width="2.5"/>
+            <rect x="486" y="202" width="36" height="16" rx="3" fill="#f3e3c3" stroke="#8a6420" stroke-width="2"/>
+            <path d="M494,202 V218 M502,202 V218 M510,202 V218" stroke="#c0392b" stroke-width="2.5"/>
+          </g>
+          <text id="loadTxt" x="504" y="244" text-anchor="middle" class="lbl-small">Motor</text>
           <text x="504" y="270" text-anchor="middle" class="lbl-small" data-i18n="loadLbl">Yük modülü</text>
           <circle cx="482" cy="300" r="7" fill="#d32f2f" stroke="#7a1515"/>
           <circle cx="528" cy="300" r="7" fill="#222" stroke="#000"/>
@@ -287,9 +301,15 @@ footer.wrap { padding-block: 0 28px; color: var(--muted); font-size: .8rem; }
           <rect x="570" y="54" width="460" height="278" rx="4" fill="url(#gPanel)" stroke="#b9c2ca"/>
           <text x="588" y="80" class="lbl-panel" fill="#cf5530" style="fill:#c24d2b">O₂</text>
           <text x="1010" y="80" text-anchor="end" class="lbl-panel" style="fill:#117f9f">H₂</text>
-          <text x="800" y="80" text-anchor="middle" class="lbl-panel" data-i18n="fcLbl">PEM yakıt hücresi (çift, seri)</text>
+          <text id="fcTitle" x="800" y="80" text-anchor="middle" class="lbl-panel">PEM yakıt hücresi (çift, seri)</text>
           <g id="fcCells"></g>
-          <path d="M904,154 C930,170 930,190 904,206" fill="none" stroke="#222" stroke-width="3"/>
+          <!-- seri bağlantı: 1. hücrenin çıkışı 2. hücrenin girişine -->
+          <path id="fcLinkS" d="M904,154 C930,170 930,190 904,206" fill="none" stroke="#222" stroke-width="3"/>
+          <!-- paralel bağlantı: iki hücrenin aynı uçları ortak baralara -->
+          <g id="fcLinkP" display="none" fill="none" stroke-width="3">
+            <path d="M902,140 H918 V240 H902" stroke="#222"/>
+            <path d="M682,140 H664 V240 H682" stroke="#d32f2f"/>
+          </g>
           <circle cx="596" cy="300" r="7" fill="#d32f2f" stroke="#7a1515"/>
           <circle cx="626" cy="300" r="7" fill="#222" stroke="#000"/>
           <text x="611" y="324" text-anchor="middle" class="lbl-small">+   −</text>
@@ -439,6 +459,26 @@ footer.wrap { padding-block: 0 28px; color: var(--muted); font-size: .8rem; }
       </div>
 
       <div class="panel">
+        <h2 data-i18n="loadH">Yakıt hücresi ve yük</h2>
+        <div class="seg" id="connSeg">
+          <button type="button" data-conn="s" class="on" data-i18n="series">Seri</button>
+          <button type="button" data-conn="p" data-i18n="parallel">Paralel</button>
+        </div>
+        <label class="field"><span data-i18n="loadSel">Yük</span><select id="loadSel"></select></label>
+        <div class="fc-read">
+          <div><span data-i18n="rdV">Gerilim</span><b id="fcRV">0,00 V</b></div>
+          <div><span data-i18n="rdI">Akım</span><b id="fcRI">0 mA</b></div>
+          <div><span data-i18n="rdP">Güç</span><b id="fcRP">0 mW</b></div>
+        </div>
+        <div class="row">
+          <button class="btn primary" id="btnIvPt" type="button" data-i18n="ivPt">Noktayı kaydet</button>
+          <button class="btn" id="btnIvSweep" type="button" data-i18n="ivSweep">Otomatik tarama</button>
+          <button class="btn" id="btnIvClr" type="button" data-i18n="ivClr">Temizle</button>
+        </div>
+        <p class="hint" style="margin:0" data-i18n="loadHint">Direnç seçip noktaları kaydedin; I–V ve güç eğrisi Grafikler sekmesinde çizilir.</p>
+      </div>
+
+      <div class="panel">
         <h2 data-i18n="swH">Kronometre ölçümü</h2>
         <div class="row" style="justify-content:space-between">
           <span class="sw-display" id="swTime">00:00</span>
@@ -477,6 +517,7 @@ footer.wrap { padding-block: 0 28px; color: var(--muted); font-size: .8rem; }
         <div class="chart-box"><h3 data-i18n="ch1">Depodaki gaz hacmi – zaman</h3><div class="cv"><canvas id="c1"></canvas></div><p data-i18n="ch1p">Yakıt hücresi tüketimi düşülmüş net hacim.</p></div>
         <div class="chart-box"><h3 data-i18n="ch2">PV I–V eğrisi ve çalışma noktası</h3><div class="cv"><canvas id="c2"></canvas></div><p data-i18n="ch2p">Panel eğrisinin elektrolizör eğrisini kestiği nokta çalışma noktasıdır.</p></div>
         <div class="chart-box"><h3 data-i18n="ch3">Akım – 20 dakikada H₂</h3><div class="cv"><canvas id="c3"></canvas></div><p data-i18n="ch3p">Laboratuvar ölçümleri, Faraday doğrusu ve sizin kronometre ölçümleriniz.</p></div>
+        <div class="chart-box"><h3 data-i18n="ch4">Yakıt hücresi I–V ve güç eğrisi</h3><div class="cv"><canvas id="c4"></canvas></div><p data-i18n="ch4p">Çizgiler model eğrisidir (H₂ yeterliyken): düz çizgi seri, kesikli çizgi paralel. Noktalar sizin kaydettiğiniz ölçümlerdir. Sol eksen V, sağ eksen W.</p></div>
       </div>
       <p class="hint" id="chartFail" hidden>Grafik kütüphanesi yüklenemedi. İnternet bağlantısını kontrol edin.</p>
     </div>
@@ -560,6 +601,16 @@ const I18N = {
     howH: "Nasıl okunur?",
     howP1: "Faraday verimi, üretilen hidrojenin akımın teorik olarak üretebileceği miktara oranıdır. Enerji verimi ise hidrojenin üst ısıl değerinin (HHV, 285,8 kJ/mol) harcanan elektrik enerjisine oranıdır.",
     howP2: "Elektrolizör gerilimi 1,48 V'un (termonötr gerilim) üzerinde olduğu için fark ısıya dönüşür. Bu yüzden enerji verimi Faraday veriminden düşüktür.",
+    loadH: "Yakıt hücresi ve yük", series: "Seri", parallel: "Paralel", loadSel: "Yük", rdV: "Gerilim", rdI: "Akım", rdP: "Güç",
+    loadMotor: "Motor + pervane", loadOpen: "Açık devre (yük yok)", resLbl: "Direnç",
+    ivPt: "Noktayı kaydet", ivSweep: "Otomatik tarama", ivClr: "Temizle",
+    loadHint: "Direnç seçip noktaları kaydedin; I–V ve güç eğrisi Grafikler sekmesinde çizilir.",
+    fcLblS: "PEM yakıt hücresi (çift, seri)", fcLblP: "PEM yakıt hücresi (çift, paralel)",
+    ch4: "Yakıt hücresi I–V ve güç eğrisi", ch4p: "Çizgiler model eğrisidir (H₂ yeterliyken): düz çizgi seri, kesikli çizgi paralel. Noktalar sizin kaydettiğiniz ölçümlerdir. Sol eksen V, sağ eksen W.",
+    xIfc: "Akım (A)", yVfc: "Gerilim (V)", yPfc: "Güç (W)",
+    dsFcVs: "Model V · seri", dsFcPs: "Model P · seri", dsFcVp: "Model V · paralel", dsFcPp: "Model P · paralel", dsSV: "Seri · V", dsSP: "Seri · P", dsPV2: "Paralel · V", dsPP: "Paralel · P", dsFcOp: "Şu anki nokta",
+    ivNoGas: "Yakıt hücresine H₂ gelmiyor: vanayı açın ve depoda gaz olduğundan emin olun.",
+    ivSaved: "Nokta kaydedildi", ivDone: "Tarama bitti: 10 direnç kaydedildi", ivBusy: "Tarama sürüyor…",
     srcJson: "Veri kaynağı: data/deney_verileri.json",
     srcEmb: "Veri kaynağı: gömülü yedek (JSON okunamadı)",
     foot: "Veriler: laboratuvar ölçümleri (Devre_Tasarimi_Veriler.xlsx) ve Heliocentris Dr FuelCell® Professional teknik veri sayfası.",
@@ -598,6 +649,16 @@ const I18N = {
     howH: "How to read this",
     howP1: "Faraday efficiency is the hydrogen produced divided by what the current could produce in theory. Energy efficiency is the higher heating value of the hydrogen (HHV, 285.8 kJ/mol) divided by the electrical energy used.",
     howP2: "The electrolyzer runs above the 1.48 V thermoneutral voltage, and the difference becomes heat. That is why energy efficiency is lower than Faraday efficiency.",
+    loadH: "Fuel cell and load", series: "Series", parallel: "Parallel", loadSel: "Load", rdV: "Voltage", rdI: "Current", rdP: "Power",
+    loadMotor: "Motor + propeller", loadOpen: "Open circuit (no load)", resLbl: "Resistor",
+    ivPt: "Save point", ivSweep: "Auto sweep", ivClr: "Clear",
+    loadHint: "Pick a resistor and save points; the I–V and power curve is drawn in the Charts tab.",
+    fcLblS: "PEM fuel cell (double, series)", fcLblP: "PEM fuel cell (double, parallel)",
+    ch4: "Fuel cell I–V and power curve", ch4p: "Lines are the model curves (with enough H₂): solid for series, dashed for parallel. Dots are the points you saved. Left axis V, right axis W.",
+    xIfc: "Current (A)", yVfc: "Voltage (V)", yPfc: "Power (W)",
+    dsFcVs: "Model V · series", dsFcPs: "Model P · series", dsFcVp: "Model V · parallel", dsFcPp: "Model P · parallel", dsSV: "Series · V", dsSP: "Series · P", dsPV2: "Parallel · V", dsPP: "Parallel · P", dsFcOp: "Current point",
+    ivNoGas: "No H₂ reaches the fuel cell: open the valve and make sure there is gas in storage.",
+    ivSaved: "Point saved", ivDone: "Sweep finished: 10 resistors saved", ivBusy: "Sweep running…",
     srcJson: "Data source: data/deney_verileri.json",
     srcEmb: "Data source: embedded fallback (JSON not loaded)",
     foot: "Data: lab measurements (Devre_Tasarimi_Veriler.xlsx) and the Heliocentris Dr FuelCell® Professional data sheet.",
@@ -616,7 +677,8 @@ const NOTES = {
 <li><b>Elektrolizör</b> davranışı laboratuvar ölçümlerinizden gelir: 20 dakikada üretilen H₂ (0,5 A → 83 mL … 2,0 A → 329 mL, 16 grup) akıma göre doğrusal ara değerlemeyle hesaplanır. Gerilim, ölçümlerde görüldüğü gibi soğuk başlangıçta 2,7–2,9 V'tan ısındıkça yaklaşık 2,4 V'a iner (zaman sabiti ≈ 200 s).</li>
 <li><b>Işık kademeleri</b> sizin 16 deney grubunuzla eşleşir. Kademe <i>n</i>, ısınmış elektrolizörde grup <i>n</i>'nin akımını (0,5 + 0,1·(n−1) A) verecek şekilde kalibre edilmiştir.</li>
 <li><b>PV paneli</b> tek diyot modeliyle hesaplanır: I = I<sub>ph</sub> − I<sub>0</sub>(e<sup>V/(n·V<sub>t</sub>·N<sub>s</sub>)</sup> − 1). Üreticinin 4 hücreli paneli (V<sub>oc</sub> 2,3 V, I<sub>sc</sub> 1 A) ölçümlerdeki 2,4 V'luk elektrolizörü süremez. Bu nedenle model, düzeneğinizi temsil eden 6 hücreli eşdeğer bir panel kullanır (1000 W/m²'de V<sub>oc</sub> ≈ 3,5 V, I<sub>sc</sub> ≈ 2,2 A; en yüksek kademe ≈ 920 W/m²).</li>
-<li><b>Yakıt hücresi</b>: çift PEM hücre seri bağlı. Hücre gerilimi 0,98 V − 0,03·ln(1 + I/2 mA) − 0,25 Ω·I; seri bağlantıda üretici aralığı olan 0,8–1,8 V'ta kalır. H₂ tüketimi N<sub>s</sub>·I/(2F).</li>
+<li><b>Yakıt hücresi</b>: çift PEM hücre, <b>seri</b> veya <b>paralel</b> bağlanabilir. Hücre gerilimi 0,98 V − 0,03·ln(1 + I/2 mA) − 0,175 Ω·I. Seride gerilimler toplanır (U = 2·U<sub>hücre</sub>, akım aynı); paralelde gerilim tek hücreninkidir, akım ikiye bölünür (I<sub>hücre</sub> = I/2). İç direnç 0,175 Ω, seri bağlantıda en yüksek gücü üretici değerine oturtur: 0,80 V'ta 1,70 W (≈0,38 Ω yükte). Paralelde aynı güç yarı gerilim ve iki kat akımla elde edilir. H₂ tüketimi hücre akımlarının toplamı/(2F): seride 2·I, paralelde I.</li>
+<li><b>Yük</b>: motor + pervane, yük modülündeki dirençlerden biri (0,3–100 Ω) veya açık devre seçilebilir. Çalışma noktası, yakıt hücresi eğrisinin yük eğrisini (direnç için I = U/R) kestiği noktadır. Direnç küçüldükçe akım artar, gerilim düşer; güç, yük direnci yakıt hücresinin iç direncine yaklaştığında en büyük olur.</li>
 <li><b>Motor</b>: üretici sınırı 3 V / 130 mA. Yük eğrisi I = 20 mA + V/30 Ω; devir sayısı ≈ 1500 rpm/V (0,3 V üzerinde), rotor ataleti 0,8 s.</li>
 <li><b>Depo</b> ölçeği 0–400 mL'dir, çünkü ölçümlerinizde 20 dakikada 329 mL'ye kadar gaz üretiliyor (Professional'ın kendi deposu 64 mL).</li>
 <li>Gaz hacmi 25 °C ve 1 atm için V<sub>m</sub> = 24,45 L/mol ile hesaplanır.</li>
@@ -633,7 +695,8 @@ const NOTES = {
 <li><b>Electrolyzer</b> behaviour comes from your lab measurements: H₂ produced in 20 minutes (0.5 A → 83 mL … 2.0 A → 329 mL, 16 groups) is linearly interpolated over current. Voltage starts at 2.7–2.9 V when cold and settles near 2.4 V as it warms (time constant ≈ 200 s), as in the measurements.</li>
 <li><b>Light levels</b> match your 16 measurement groups. Level <i>n</i> is calibrated to give group <i>n</i>'s current (0.5 + 0.1·(n−1) A) once the electrolyzer is warm.</li>
 <li><b>PV panel</b> uses the single-diode model: I = I<sub>ph</sub> − I<sub>0</sub>(e<sup>V/(n·V<sub>t</sub>·N<sub>s</sub>)</sup> − 1). The manufacturer's 4-cell panel (V<sub>oc</sub> 2.3 V, I<sub>sc</sub> 1 A) cannot drive the 2.4 V electrolyzer seen in the data, so the model uses an equivalent 6-cell panel (V<sub>oc</sub> ≈ 3.5 V, I<sub>sc</sub> ≈ 2.2 A at 1000 W/m²; top level ≈ 920 W/m²).</li>
-<li><b>Fuel cell</b>: double PEM cell in series. Cell voltage 0.98 V − 0.03·ln(1 + I/2 mA) − 0.25 Ω·I, staying inside the manufacturer's 0.8–1.8 V series range. H₂ use is N<sub>s</sub>·I/(2F).</li>
+<li><b>Fuel cell</b>: double PEM cell, connected in <b>series</b> or <b>parallel</b>. Cell voltage 0.98 V − 0.03·ln(1 + I/2 mA) − 0.175 Ω·I. In series the voltages add (U = 2·U<sub>cell</sub>, same current); in parallel the voltage is that of one cell and the current splits (I<sub>cell</sub> = I/2). The 0.175 Ω internal resistance puts the series maximum power at the manufacturer's value: 1.70 W at 0.80 V (≈0.38 Ω load). In parallel the same power comes at half the voltage and twice the current. H₂ use is the sum of cell currents/(2F): 2·I in series, I in parallel.</li>
+<li><b>Load</b>: motor + propeller, one of the load-module resistors (0.3–100 Ω) or open circuit. The operating point is where the fuel cell curve meets the load line (I = U/R for a resistor). Smaller resistance means more current and less voltage; power peaks when the load resistance approaches the fuel cell's internal resistance.</li>
 <li><b>Motor</b>: manufacturer limit 3 V / 130 mA. Load curve I = 20 mA + V/30 Ω; speed ≈ 1500 rpm/V above 0.3 V, rotor lag 0.8 s.</li>
 <li><b>Storage</b> scale is 0–400 mL because your measurements produce up to 329 mL in 20 minutes (the Professional's own storage is 64 mL).</li>
 <li>Gas volume uses V<sub>m</sub> = 24.45 L/mol (25 °C, 1 atm).</li>
@@ -695,20 +758,31 @@ function solveOp(Iph, c) {
   for (let k = 0; k < 44; k++) { const m = (lo + hi) / 2; if (pvI(vEl(m, c), Iph) - m > 0) lo = m; else hi = m; }
   return (lo + hi) / 2;
 }
-const fcCellV = (I) => 0.98 - 0.03 * Math.log(1 + I / 0.002) - 0.25 * I;
+// Tek hücre gerilimi: açık devre 0,98 V − aktivasyon kaybı − iç direnç (0,175 Ω).
+// 0,175 Ω, seri bağlantıda en yüksek gücü üreticinin değerine (0,80 V'ta 1,70 W) oturtur.
+const FC_R = 0.175;
+const fcCellV = (I) => 0.98 - 0.03 * Math.log(1 + I / 0.002) - FC_R * I;
+const RES = [0.3, 0.5, 1, 2, 3, 5, 10, 20, 50, 100];   // yük modülündeki dirençler (Ω)
+// Yığın gerilimi: seri → 2 hücrenin gerilimi toplanır, akım aynı;
+// paralel → gerilim tek hücreninki, akım iki hücreye yarı yarıya bölünür.
+const stackV = (I, s, conn) => Math.max(0, conn === "p" ? s * fcCellV(I / 2) : 2 * s * fcCellV(I));
+// Yükün çektiği akım: motor eğrisi, direnç için Ohm yasası, açık devrede sıfır.
+const loadI = (V, load) => load === "motor" ? motorI(V) : load === "open" ? 0 : V / load;
 const motorI = (V) => V > 0.05 ? 0.02 * Math.min(1, V / 0.3) + V / 30 : 0;
-function solveFc(s) {
+// Çalışma noktası: yakıt hücresi eğrisi ile yük eğrisinin kesiştiği akım (ikiye bölme yöntemi).
+function solveFc(s, conn = S.conn, load = S.load) {
   if (s < 0.02) return { I: 0, V: 0 };
-  let lo = 0, hi = 0.5;
-  for (let k = 0; k < 40; k++) { const m = (lo + hi) / 2; const V = Math.max(0, 2 * s * fcCellV(m)); if (motorI(V) - m > 0) lo = m; else hi = m; }
-  const I = (lo + hi) / 2; return { I, V: Math.max(0, 2 * s * fcCellV(I)) };
+  if (load === "open") return { I: 0, V: stackV(0, s, conn) };
+  let lo = 0, hi = 8;
+  for (let k = 0; k < 50; k++) { const m = (lo + hi) / 2; if (loadI(stackV(m, s, conn), load) - m > 0) lo = m; else hi = m; }
+  const I = (lo + hi) / 2; return { I, V: stackV(I, s, conn) };
 }
 
 /* ---------- state ---------- */
 const S = {};
 function resetState() {
   Object.assign(S, {
-    level: 4, t: 0, speed: S.speed || 1, paused: false, valve: true, ch: S.ch || "fc",
+    level: 4, t: 0, speed: S.speed || 1, conn: S.conn || "s", load: S.load ?? "motor", paused: false, valve: true, ch: S.ch || "fc",
     vH2: 40, vO2: 20, prod: 0, c: 0.55, fcS: 1, rpm: 0, rpmVis: 0, full: false,
     I: 0, V: 0, rate: 0, fcI: 0, fcV: 0, cons: 0,
     sw: { run: false, t: 0, h2: 0, level: 4 }, hist: [], lastHist: -1
@@ -732,7 +806,9 @@ function step(dt) {
   S.fcS += ((avail ? 1 : 0) - S.fcS) * (1 - Math.exp(-dt / (avail ? 2.5 : 7)));
   const fc = solveFc(S.fcS);
   S.fcI = fc.I; S.fcV = fc.V;
-  S.cons = S.valve ? 2 * S.fcI * 60 / (2 * F) * VM : 0;
+  // H₂ tüketimi hücre akımlarının toplamıyla orantılı: seride 2·I, paralelde I (iki yarım akım)
+  const cellSum = S.conn === "p" ? S.fcI : 2 * S.fcI;
+  S.cons = S.valve ? cellSum * 60 / (2 * F) * VM : 0;
 
   const before = S.vH2;
   S.vH2 = S.vH2 + prod - S.cons * dt / 60;
@@ -741,7 +817,7 @@ function step(dt) {
   S.vH2 = Math.min(TANK, Math.max(0, S.vH2));
   S.vO2 = Math.min(TANK, Math.max(0, S.vO2 + prod / 2 - S.cons / 2 * dt / 60));
 
-  const target = S.fcV > 0.3 ? (S.fcV - 0.3) * 1500 : 0;
+  const target = S.load === "motor" && S.fcV > 0.3 ? (S.fcV - 0.3) * 1500 : 0;
   S.rpm += (target - S.rpm) * (1 - Math.exp(-dt / 0.8));
   S.t += dt;
 
@@ -871,7 +947,7 @@ function animate(rdt, now) {
 
   // electrons (conventional current) on wires
   n = 0;
-  const wires = [["wPVp", S.I * 140, 1], ["wPVn", S.I * 140, -1], ["wFCp", S.fcI * 1600, 1], ["wFCn", S.fcI * 1600, -1]];
+  const wires = [["wPVp", S.I * 140, 1], ["wPVn", S.I * 140, -1], ["wFCp", 450 * Math.sqrt(S.fcI), 1], ["wFCn", 450 * Math.sqrt(S.fcI), -1]];
   for (const [id, v, dir] of wires) {
     const P = paths[id];
     ePhase[id] = (ePhase[id] + dir * v * rdt * sp + P.L) % P.L;
@@ -886,7 +962,7 @@ function animate(rdt, now) {
   ePool.hideFrom(n);
 
   // fuel cell: H+ ions crossing membrane, water forming on O2 side
-  const fcAct = S.fcI / 0.08;
+  const fcAct = Math.min(6, Math.sqrt((S.conn === "p" ? S.fcI / 2 : S.fcI) / 0.08));   // hücre başına akım
   spawnAcc.ion += rdt * fcAct * 14 * density * sp;
   while (spawnAcc.ion >= 1) { spawnAcc.ion--; ions.push({ x: 880, y: (Math.random() < .5 ? 105 : 205) + 8 + Math.random() * 54, k: "i" }); }
   spawnAcc.drop += rdt * fcAct * 1.6 * density * sp;
@@ -931,6 +1007,7 @@ function updateUi() {
   }
   bars.querySelectorAll("span").forEach((s, i) => s.classList.toggle("on", i < S.level));
   $("#btnDec").disabled = S.level === 0; $("#btnInc").disabled = S.level >= NLV;
+  updateLoadUi();
   $("#simT").textContent = fmtT(S.t);
   $("#swTime").textContent = fmtT(S.sw.t); $("#swSvg").textContent = fmtT(S.sw.t);
   $("#swH2").textContent = `${num(S.sw.h2, 1)} mL`;
@@ -1020,7 +1097,7 @@ function resetSw() { S.sw = { run: false, t: 0, h2: 0, q: 0, level: S.level }; }
 resetSw();
 
 /* ---------- charts ---------- */
-let c0, c1, c2, c3;
+let c0, c1, c2, c3, c4;
 const css = (v) => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
 function chartBase(xl, yl) {
   const fg = css("--muted"), grid = css("--line");
@@ -1031,11 +1108,11 @@ function chartBase(xl, yl) {
 }
 function makeCharts() {
   if (typeof Chart === "undefined") { $("#chartFail").hidden = false; return; }
-  [c0, c1, c2, c3].forEach((c) => c && c.destroy());
+  [c0, c1, c2, c3, c4].forEach((c) => c && c.destroy());
   const h2 = css("--h2"), o2 = css("--o2"), acc = css("--accent"), sun = css("--sun"), fg = css("--fg");
   const o0 = chartBase(t("xTime"), t("yVA"));
   o0.scales.y.max = 3.5;
-  o0.scales.y2 = { type: "linear", position: "right", min: 0, max: 10, title: { display: true, text: t("yRate"), color: css("--muted") }, ticks: { color: css("--muted") }, grid: { drawOnChartArea: false } };
+  o0.scales.y2 = { type: "linear", position: "right", min: 0, max: 18, title: { display: true, text: t("yRate"), color: css("--muted") }, ticks: { color: css("--muted") }, grid: { drawOnChartArea: false } };
   c0 = new Chart($("#c0"), { type: "line", data: { datasets: [
     { label: t("dsV"), data: [], borderColor: acc, pointRadius: 0, borderWidth: 2, stepped: false, yAxisID: "y" },
     { label: t("dsI"), data: [], borderColor: sun, pointRadius: 0, borderWidth: 2, yAxisID: "y" },
@@ -1054,7 +1131,43 @@ function makeCharts() {
     { label: t("dsLab"), data: LAB20.map(([x, y]) => ({ x, y })), pointRadius: 6, pointBackgroundColor: h2, pointBorderColor: fg, pointBorderWidth: 1 },
     { label: t("dsMine"), data: [], pointRadius: 7, pointStyle: "rectRot", pointBackgroundColor: o2, pointBorderColor: fg, pointBorderWidth: 1 } ] }, options: chartBase(t("xI"), t("yH2")) });
   c3.options.scales.x.min = 0; c3.options.scales.x.max = 2.1; c3.options.scales.y.max = 360;
-  updateCharts(); updateC3();
+  const o4 = chartBase(t("xIfc"), t("yVfc"));
+  o4.scales.x.min = 0; o4.scales.x.max = 3; o4.scales.y.max = 2.1;
+  o4.scales.y2 = { type: "linear", position: "right", min: 0, max: 2.1, title: { display: true, text: t("yPfc"), color: css("--muted") }, ticks: { color: css("--muted") }, grid: { drawOnChartArea: false } };
+  o4.plugins.legend.labels.filter = (it, d) => d.datasets[it.datasetIndex].data.length > 0;   // boş serileri gizle
+  const pt = (style, color, yAxisID, filled) => ({ showLine: false, pointRadius: 6, pointStyle: style, yAxisID,
+    pointBackgroundColor: filled ? color : "transparent", pointBorderColor: color, pointBorderWidth: 2 });
+  c4 = new Chart($("#c4"), { type: "scatter", data: { datasets: [
+    { label: t("dsFcVs"), data: [], showLine: true, borderColor: acc, pointRadius: 0, borderWidth: 2, yAxisID: "y" },
+    { label: t("dsFcPs"), data: [], showLine: true, borderColor: sun, pointRadius: 0, borderWidth: 2, yAxisID: "y2" },
+    { label: t("dsFcVp"), data: [], showLine: true, borderColor: acc, pointRadius: 0, borderWidth: 2, borderDash: [6, 4], yAxisID: "y" },
+    { label: t("dsFcPp"), data: [], showLine: true, borderColor: sun, pointRadius: 0, borderWidth: 2, borderDash: [6, 4], yAxisID: "y2" },
+    { label: t("dsSV"), data: [], ...pt("circle", acc, "y", true) },
+    { label: t("dsSP"), data: [], ...pt("circle", sun, "y2", true) },
+    { label: t("dsPV2"), data: [], ...pt("triangle", acc, "y", false) },
+    { label: t("dsPP"), data: [], ...pt("triangle", sun, "y2", false) },
+    { label: t("dsFcOp"), data: [], pointRadius: 8, pointStyle: "crossRot", borderColor: fg, pointBorderWidth: 2.5, yAxisID: "y" } ] }, options: o4 });
+  updateCharts(); updateC3(); updateC4();
+}
+// Yakıt hücresi eğrisi: model çizgileri (H₂ yeterli, s = 1) + kaydedilen noktalar
+function updateC4() {
+  if (!c4) return;
+  // model eğrisi: seçili bağlantı ve noktası kaydedilmiş bağlantı(lar) için çizilir
+  const curve = (conn) => {
+    const mv = [], mp = [];
+    if (S.conn === conn || ivPts.some((q) => q.conn === conn))
+      for (let i = 0; i <= 60; i++) { const I = 3 * i / 60, V = stackV(I, 1, conn); if (V <= 0) break; mv.push({ x: I, y: V }); mp.push({ x: I, y: I * V }); }
+    return [mv, mp];
+  };
+  const d = c4.data.datasets;
+  [d[0].data, d[1].data] = curve("s");
+  [d[2].data, d[3].data] = curve("p");
+  d[4].data = ivPts.filter((q) => q.conn === "s").map((q) => ({ x: q.I, y: q.V }));
+  d[5].data = ivPts.filter((q) => q.conn === "s").map((q) => ({ x: q.I, y: q.P }));
+  d[6].data = ivPts.filter((q) => q.conn === "p").map((q) => ({ x: q.I, y: q.V }));
+  d[7].data = ivPts.filter((q) => q.conn === "p").map((q) => ({ x: q.I, y: q.P }));
+  d[8].data = S.fcS > 0.02 ? [{ x: S.fcI, y: S.fcV }] : [];
+  c4.update("none");
 }
 function updateC3() { if (!c3) return; c3.data.datasets[2].data = records.filter((r) => r.kind === "sw").map((r) => ({ x: r.Iavg, y: r.h20 })); c3.update("none"); }
 function updateCharts() {
@@ -1072,6 +1185,7 @@ function updateCharts() {
   c2.data.datasets[0].data = pv; c2.data.datasets[1].data = ez;
   c2.data.datasets[2].data = S.I > 0 ? [{ x: S.V, y: S.I }] : [];
   c2.update("none");
+  updateC4();
 }
 
 /* ---------- i18n apply ---------- */
@@ -1081,7 +1195,7 @@ function applyLang() {
   document.title = t("title");
   $("#btnLang").textContent = lang === "tr" ? "EN" : "TR";
   $("#notes").innerHTML = NOTES[lang];
-  buildFarTable(); renderRecords(); makeCharts(); updateUi();
+  buildFarTable(); renderRecords(); buildLoadSel(); makeCharts(); updateUi();
   try { localStorage.setItem("h2twin-lang", lang); } catch (e) {}
 }
 
@@ -1097,6 +1211,57 @@ const toggleValve = () => { S.valve = !S.valve; updateUi(); };
 $("#btnValve").addEventListener("click", toggleValve);
 $("#valve").addEventListener("click", toggleValve);
 $("#valve").addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggleValve(); } });
+/* ---------- yakıt hücresi bağlantısı ve yük ---------- */
+let ivPts = [], sweeping = false;
+const fmtR = (r) => `${num(r, r < 1 ? 1 : 0)} Ω`;
+function buildLoadSel() {
+  const sel = $("#loadSel");
+  sel.innerHTML = `<option value="motor">${t("loadMotor")}</option>` +
+    RES.map((r) => `<option value="${r}">${t("resLbl")} ${fmtR(r)}</option>`).join("") +
+    `<option value="open">${t("loadOpen")}</option>`;
+  sel.value = String(S.load);
+}
+function setLoad(v) { S.load = v === "motor" || v === "open" ? v : +v; $("#loadSel").value = String(S.load); updateUi(); updateC4(); }
+function setConn(c) { S.conn = c; document.querySelectorAll("#connSeg button").forEach((b) => b.classList.toggle("on", b.dataset.conn === c)); updateUi(); updateC4(); }
+function updateLoadUi() {
+  const res = typeof S.load === "number";
+  $("#motorSym").setAttribute("display", res ? "none" : "inline");
+  $("#resSym").setAttribute("display", res ? "inline" : "none");
+  $("#propWrap").setAttribute("opacity", S.load === "motor" ? 1 : 0.35);
+  $("#loadTxt").textContent = res ? fmtR(S.load) : S.load === "open" ? "∞ Ω" : t("motorLbl");
+  $("#fcLinkS").setAttribute("display", S.conn === "s" ? "inline" : "none");
+  $("#fcLinkP").setAttribute("display", S.conn === "p" ? "inline" : "none");
+  $("#fcTitle").textContent = t(S.conn === "p" ? "fcLblP" : "fcLblS");
+  const P = S.fcV * S.fcI;
+  $("#fcRV").textContent = `${num(S.fcV, 2)} V`;
+  $("#fcRI").textContent = S.fcI < 1 ? `${Math.round(S.fcI * 1000)} mA` : `${num(S.fcI, 2)} A`;
+  $("#fcRP").textContent = P < 1 ? `${Math.round(P * 1000)} mW` : `${num(P, 2)} W`;
+  $("#btnIvSweep").disabled = sweeping;
+}
+function savePoint(q) { ivPts.push(q); updateC4(); }
+$("#connSeg").addEventListener("click", (e) => { const b = e.target.closest("button"); if (b && !sweeping) setConn(b.dataset.conn); });
+$("#loadSel").addEventListener("change", (e) => setLoad(e.target.value));
+$("#btnIvPt").addEventListener("click", () => {
+  if (S.fcS < 0.5) { toast(t("ivNoGas")); return; }
+  savePoint({ conn: S.conn, R: S.load, I: S.fcI, V: S.fcV, P: S.fcI * S.fcV }); toast(t("ivSaved"));
+});
+$("#btnIvClr").addEventListener("click", () => { ivPts = []; updateC4(); });
+// Otomatik tarama: dirençleri büyükten küçüğe sırayla bağlar, her birinde noktayı kaydeder
+$("#btnIvSweep").addEventListener("click", () => {
+  if (sweeping) return;
+  if (S.fcS < 0.5) { toast(t("ivNoGas")); return; }
+  sweeping = true; toast(t("ivBusy"));
+  const prev = S.load, list = RES.slice().reverse();
+  let k = 0;
+  (function next() {
+    if (k >= list.length || S.fcS < 0.5) { sweeping = false; setLoad(prev); toast(t(k >= list.length ? "ivDone" : "ivNoGas")); return; }
+    const R = list[k++]; setLoad(R);
+    const fc = solveFc(S.fcS, S.conn, R);
+    savePoint({ conn: S.conn, R, I: fc.I, V: fc.V, P: fc.I * fc.V });
+    setTimeout(next, REC ? 0 : 700);
+  })();
+});
+
 function setCh(c) { S.ch = c; $("#chPV").classList.toggle("on", c === "pv"); $("#chFC").classList.toggle("on", c === "fc"); updateUi(); }
 [["#chPV", "pv"], ["#chFC", "fc"]].forEach(([s, c]) => { const n = $(s); n.addEventListener("click", () => setCh(c)); n.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setCh(c); } }); });
 $("#btnSw").addEventListener("click", () => { S.sw.run ? stopSw(false) : startSw(); updateUi(); });
@@ -1145,7 +1310,7 @@ function tick(rdt, now) {
 }
 // warm start: show the rig already running for a minute
 for (let i = 0; i < 120; i++) step(0.5);
-window.__twin = { S, setLevel, step, h2Rate, faradayRate, IPH, levelG, solveFc,
+window.__twin = { S, setLevel, step, h2Rate, faradayRate, IPH, levelG, solveFc, stackV, setLoad, setConn, ivPts: () => ivPts,
   tick: (dt) => { recNow += dt * 1000; tick(dt, recNow); } };
 /* ---------- data: data/deney_verileri.json ---------- */
 // Ölçüm özetini JSON'dan okur ve LAB20'nin içeriğini değiştirir (dizi aynı kalır,
