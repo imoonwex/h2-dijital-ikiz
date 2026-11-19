@@ -129,6 +129,37 @@ label.chk { display: flex; gap: 6px; align-items: center; font-size: .88rem; col
 .tab { background: none; border: 0; border-bottom: 3px solid transparent; padding: 12px 16px; font: 600 .95rem var(--font-display); letter-spacing: .05em; text-transform: uppercase; color: var(--muted); cursor: pointer; white-space: nowrap; }
 .tab[aria-selected="true"] { color: var(--accent); border-bottom-color: var(--accent); }
 .tabpanel { padding: 16px; min-width: 0; }
+/* deney föyü ve quiz */
+.ws-bar { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+.ws-bar .seg { min-width: 240px; }
+.ws-info { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin-bottom: 14px; }
+.ws-info label, .ws-q label.txt { display: grid; gap: 4px; font-size: .85rem; color: var(--muted); }
+.ws input[type=text], .ws textarea { background: var(--surface); color: var(--fg); border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; font: 400 .92rem var(--font-body); width: 100%; box-sizing: border-box; }
+.ws textarea { min-height: 64px; resize: vertical; }
+.ws .num-in { width: 84px; text-align: right; font-family: var(--font-data); }
+.ws .num-in.ok { border-color: var(--ok); background: color-mix(in srgb, var(--ok) 12%, var(--surface)); }
+.ws .num-in.bad { border-color: var(--warn); background: color-mix(in srgb, var(--warn) 14%, var(--surface)); }
+.ws-exp { border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; margin-bottom: 16px; display: grid; gap: 10px; }
+.ws-exp h3 { margin: 0; }
+.ws-exp ol { margin: 0; padding-left: 20px; display: grid; gap: 3px; font-size: .92rem; }
+.ws-exp table td, .ws-exp table th { padding: 6px 8px; }
+.ws-res { font-size: .88rem; font-weight: 600; }
+.ws-q { border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; margin-bottom: 12px; display: grid; gap: 8px; }
+.ws-q p { margin: 0; font-weight: 600; }
+.ws-q .opt { display: flex; gap: 8px; align-items: flex-start; padding: 6px 8px; border-radius: 6px; border: 1px solid transparent; cursor: pointer; font-size: .92rem; }
+.ws-q .opt.right { border-color: var(--ok); background: color-mix(in srgb, var(--ok) 12%, transparent); }
+.ws-q .opt.wrong { border-color: var(--warn); background: color-mix(in srgb, var(--warn) 14%, transparent); }
+.ws-q .exp { font-size: .85rem; color: var(--muted); margin: 0; }
+.ws-score { font: 600 1.1rem var(--font-display); }
+.ws-ptitle { display: none; margin: 0 0 10px; font: 600 1.3rem var(--font-display); }
+@media print {
+  body * { visibility: hidden; }
+  #tp5, #tp5 * { visibility: visible; }
+  #tp5 { position: absolute; left: 0; top: 0; width: 100%; padding: 0; }
+  .ws-noprint { display: none !important; }
+  .ws-ptitle { display: block; }
+  .ws-exp, .ws-q { break-inside: avoid; }
+}
 .charts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px 24px; }
 @media (max-width: 860px) { .charts { grid-template-columns: minmax(0, 1fr); } }
 .chart-box { min-width: 0; display: grid; gap: 6px; }
@@ -513,6 +544,7 @@ footer.wrap { padding-block: 0 28px; color: var(--muted); font-size: .8rem; }
       <button class="tab" role="tab" aria-selected="true" aria-controls="tp1" id="tb1" data-i18n="tCharts">Grafikler</button>
       <button class="tab" role="tab" aria-selected="false" aria-controls="tp2" id="tb2" data-i18n="tTable">Ölçüm tablosu</button>
       <button class="tab" role="tab" aria-selected="false" aria-controls="tp3" id="tb3" data-i18n="tEff">Faraday ve verim</button>
+      <button class="tab" role="tab" aria-selected="false" aria-controls="tp5" id="tb5" data-i18n="tWs">Deney föyü ve quiz</button>
       <button class="tab" role="tab" aria-selected="false" aria-controls="tp4" id="tb4" data-i18n="tNotes">Model notları</button>
     </div>
 
@@ -567,6 +599,8 @@ footer.wrap { padding-block: 0 28px; color: var(--muted); font-size: .8rem; }
         <tbody id="cmpBody"></tbody></table></div>
     </div>
 
+    <div class="tabpanel ws" role="tabpanel" id="tp5" aria-labelledby="tb5" hidden></div>
+
     <div class="tabpanel" role="tabpanel" id="tp4" aria-labelledby="tb4" hidden>
       <div class="notes" id="notes"></div>
     </div>
@@ -600,7 +634,7 @@ const I18N = {
     swH: "Kronometre ölçümü", start: "Başlat", stop: "Durdur", clear: "Sıfırla", record: "Anlık kaydet",
     auto20: "20 dakikada otomatik durdur ve kaydet",
     cLight: "Işık", cPV: "Güneş paneli", cELZ: "Elektrolizör", cTank: "Gaz deposu", cFC: "Yakıt hücresi", cFan: "Pervane",
-    tCharts: "Grafikler", tTable: "Ölçüm tablosu", tEff: "Faraday ve verim", tNotes: "Model notları",
+    tCharts: "Grafikler", tTable: "Ölçüm tablosu", tEff: "Faraday ve verim", tNotes: "Model notları", tWs: "Deney föyü ve quiz",
     ch1: "Depodaki gaz hacmi – zaman", ch1p: "Yakıt hücresi tüketimi düşülmüş net hacim.",
     ch2: "PV I–V eğrisi ve çalışma noktası", ch2p: "Panel eğrisinin elektrolizör eğrisini kestiği nokta çalışma noktasıdır.",
     ch3: "Akım – 20 dakikada H₂", ch3p: "Laboratuvar ölçümleri, Faraday doğrusu ve sizin kronometre ölçümleriniz.",
@@ -654,7 +688,7 @@ const I18N = {
     swH: "Stopwatch measurement", start: "Start", stop: "Stop", clear: "Clear", record: "Record now",
     auto20: "Stop and record automatically at 20 minutes",
     cLight: "Light", cPV: "Solar panel", cELZ: "Electrolyzer", cTank: "Gas storage", cFC: "Fuel cell", cFan: "Propeller",
-    tCharts: "Charts", tTable: "Measurements", tEff: "Faraday & efficiency", tNotes: "Model notes",
+    tCharts: "Charts", tTable: "Measurements", tEff: "Faraday & efficiency", tNotes: "Model notes", tWs: "Worksheet & quiz",
     ch1: "Stored gas volume vs time", ch1p: "Net volume after fuel cell consumption.",
     ch2: "PV I–V curve and operating point", ch2p: "The operating point is where the panel curve meets the electrolyzer curve.",
     ch3: "Current vs H₂ in 20 minutes", ch3p: "Lab measurements, Faraday line and your stopwatch runs.",
@@ -1254,7 +1288,7 @@ function applyLang() {
   document.title = t("title");
   $("#btnLang").textContent = lang === "tr" ? "EN" : "TR";
   $("#notes").innerHTML = NOTES[lang];
-  buildFarTable(); renderRecords(); buildLoadSel(); makeCharts(); updateUi();
+  buildFarTable(); renderRecords(); buildLoadSel(); renderWs(); makeCharts(); updateUi();
   try { localStorage.setItem("h2twin-lang", lang); } catch (e) {}
 }
 
@@ -1325,6 +1359,170 @@ $("#btnIvSweep").addEventListener("click", () => {
   })();
 });
 
+
+/* ---------- deney föyü ve quiz ----------
+   Metinler WS_TXT içinde (tr/en). Öğrencinin girdiği değerler tarayıcıda saklanır (localStorage).
+   "Kontrol et": öğrencinin değerini simülasyonun beklenen değeriyle karşılaştırır (±%5 veya küçük mutlak tolerans). */
+const WS_TXT = {
+  tr: {
+    foy: "Deney föyü", quiz: "Quiz", print: "Yazdır / PDF", clearAll: "Föyü temizle", clearQ: "Quiz'i sıfırla",
+    name: "Ad Soyad", no: "Öğrenci no", date: "Tarih", group: "Grup",
+    aim: "Amaç", steps: "Adımlar", check: "Kontrol et", answer: "Cevabınız",
+    res: (ok, n) => `${n} değerden ${ok} tanesi beklenen aralıkta.`, empty: "Önce tabloyu doldurun.",
+    th: { lvl: "Kademe", I: "I (A)", H: "ΔH₂ 20 dk (mL)", th: "Teorik (mL)", eta: "η<sub>F</sub>", panel: "Panel", V: "V (V)", P: "P (W)", load: "Yük", conn: "Bağlantı" },
+    e1: { h: "Deney 1 · Işık şiddeti ve hidrojen üretimi",
+      aim: "Elektrolizör akımı ile 20 dakikada üretilen H₂ hacmi arasındaki ilişkiyi bulmak ve Faraday yasasıyla karşılaştırmak.",
+      steps: ["Işık panelinden <b>Model (6 hücre)</b> panelini seçin, zaman hızını <b>60×</b> yapın.",
+              "Işığı <b>kademe 4</b>'e getirin ve elektrolizörün ısınması için yaklaşık 4 simülasyon dakikası bekleyin.",
+              "<b>Kronometre ölçümü</b> panelinde <b>Başlat</b>'a basın; 20 dakikada kendiliğinden durur.",
+              "PV ölçümündeki akımı (I) ve kronometredeki ΔH₂ değerini tabloya yazın. Teorik hacim ve Faraday verimi kendiliğinden hesaplanır.",
+              "Aynı adımları <b>kademe 8</b> ve <b>kademe 12</b> için tekrarlayın."],
+      q: "Faraday verimi (η<sub>F</sub>) %100'ün üzerine çıkan bir ölçüm var mı? Bu fiziksel olarak mümkün mü? Laboratuvar verisindeki hangi hatalar buna yol açabilir?" },
+    e2: { h: "Deney 2 · Güneş paneli ve çalışma noktası",
+      aim: "Aynı ışıkta iki farklı panelin elektrolizöre verdiği akımı ve gücü karşılaştırmak.",
+      steps: ["Işığı <b>kademe 16</b>'ya getirin, <b>Model (6 hücre)</b> panelini seçin ve değerlerin oturması için birkaç saniye bekleyin.",
+              "PV ölçümündeki gerilim (V), akım (I) ve güç (P) değerlerini tabloya yazın.",
+              "<b>Üretici (4 hücre)</b> paneline geçin, değerler oturunca aynı ölçümleri yazın.",
+              "Grafikler sekmesindeki <b>PV I–V eğrisi</b> grafiğinde iki panelin eğrisine ve çalışma noktalarına bakın."],
+      q: "Üretici panelinin açık devre gerilimi (V<sub>oc</sub> ≈ 2,3 V) ile elektrolizörün çalışma gerilimini (≈ 2,4 V) karşılaştırın. Üretici paneli neden bu kadar az akım veriyor? Bu sorunu çözmek için ne önerirsiniz?" },
+    e3: { h: "Deney 3 · Yakıt hücresi I–V ve güç eğrisi",
+      aim: "Yük direnci değiştikçe yakıt hücresinin gerilim, akım ve gücünün nasıl değiştiğini bulmak; seri ve paralel bağlantıyı karşılaştırmak.",
+      steps: ["H₂ vanasının açık olduğundan ve depoda gaz bulunduğundan emin olun.",
+              "<b>Yakıt hücresi ve yük</b> panelinde <b>Seri</b> bağlantıyı seçin.",
+              "Yük olarak sırayla <b>100 Ω, 10 Ω, 2 Ω</b> ve <b>0,5 Ω</b> seçin; her birinde gerilim ve akımı tabloya yazın. Güç kendiliğinden hesaplanır.",
+              "<b>Paralel</b> bağlantıya geçin, <b>2 Ω</b> için ölçümü tekrarlayın.",
+              "İsterseniz <b>Otomatik tarama</b> ile tam eğriyi Grafikler sekmesinde görün."],
+      q: "Hangi dirençte en yüksek gücü ölçtünüz? Güç neden yük direnci küçüldükçe önce artıp sonra azalır? Aynı 2 Ω yükte seri ve paralel bağlantıyı gerilim, akım ve güç açısından karşılaştırın." },
+    rows2: { m: "Model (6 hücre)", r: "Üretici (4 hücre)" }, s: "Seri", p: "Paralel",
+    score: (k, n, m) => `Puan: ${k} / ${n}` + (m < n ? ` · ${n - m} soru cevaplanmadı` : ""),
+    right: "Doğru.", wrong: "Yanlış.",
+  },
+  en: {
+    foy: "Worksheet", quiz: "Quiz", print: "Print / PDF", clearAll: "Clear worksheet", clearQ: "Reset quiz",
+    name: "Name", no: "Student no.", date: "Date", group: "Group",
+    aim: "Aim", steps: "Steps", check: "Check", answer: "Your answer",
+    res: (ok, n) => `${ok} of ${n} values are in the expected range.`, empty: "Fill in the table first.",
+    th: { lvl: "Level", I: "I (A)", H: "ΔH₂ 20 min (mL)", th: "Theory (mL)", eta: "η<sub>F</sub>", panel: "Panel", V: "V (V)", P: "P (W)", load: "Load", conn: "Connection" },
+    e1: { h: "Experiment 1 · Light intensity and hydrogen production",
+      aim: "Find how the H₂ volume produced in 20 minutes depends on the electrolyzer current and compare it with Faraday's law.",
+      steps: ["In the light panel choose the <b>Model (6 cells)</b> panel and set the speed to <b>60×</b>.",
+              "Set the light to <b>level 4</b> and wait about 4 simulated minutes for the electrolyzer to warm up.",
+              "Press <b>Start</b> in the <b>Stopwatch run</b> panel; it stops by itself after 20 minutes.",
+              "Write the current (I) from the PV meter and ΔH₂ from the stopwatch into the table. Theory and Faraday efficiency are calculated automatically.",
+              "Repeat for <b>level 8</b> and <b>level 12</b>."],
+      q: "Is there a run where the Faraday efficiency (η<sub>F</sub>) goes above 100%? Is that physically possible? Which errors in the lab data could cause it?" },
+    e2: { h: "Experiment 2 · Solar panel and operating point",
+      aim: "Compare the current and power two different panels deliver to the electrolyzer under the same light.",
+      steps: ["Set the light to <b>level 16</b>, choose the <b>Model (6 cells)</b> panel and wait a few seconds for the values to settle.",
+              "Write the voltage (V), current (I) and power (P) from the PV meter into the table.",
+              "Switch to the <b>Maker (4 cells)</b> panel and write the same readings once they settle.",
+              "Look at both curves and operating points in the <b>PV I–V curve</b> chart in the Charts tab."],
+      q: "Compare the manufacturer panel's open-circuit voltage (V<sub>oc</sub> ≈ 2.3 V) with the electrolyzer's operating voltage (≈ 2.4 V). Why does the manufacturer panel deliver so little current? What would you suggest to fix it?" },
+    e3: { h: "Experiment 3 · Fuel cell I–V and power curve",
+      aim: "Find how the fuel cell's voltage, current and power change with the load resistance, and compare series and parallel connection.",
+      steps: ["Make sure the H₂ valve is open and there is gas in storage.",
+              "In the <b>Fuel cell and load</b> panel choose <b>Series</b>.",
+              "Select <b>100 Ω, 10 Ω, 2 Ω</b> and <b>0.5 Ω</b> in turn and write voltage and current into the table. Power is calculated automatically.",
+              "Switch to <b>Parallel</b> and repeat the reading for <b>2 Ω</b>.",
+              "Optionally use <b>Auto sweep</b> to see the full curve in the Charts tab."],
+      q: "At which resistance did you measure the highest power? Why does power first rise and then fall as the load resistance gets smaller? Compare series and parallel at the same 2 Ω load in terms of voltage, current and power." },
+    rows2: { m: "Model (6 cells)", r: "Maker (4 cells)" }, s: "Series", p: "Parallel",
+    score: (k, n, m) => `Score: ${k} / ${n}` + (m < n ? ` · ${n - m} unanswered` : ""),
+    right: "Correct.", wrong: "Not quite.",
+  }
+};
+// Quiz soruları: c = doğru seçeneğin sırası (0'dan başlar), e = açıklama
+const QUIZ = [
+  { tr: { q: "1,0 A akım 20 dakikada teorik olarak kaç mL H₂ üretir? (25 °C, 1 atm, V<sub>m</sub> = 24,45 L/mol)", o: ["76 mL", "152 mL", "304 mL", "1200 mL"], e: "V = I·t/(2F)·V<sub>m</sub> = 1,0 · 1200 / (2 · 96485) · 24450 ≈ 152 mL. Her H₂ molekülü için 2 elektron gerekir." },
+    en: { q: "How much H₂ does 1.0 A produce in 20 minutes in theory? (25 °C, 1 atm, V<sub>m</sub> = 24.45 L/mol)", o: ["76 mL", "152 mL", "304 mL", "1200 mL"], e: "V = I·t/(2F)·V<sub>m</sub> = 1.0 · 1200 / (2 · 96485) · 24450 ≈ 152 mL. Each H₂ molecule needs 2 electrons." }, c: 1 },
+  { tr: { q: "Elektrolizde oluşan H₂ ve O₂ hacimlerinin oranı nedir?", o: ["1 : 1", "2 : 1 (H₂ iki kat)", "1 : 2 (O₂ iki kat)", "4 : 1"], e: "2 H₂O → 2 H₂ + O₂. Her O₂ molekülüne karşılık iki H₂ molekülü oluşur; bu yüzden H₂ deposu iki kat hızlı dolar." },
+    en: { q: "What is the volume ratio of H₂ to O₂ produced by electrolysis?", o: ["1 : 1", "2 : 1 (twice as much H₂)", "1 : 2 (twice as much O₂)", "4 : 1"], e: "2 H₂O → 2 H₂ + O₂. Two H₂ molecules form for every O₂ molecule, so the H₂ storage fills twice as fast." }, c: 1 },
+  { tr: { q: "Işık şiddeti artırıldığında PV–elektrolizör çalışma noktasında ne olur?", o: ["Gerilim çok artar, akım değişmez", "Akım artar, gerilim neredeyse sabit kalır (≈2,4 V)", "İkisi de değişmez", "Akım artar, gerilim sıfıra düşer"], e: "Elektrolizörün I–V eğrisi çok diktir: gerilim biraz artınca akım çok artar. Panelin ışık akımı yükseldikçe çalışma noktası bu dik eğri boyunca yukarı kayar." },
+    en: { q: "What happens at the PV–electrolyzer operating point when the light gets stronger?", o: ["Voltage rises a lot, current stays the same", "Current rises, voltage stays nearly constant (≈2.4 V)", "Neither changes", "Current rises, voltage drops to zero"], e: "The electrolyzer's I–V curve is very steep: a small voltage rise gives a large current rise. As the panel's light current grows, the operating point moves up this steep curve." }, c: 1 },
+  { tr: { q: "Ölçümlerde elektrolizör gerilimi başlangıçta 2,6–2,9 V iken zamanla 2,4 V'a iniyor. Bunun en olası nedeni nedir?", o: ["Depo dolduğu için", "Hücre ısındıkça iç direnç ve aktivasyon kayıpları azalır", "Işık şiddeti zamanla azalır", "O₂ üretimi durur"], e: "Soğuk PEM hücrede membranın iletkenliği ve tepkime hızı düşüktür. Hücre ısındıkça kayıplar azalır ve aynı akım için gereken gerilim düşer." },
+    en: { q: "In the measurements the electrolyzer voltage starts at 2.6–2.9 V and falls to 2.4 V over time. What is the most likely reason?", o: ["The storage fills up", "Internal resistance and activation losses fall as the cell warms", "The light gets weaker over time", "O₂ production stops"], e: "In a cold PEM cell the membrane conducts poorly and the reaction is slow. As the cell warms, losses fall and less voltage is needed for the same current." }, c: 1 },
+  { tr: { q: "Laboratuvar verisinde 0,8 A grubunda ölçülen hacim teorik değerin %112'si çıkıyor. Bu neyi gösterir?", o: ["Elektrolizör %100'den verimli çalıştı", "Ölçüm veya deney hatası (okuma, önceki gruptan kalan gaz, sıcaklık/basınç)", "Faraday yasası bu akımda geçersiz", "Depoya O₂ karıştı ve hacim azaldı"], e: "Faraday yasası üst sınırı verir; %100'ün üzeri fiziksel olarak mümkün değildir. Sapma ölçüm koşullarından kaynaklanır." },
+    en: { q: "In the lab data the 0.8 A group measured 112% of the theoretical volume. What does this show?", o: ["The electrolyzer worked above 100% efficiency", "A measurement or procedure error (reading, gas left from the previous group, temperature/pressure)", "Faraday's law does not hold at this current", "O₂ mixed into storage and reduced the volume"], e: "Faraday's law sets the upper limit; above 100% is physically impossible. The deviation comes from the measurement conditions." }, c: 1 },
+  { tr: { q: "Yakıt hücresinden en yüksek güç hangi durumda alınır?", o: ["Açık devrede (yük yok)", "Kısa devrede", "Yük direnci yakıt hücresinin iç direncine yakınken", "En büyük dirençte (100 Ω)"], e: "Açık devrede akım, kısa devrede gerilim sıfırdır; ikisinde de güç sıfırdır. Güç, yük direnci iç dirence yaklaştığında en büyük olur (seri bağlantıda ≈0,4 Ω, ≈1,7 W)." },
+    en: { q: "When does the fuel cell deliver its highest power?", o: ["At open circuit (no load)", "At short circuit", "When the load resistance is close to the fuel cell's internal resistance", "At the largest resistance (100 Ω)"], e: "At open circuit the current is zero, at short circuit the voltage is zero; power is zero in both. Power peaks when the load resistance approaches the internal resistance (≈0.4 Ω, ≈1.7 W in series)." }, c: 2 },
+  { tr: { q: "İki yakıt hücresi seri yerine paralel bağlanırsa ne değişir?", o: ["Gerilim iki katına çıkar", "Gerilim yaklaşık yarıya iner, verilebilecek akım iki katına çıkar", "Gerilim ve akım değişmez", "H₂ tüketimi iki katına çıkar"], e: "Seride gerilimler toplanır, akım aynıdır. Paralelde gerilim tek hücreninkidir, akım iki hücreye bölünür. Bu yüzden motor paralelde daha yavaş döner." },
+    en: { q: "What changes if the two fuel cells are connected in parallel instead of series?", o: ["The voltage doubles", "The voltage roughly halves and the available current doubles", "Voltage and current stay the same", "H₂ use doubles"], e: "In series the voltages add and the current is the same. In parallel the voltage is that of one cell and the current splits between the cells. That is why the motor runs slower in parallel." }, c: 1 },
+  { tr: { q: "Seri bağlı yakıt hücresi 2 Ω yükte 1,37 V ve 0,69 A veriyor. Yükteki güç yaklaşık kaçtır?", o: ["0,50 W", "0,94 W", "1,37 W", "2,06 W"], e: "P = U · I = 1,37 V · 0,69 A ≈ 0,94 W." },
+    en: { q: "The series fuel cell gives 1.37 V and 0.69 A into a 2 Ω load. What is the power in the load?", o: ["0.50 W", "0.94 W", "1.37 W", "2.06 W"], e: "P = U · I = 1.37 V · 0.69 A ≈ 0.94 W." }, c: 1 },
+  { tr: { q: "Üreticinin 4 hücreli paneli (V<sub>oc</sub> 2,3 V) bu elektrolizörü neden yeterince çalıştıramaz?", o: ["Paneli ışık az geldiği için", "Elektrolizör ≈2,4 V istiyor; panelin gerilimi bu değere yaklaşınca akımı hızla düşüyor", "Panelin akımı çok yüksek olduğu için", "Panel alternatif akım ürettiği için"], e: "Bir panel V<sub>oc</sub>'a yaklaştıkça akımı sıfıra iner. Elektrolizör 2,4 V civarında çalıştığı için 2,3 V'luk panel ancak çok küçük bir akım verebilir. Çözüm: seri hücre sayısını artırmak (ör. 6 hücre)." },
+    en: { q: "Why can't the manufacturer's 4-cell panel (V<sub>oc</sub> 2.3 V) drive this electrolyzer properly?", o: ["Because it gets too little light", "The electrolyzer needs ≈2.4 V; as the panel voltage approaches that, its current falls sharply", "Because its current is too high", "Because it produces alternating current"], e: "A panel's current drops to zero as it approaches V<sub>oc</sub>. With the electrolyzer working near 2.4 V, a 2.3 V panel can only supply a tiny current. Fix: more cells in series (e.g. 6)." }, c: 1 },
+  { tr: { q: "Bu düzenekteki enerji dönüşüm zincirinin doğru sırası hangisidir?", o: ["Işık → kimyasal → elektrik → hareket", "Işık → elektrik → kimyasal (H₂) → elektrik → hareket", "Elektrik → ışık → kimyasal → hareket", "Işık → hareket → elektrik → kimyasal"], e: "PV paneli ışığı elektriğe, elektrolizör elektriği H₂'nin kimyasal enerjisine, yakıt hücresi bunu yeniden elektriğe, motor da harekete çevirir." },
+    en: { q: "What is the correct order of the energy chain in this setup?", o: ["Light → chemical → electrical → motion", "Light → electrical → chemical (H₂) → electrical → motion", "Electrical → light → chemical → motion", "Light → motion → electrical → chemical"], e: "The PV panel turns light into electricity, the electrolyzer turns electricity into the chemical energy of H₂, the fuel cell turns it back into electricity and the motor into motion." }, c: 1 },
+];
+let ws = {}, wsView = "foy";
+try { ws = JSON.parse(localStorage.getItem("h2twin-ws") || "{}"); } catch (e) { ws = {}; }
+const wsSave = () => { try { localStorage.setItem("h2twin-ws", JSON.stringify(ws)); } catch (e) {} };
+const W = () => WS_TXT[lang] || WS_TXT.tr;
+const pnum = (v) => { const x = parseFloat(String(v ?? "").replace(",", ".")); return isFinite(x) ? x : NaN; };
+const nIn = (id) => `<input type="text" inputmode="decimal" class="num-in" data-k="${id}" value="${(ws[id] ?? "").toString().replace(/"/g, "")}">`;
+// beklenen değerler (simülasyon modelinden)
+function wsTargets() {
+  const T = {};
+  [4, 8, 12].forEach((lv) => { const r = LAB20[lv - 1]; if (r) { T[`e1_${lv}_I`] = r[0]; T[`e1_${lv}_H`] = r[1]; } });
+  [["m", PV], ["r", PVR]].forEach(([k, P]) => { const lv = NLV, I = solveOp(iphAt(lv, P), 1, P), V = vEl(I, 1); T[`e2_${k}_V`] = V; T[`e2_${k}_I`] = I; T[`e2_${k}_P`] = V * I; });
+  [["s", 100], ["s", 10], ["s", 2], ["s", 0.5], ["p", 2]].forEach(([c, R]) => { const f = solveFc(1, c, R); T[`e3_${c}${R}_V`] = f.V; T[`e3_${c}${R}_I`] = f.I; });
+  return T;
+}
+const tolOk = (x, t) => Math.abs(x - t) <= Math.max(0.05 * Math.abs(t), 0.02);
+function renderWs() {
+  const w = W(), th = w.th;
+  const exp = (key, body) => { const e = w[key];
+    return `<div class="ws-exp" data-exp="${key}"><h3>${e.h}</h3><p class="hint"><b>${w.aim}:</b> ${e.aim}</p>
+      <div><b style="font-size:.9rem">${w.steps}</b><ol>${e.steps.map((x) => `<li>${x}</li>`).join("")}</ol></div>
+      <div class="tbl-wrap">${body}</div>
+      <div class="row ws-noprint"><button class="btn primary" type="button" data-check="${key}">${w.check}</button><span class="ws-res" data-res="${key}"></span></div>
+      <label class="txt" style="display:grid;gap:4px;font-size:.88rem"><span>${e.q}</span><textarea data-k="${key}_ans" placeholder="${w.answer}">${(ws[key + "_ans"] || "").replace(/</g, "&lt;")}</textarea></label></div>`; };
+  const t1 = `<table><thead><tr><th>${th.lvl}</th><th>${th.I}</th><th>${th.H}</th><th>${th.th}</th><th>${th.eta}</th></tr></thead><tbody>` +
+    [4, 8, 12].map((lv) => `<tr><td>${lv}</td><td>${nIn(`e1_${lv}_I`)}</td><td>${nIn(`e1_${lv}_H`)}</td><td data-out="e1_${lv}_th"></td><td data-out="e1_${lv}_eta"></td></tr>`).join("") + "</tbody></table>";
+  const t2 = `<table><thead><tr><th>${th.panel}</th><th>${th.V}</th><th>${th.I}</th><th>${th.P}</th></tr></thead><tbody>` +
+    ["m", "r"].map((k) => `<tr><td>${w.rows2[k]}</td><td>${nIn(`e2_${k}_V`)}</td><td>${nIn(`e2_${k}_I`)}</td><td>${nIn(`e2_${k}_P`)}</td></tr>`).join("") + "</tbody></table>";
+  const t3 = `<table><thead><tr><th>${th.conn}</th><th>${th.load}</th><th>${th.V}</th><th>${th.I}</th><th>${th.P}</th></tr></thead><tbody>` +
+    [["s", 100], ["s", 10], ["s", 2], ["s", 0.5], ["p", 2]].map(([c, R]) => `<tr><td>${w[c]}</td><td>${fmtR(R)}</td><td>${nIn(`e3_${c}${R}_V`)}</td><td>${nIn(`e3_${c}${R}_I`)}</td><td data-out="e3_${c}${R}_P"></td></tr>`).join("") + "</tbody></table>";
+  const info = ["name", "no", "group", "date"].map((k) => `<label>${w[k]}<input type="text" data-k="info_${k}" value="${(ws["info_" + k] || "").replace(/"/g, "")}"></label>`).join("");
+  const answered = QUIZ.filter((_, i) => ws["q" + i] !== undefined).length, correct = QUIZ.filter((q, i) => ws["q" + i] === q.c).length;
+  const quiz = `<p class="ws-score">${w.score(correct, QUIZ.length, answered)}</p>` + QUIZ.map((q, i) => { const Q = q[lang] || q.tr, a = ws["q" + i];
+    return `<div class="ws-q"><p>${i + 1}. ${Q.q}</p>` + Q.o.map((o, j) => {
+      const cls = a === undefined ? "" : j === q.c ? "right" : j === a ? "wrong" : "";
+      return `<label class="opt ${cls}"><input type="radio" name="q${i}" value="${j}" ${a === j ? "checked" : ""} ${a !== undefined ? "disabled" : ""}> <span>${o}</span></label>`; }).join("") +
+      (a !== undefined ? `<p class="exp"><b>${a === q.c ? w.right : w.wrong}</b> ${Q.e}</p>` : "") + "</div>"; }).join("");
+  $("#tp5").innerHTML = `<div class="ws-bar ws-noprint"><div class="seg" id="wsSeg"><button type="button" data-v="foy" class="${wsView === "foy" ? "on" : ""}">${w.foy}</button><button type="button" data-v="quiz" class="${wsView === "quiz" ? "on" : ""}">${w.quiz}</button></div>
+    <div class="row"><button class="btn" type="button" id="wsPrint">${w.print}</button><button class="btn" type="button" id="wsClear">${wsView === "foy" ? w.clearAll : w.clearQ}</button></div></div>
+    <h2 class="ws-ptitle">${t("title")} · ${wsView === "foy" ? w.foy : w.quiz}</h2>
+    <div class="ws-info">${info}</div>
+    <div ${wsView === "foy" ? "" : "hidden"}>${exp("e1", t1)}${exp("e2", t2)}${exp("e3", t3)}</div>
+    <div ${wsView === "quiz" ? "" : "hidden"}>${quiz}</div>`;
+  wsCalc();
+}
+// öğrencinin değerlerinden hesaplanan sütunlar (teorik hacim, Faraday verimi, güç)
+function wsCalc() {
+  const out = (k, v) => { const c = document.querySelector(`[data-out="${k}"]`); if (c) c.innerHTML = v; };
+  [4, 8, 12].forEach((lv) => { const I = pnum(ws[`e1_${lv}_I`]), H = pnum(ws[`e1_${lv}_H`]), th = I * 1200 / (2 * F) * VM;
+    out(`e1_${lv}_th`, isFinite(th) ? num(th, 1) : "–");
+    out(`e1_${lv}_eta`, isFinite(th) && isFinite(H) && th > 0 ? pct(H / th * 100, 1) + (H / th > 1 ? ' <span class="pill warn">&gt;100</span>' : "") : "–"); });
+  [["s", 100], ["s", 10], ["s", 2], ["s", 0.5], ["p", 2]].forEach(([c, R]) => { const V = pnum(ws[`e3_${c}${R}_V`]), I = pnum(ws[`e3_${c}${R}_I`]);
+    out(`e3_${c}${R}_P`, isFinite(V * I) ? num(V * I, 3) : "–"); });
+}
+function wsCheck(key) {
+  const T = wsTargets(); let ok = 0, n = 0;
+  document.querySelectorAll(`[data-exp="${key}"] .num-in`).forEach((inp) => { const t = T[inp.dataset.k], x = pnum(inp.value);
+    inp.classList.remove("ok", "bad"); if (t === undefined || !isFinite(x)) return; n++; const g = tolOk(x, t); if (g) ok++; inp.classList.add(g ? "ok" : "bad"); });
+  document.querySelector(`[data-res="${key}"]`).textContent = n ? W().res(ok, n) : W().empty;
+}
+$("#tp5").addEventListener("input", (e) => { const k = e.target.dataset && e.target.dataset.k; if (!k) return; ws[k] = e.target.value; wsSave(); e.target.classList.remove("ok", "bad"); wsCalc(); });
+$("#tp5").addEventListener("change", (e) => { if (e.target.type === "radio") { ws[e.target.name] = +e.target.value; wsSave(); renderWs(); } });
+$("#tp5").addEventListener("click", (e) => {
+  const b = e.target.closest("button"); if (!b) return;
+  if (b.dataset.v) { wsView = b.dataset.v; renderWs(); }
+  else if (b.dataset.check) wsCheck(b.dataset.check);
+  else if (b.id === "wsPrint") window.print();
+  else if (b.id === "wsClear") { Object.keys(ws).forEach((k) => { if (wsView === "quiz" ? /^q\d+$/.test(k) : !/^q\d+$/.test(k) && !k.startsWith("info_")) delete ws[k]; }); wsSave(); renderWs(); }
+});
+
 function setCh(c) { S.ch = c; $("#chPV").classList.toggle("on", c === "pv"); $("#chFC").classList.toggle("on", c === "fc"); updateUi(); }
 [["#chPV", "pv"], ["#chFC", "fc"]].forEach(([s, c]) => { const n = $(s); n.addEventListener("click", () => setCh(c)); n.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setCh(c); } }); });
 $("#btnSw").addEventListener("click", () => { S.sw.run ? stopSw(false) : startSw(); updateUi(); });
@@ -1342,7 +1540,7 @@ $("#btnCopy").addEventListener("click", () => {
 });
 document.querySelectorAll(".tab").forEach((tb) => tb.addEventListener("click", () => {
   document.querySelectorAll(".tab").forEach((x) => { const on = x === tb; x.setAttribute("aria-selected", on); document.getElementById(x.getAttribute("aria-controls")).hidden = !on; });
-  if (tb.id === "tb1") { [c0, c1, c2, c3].forEach((c) => c && c.resize()); }
+  if (tb.id === "tb1") { [c0, c1, c2, c3, c4].forEach((c) => c && c.resize()); }
 }));
 $("#btnLang").addEventListener("click", () => { lang = lang === "tr" ? "en" : "tr"; applyLang(); });
 $("#btnTheme").addEventListener("click", () => {

@@ -46,4 +46,4 @@ Zincir: **Işık → PV panel → PEM elektrolizör (H₂/O₂) → gaz depolar�
 - [x] Paralel/seri yakıt hücresi bağlantı seçeneği
 - [x] Gerçek PV paneli (4 hücre, Voc 2,3 V) ile karşılaştırma modu
 - [x] Ölçüm verisinin `data/deney_verileri.json` dosyasından dinamik yüklenmesi (yerel sunucu/Live Server veya GitHub Pages gerekir; dosyaya çift tıklanınca gömülü yedek veri kullanılır)
-- [ ] Öğrenci deney föyü / quiz modu
+- [x] Öğrenci deney föyü / quiz modu ("Deney föyü ve quiz" sekmesi: 3 rehberli deney, otomatik kontrol, 10 soruluk quiz, yazdır/PDF)
