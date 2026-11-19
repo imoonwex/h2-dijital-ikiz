@@ -21,6 +21,7 @@ Zincir: **Işık → PV panel → PEM elektrolizör (H₂/O₂) → gaz depolar�
 ## Model özeti
 - **Işık:** 0–16 kademe; kademe 1–16 laboratuvar deney gruplarına (0,5…2,0 A) karşılık gelir. Kademe sayısı `data/deney_verileri.json` içindeki `ozet_20dk` listesinden otomatik çıkar.
 - **PV:** Tek diyot modeli; elektrolizör I–V eğrisiyle kesişimi ölçülen akımı verecek şekilde kalibre.
+- **Üretici paneli modu:** Işık panelinden gerçek 4 hücreli panele (Voc 2,3 V, Isc 1,0 A) geçilir; I–V grafiğinde iki panel üst üste, "Faraday ve verim" sekmesinde kademe kademe karşılaştırma tablosu.
 - **Elektrolizör:** Isınma geçişli gerilim (≈2,8 V → 2,4 V); H₂ debisi ölçüm tablosundan interpolasyon, Faraday teorik değeriyle karşılaştırma.
 - **Yakıt hücresi:** Çift hücre, seri veya paralel bağlanabilir; iç direnç 0,175 Ω ile üretici değerlerine (seri 0,8–1,8 V, en fazla 1,7 W) kalibre.
 - **Yük:** Motor + pervane, 0,3–100 Ω direnç veya açık devre. "Otomatik tarama" 10 direnci sırayla bağlayıp I–V ve güç eğrisini çıkarır.
@@ -43,6 +44,6 @@ Zincir: **Işık → PV panel → PEM elektrolizör (H₂/O₂) → gaz depolar�
 - [ ] İngilizce altyazılı / 30 sn kısa tanıtım videosu
 - [x] Yük direnci seçimi (0,3–100 Ω) ve yakıt hücresi I–V / güç eğrisi deneyi
 - [x] Paralel/seri yakıt hücresi bağlantı seçeneği
-- [ ] Gerçek PV paneli (4 hücre, Voc 2,3 V) ile karşılaştırma modu
+- [x] Gerçek PV paneli (4 hücre, Voc 2,3 V) ile karşılaştırma modu
 - [x] Ölçüm verisinin `data/deney_verileri.json` dosyasından dinamik yüklenmesi (yerel sunucu/Live Server veya GitHub Pages gerekir; dosyaya çift tıklanınca gömülü yedek veri kullanılır)
 - [ ] Öğrenci deney föyü / quiz modu

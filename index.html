@@ -322,7 +322,7 @@ footer.wrap { padding-block: 0 28px; color: var(--muted); font-size: .8rem; }
           <g id="pvCells"></g>
           <rect id="pvGlow" x="268" y="392" width="186" height="236" fill="url(#gPvGlow)" opacity="0" style="mix-blend-mode:screen"/>
           <circle cx="361" cy="644" r="9" fill="#3d454d"/>
-          <text x="361" y="664" text-anchor="middle" class="lbl-small" data-i18n="pvLbl">Güneş paneli</text>
+          <text id="pvTitle" x="361" y="664" text-anchor="middle" class="lbl-small">Güneş paneli</text>
           <circle cx="330" cy="676" r="7" fill="#d32f2f" stroke="#7a1515"/>
           <circle cx="392" cy="676" r="7" fill="#222" stroke="#000"/>
         </g>
@@ -437,6 +437,11 @@ footer.wrap { padding-block: 0 28px; color: var(--muted); font-size: .8rem; }
           </button>
         </div>
         <div class="meter" id="meterBars" aria-hidden="true"></div>
+        <div class="seg" id="pvSeg">
+          <button type="button" data-pv="m" class="on" data-i18n="pvMs">Model (6 hücre)</button>
+          <button type="button" data-pv="r" data-i18n="pvRs">Üretici (4 hücre)</button>
+        </div>
+        <label class="chk"><input type="checkbox" id="pvCmp" checked> <span data-i18n="pvCmp">Grafikte diğer paneli de göster</span></label>
         <div class="lvl-info"><span><span data-i18n="level">Kademe</span> <b id="lvlNum">4/16</b></span><span><b id="lvlG">0</b> W/m²</span><span><span data-i18n="group">Grup</span> <b id="lvlGrp">4</b></span></div>
       </div>
 
@@ -554,6 +559,12 @@ footer.wrap { padding-block: 0 28px; color: var(--muted); font-size: .8rem; }
           <p data-i18n="howP2">Elektrolizör gerilimi 1,48 V'un (termonötr gerilim) üzerinde olduğu için fark ısıya dönüşür. Bu yüzden enerji verimi Faraday veriminden düşüktür.</p>
         </div>
       </div>
+      <h3 style="margin-top:18px" data-i18n="cmpH">PV paneli karşılaştırması: model paneli ve üretici paneli</h3>
+      <p class="hint" data-i18n="cmpP">Her kademede, ısınmış elektrolizöre bağlanınca panelin verdiği akım ve 20 dakikada üretilen H₂. Üretici panelinin V<sub>oc</sub> değeri (2,3 V), elektrolizörün çalışma gerilimine (≈2,4 V) yetmez.</p>
+      <div class="tbl-wrap" style="margin-top:8px"><table>
+        <thead><tr><th rowspan="2" data-i18n="thLvl">Kademe</th><th rowspan="2">G (W/m²)</th><th colspan="4" data-i18n="pvM">Model paneli (6 hücre)</th><th colspan="4" data-i18n="pvR">Üretici paneli (4 hücre)</th></tr>
+        <tr><th>I (A)</th><th>V (V)</th><th>P (W)</th><th data-i18n="th20">20 dk H₂ (mL)</th><th>I (A)</th><th>V (V)</th><th>P (W)</th><th data-i18n="th20">20 dk H₂ (mL)</th></tr></thead>
+        <tbody id="cmpBody"></tbody></table></div>
     </div>
 
     <div class="tabpanel" role="tabpanel" id="tp4" aria-labelledby="tb4" hidden>
@@ -601,6 +612,12 @@ const I18N = {
     howH: "Nasıl okunur?",
     howP1: "Faraday verimi, üretilen hidrojenin akımın teorik olarak üretebileceği miktara oranıdır. Enerji verimi ise hidrojenin üst ısıl değerinin (HHV, 285,8 kJ/mol) harcanan elektrik enerjisine oranıdır.",
     howP2: "Elektrolizör gerilimi 1,48 V'un (termonötr gerilim) üzerinde olduğu için fark ısıya dönüşür. Bu yüzden enerji verimi Faraday veriminden düşüktür.",
+    pvMs: "Model (6 hücre)", pvRs: "Üretici (4 hücre)", pvM: "Model paneli (6 hücre)", pvR: "Üretici paneli (4 hücre)", pvCmp: "Grafikte diğer paneli de göster",
+    pvLblM: "Güneş paneli (model, 6 hücre)", pvLblR: "Güneş paneli (üretici, 4 hücre)",
+    dsPVm: "Model paneli I–V", dsPVr: "Üretici paneli I–V", dsPVo: "Diğer panel", dsOPo: "Diğer panelin noktası",
+    pvRToast: "Üretici paneli: Voc 2,3 V, elektrolizörün ≈2,4 V'luk çalışma gerilimine yetmiyor; H₂ üretimi çok düşük.",
+    cmpH: "PV paneli karşılaştırması: model paneli ve üretici paneli",
+    cmpP: "Her kademede, ısınmış elektrolizöre bağlanınca panelin verdiği akım ve 20 dakikada üretilen H₂. Üretici panelinin Voc değeri (2,3 V), elektrolizörün çalışma gerilimine (≈2,4 V) yetmez.",
     loadH: "Yakıt hücresi ve yük", series: "Seri", parallel: "Paralel", loadSel: "Yük", rdV: "Gerilim", rdI: "Akım", rdP: "Güç",
     loadMotor: "Motor + pervane", loadOpen: "Açık devre (yük yok)", resLbl: "Direnç",
     ivPt: "Noktayı kaydet", ivSweep: "Otomatik tarama", ivClr: "Temizle",
@@ -649,6 +666,12 @@ const I18N = {
     howH: "How to read this",
     howP1: "Faraday efficiency is the hydrogen produced divided by what the current could produce in theory. Energy efficiency is the higher heating value of the hydrogen (HHV, 285.8 kJ/mol) divided by the electrical energy used.",
     howP2: "The electrolyzer runs above the 1.48 V thermoneutral voltage, and the difference becomes heat. That is why energy efficiency is lower than Faraday efficiency.",
+    pvMs: "Model (6 cells)", pvRs: "Maker (4 cells)", pvM: "Model panel (6 cells)", pvR: "Manufacturer panel (4 cells)", pvCmp: "Also show the other panel in the chart",
+    pvLblM: "Solar panel (model, 6 cells)", pvLblR: "Solar panel (manufacturer, 4 cells)",
+    dsPVm: "Model panel I–V", dsPVr: "Manufacturer panel I–V", dsPVo: "Other panel", dsOPo: "Other panel's point",
+    pvRToast: "Manufacturer panel: Voc 2.3 V is not enough for the electrolyzer's ≈2.4 V operating voltage; H₂ output is very low.",
+    cmpH: "PV panel comparison: model panel and manufacturer panel",
+    cmpP: "At each level, the current the panel delivers into the warm electrolyzer and the H₂ produced in 20 minutes. The manufacturer panel's Voc (2.3 V) is not enough for the electrolyzer's operating voltage (≈2.4 V).",
     loadH: "Fuel cell and load", series: "Series", parallel: "Parallel", loadSel: "Load", rdV: "Voltage", rdI: "Current", rdP: "Power",
     loadMotor: "Motor + propeller", loadOpen: "Open circuit (no load)", resLbl: "Resistor",
     ivPt: "Save point", ivSweep: "Auto sweep", ivClr: "Clear",
@@ -677,6 +700,7 @@ const NOTES = {
 <li><b>Elektrolizör</b> davranışı laboratuvar ölçümlerinizden gelir: 20 dakikada üretilen H₂ (0,5 A → 83 mL … 2,0 A → 329 mL, 16 grup) akıma göre doğrusal ara değerlemeyle hesaplanır. Gerilim, ölçümlerde görüldüğü gibi soğuk başlangıçta 2,7–2,9 V'tan ısındıkça yaklaşık 2,4 V'a iner (zaman sabiti ≈ 200 s).</li>
 <li><b>Işık kademeleri</b> sizin 16 deney grubunuzla eşleşir. Kademe <i>n</i>, ısınmış elektrolizörde grup <i>n</i>'nin akımını (0,5 + 0,1·(n−1) A) verecek şekilde kalibre edilmiştir.</li>
 <li><b>PV paneli</b> tek diyot modeliyle hesaplanır: I = I<sub>ph</sub> − I<sub>0</sub>(e<sup>V/(n·V<sub>t</sub>·N<sub>s</sub>)</sup> − 1). Üreticinin 4 hücreli paneli (V<sub>oc</sub> 2,3 V, I<sub>sc</sub> 1 A) ölçümlerdeki 2,4 V'luk elektrolizörü süremez. Bu nedenle model, düzeneğinizi temsil eden 6 hücreli eşdeğer bir panel kullanır (1000 W/m²'de V<sub>oc</sub> ≈ 3,5 V, I<sub>sc</sub> ≈ 2,2 A; en yüksek kademe ≈ 920 W/m²).</li>
+<li><b>Üretici paneli modu</b>: Işık panelinden üreticinin gerçek 4 hücreli paneline geçilebilir (V<sub>oc</sub> 2,3 V, I<sub>sc</sub> 1,0 A, n = 1,7 ile P<sub>maks</sub> ≈ 1,71 W). Veri sayfasındaki lamba koşulu 1000 W/m² kabul edilmiştir; iki panel aynı ışınımı alır. Bu panel ısınmış elektrolizörü en yüksek kademede bile yalnızca ≈0,17 A ile sürer (20 dakikada ≈28 mL H₂, model panelinde 329 mL). 0,5 A altındaki elektrolizör davranışı ölçülmediği için bu değerler model tahminidir. Faraday ve verim sekmesindeki tablo iki paneli kademe kademe karşılaştırır.</li>
 <li><b>Yakıt hücresi</b>: çift PEM hücre, <b>seri</b> veya <b>paralel</b> bağlanabilir. Hücre gerilimi 0,98 V − 0,03·ln(1 + I/2 mA) − 0,175 Ω·I. Seride gerilimler toplanır (U = 2·U<sub>hücre</sub>, akım aynı); paralelde gerilim tek hücreninkidir, akım ikiye bölünür (I<sub>hücre</sub> = I/2). İç direnç 0,175 Ω, seri bağlantıda en yüksek gücü üretici değerine oturtur: 0,80 V'ta 1,70 W (≈0,38 Ω yükte). Paralelde aynı güç yarı gerilim ve iki kat akımla elde edilir. H₂ tüketimi hücre akımlarının toplamı/(2F): seride 2·I, paralelde I.</li>
 <li><b>Yük</b>: motor + pervane, yük modülündeki dirençlerden biri (0,3–100 Ω) veya açık devre seçilebilir. Çalışma noktası, yakıt hücresi eğrisinin yük eğrisini (direnç için I = U/R) kestiği noktadır. Direnç küçüldükçe akım artar, gerilim düşer; güç, yük direnci yakıt hücresinin iç direncine yaklaştığında en büyük olur.</li>
 <li><b>Motor</b>: üretici sınırı 3 V / 130 mA. Yük eğrisi I = 20 mA + V/30 Ω; devir sayısı ≈ 1500 rpm/V (0,3 V üzerinde), rotor ataleti 0,8 s.</li>
@@ -695,6 +719,7 @@ const NOTES = {
 <li><b>Electrolyzer</b> behaviour comes from your lab measurements: H₂ produced in 20 minutes (0.5 A → 83 mL … 2.0 A → 329 mL, 16 groups) is linearly interpolated over current. Voltage starts at 2.7–2.9 V when cold and settles near 2.4 V as it warms (time constant ≈ 200 s), as in the measurements.</li>
 <li><b>Light levels</b> match your 16 measurement groups. Level <i>n</i> is calibrated to give group <i>n</i>'s current (0.5 + 0.1·(n−1) A) once the electrolyzer is warm.</li>
 <li><b>PV panel</b> uses the single-diode model: I = I<sub>ph</sub> − I<sub>0</sub>(e<sup>V/(n·V<sub>t</sub>·N<sub>s</sub>)</sup> − 1). The manufacturer's 4-cell panel (V<sub>oc</sub> 2.3 V, I<sub>sc</sub> 1 A) cannot drive the 2.4 V electrolyzer seen in the data, so the model uses an equivalent 6-cell panel (V<sub>oc</sub> ≈ 3.5 V, I<sub>sc</sub> ≈ 2.2 A at 1000 W/m²; top level ≈ 920 W/m²).</li>
+<li><b>Manufacturer panel mode</b>: the light panel can switch to the manufacturer's real 4-cell panel (V<sub>oc</sub> 2.3 V, I<sub>sc</sub> 1.0 A, P<sub>max</sub> ≈ 1.71 W with n = 1.7). The data-sheet lamp condition is taken as 1000 W/m²; both panels get the same irradiance. This panel drives the warm electrolyzer with only ≈0.17 A even at the top level (≈28 mL H₂ in 20 minutes, versus 329 mL with the model panel). Electrolyzer behaviour below 0.5 A was not measured, so these values are model estimates. The table in the Faraday and efficiency tab compares the two panels level by level.</li>
 <li><b>Fuel cell</b>: double PEM cell, connected in <b>series</b> or <b>parallel</b>. Cell voltage 0.98 V − 0.03·ln(1 + I/2 mA) − 0.175 Ω·I. In series the voltages add (U = 2·U<sub>cell</sub>, same current); in parallel the voltage is that of one cell and the current splits (I<sub>cell</sub> = I/2). The 0.175 Ω internal resistance puts the series maximum power at the manufacturer's value: 1.70 W at 0.80 V (≈0.38 Ω load). In parallel the same power comes at half the voltage and twice the current. H₂ use is the sum of cell currents/(2F): 2·I in series, I in parallel.</li>
 <li><b>Load</b>: motor + propeller, one of the load-module resistors (0.3–100 Ω) or open circuit. The operating point is where the fuel cell curve meets the load line (I = U/R for a resistor). Smaller resistance means more current and less voltage; power peaks when the load resistance approaches the fuel cell's internal resistance.</li>
 <li><b>Motor</b>: manufacturer limit 3 V / 130 mA. Load curve I = 20 mA + V/30 Ω; speed ≈ 1500 rpm/V above 0.3 V, rotor lag 0.8 s.</li>
@@ -738,8 +763,15 @@ function h2Rate(I) {                         // mL/min, from lab data
   return 0;
 }
 const faradayRate = (I) => I * 60 / (2 * F) * VM;  // mL/min
-const vEl = (I, c) => 1.89 + 0.06 * Math.log(1 + I / 0.0005) + 0.05 * I + 0.4 * (1 - c);
-const pvI = (V, Iph) => Iph - PV.I0 * (Math.exp(V / PV.a) - 1);
+// Elektrolizör gerilimi; soğukken fazladan gerilim (≤0,4 V) akımla büyür, 0,5 A ve üstünde tam etkili
+const vEl = (I, c) => 1.89 + 0.06 * Math.log(1 + I / 0.0005) + 0.05 * I + 0.4 * (1 - c) * Math.min(1, I / 0.5);
+// Üreticinin gerçek paneli: 4 hücre, Voc 2,3 V, Isc 1,0 A (veri sayfası koşulu = 1000 W/m² kabul edildi).
+// İdealite faktörü n = 1,7 ile en yüksek güç ≈ 1,71 W olur (veri sayfası: 1,7 W).
+const PVR = { a: 1.7 * 0.025693 * 4, IscRef: 1.0, area: 0.030 };
+PVR.I0 = PVR.IscRef / (Math.exp(2.3 / PVR.a) - 1);
+const curPV = () => S.pv === "r" ? PVR : PV;           // simülasyonda kullanılan panel
+const pvI = (V, Iph, P = curPV()) => Iph - P.I0 * (Math.exp(V / P.a) - 1);
+const pvVoc = (Iph, P = curPV()) => Iph > 0 ? P.a * Math.log(Iph / P.I0 + 1) : 0;
 const IPH = [];
 let NLV = 0;                                   // en yüksek kademe (= grup sayısı)
 function calibrate() {
@@ -751,11 +783,13 @@ function calibrate() {
 }
 calibrate();
 const levelG = (lv) => IPH[lv] / PV.IscRef * 1000;
+// aynı ışıkta (G) panelin ışık akımı: kısa devre akımı ışınımla orantılı
+const iphAt = (lv, P = curPV()) => IPH[lv] / PV.IscRef * P.IscRef;
 
-function solveOp(Iph, c) {
+function solveOp(Iph, c, P = curPV()) {
   if (Iph <= 0) return 0;
   let lo = 0, hi = Iph;
-  for (let k = 0; k < 44; k++) { const m = (lo + hi) / 2; if (pvI(vEl(m, c), Iph) - m > 0) lo = m; else hi = m; }
+  for (let k = 0; k < 44; k++) { const m = (lo + hi) / 2; if (pvI(vEl(m, c), Iph, P) - m > 0) lo = m; else hi = m; }
   return (lo + hi) / 2;
 }
 // Tek hücre gerilimi: açık devre 0,98 V − aktivasyon kaybı − iç direnç (0,175 Ω).
@@ -782,7 +816,7 @@ function solveFc(s, conn = S.conn, load = S.load) {
 const S = {};
 function resetState() {
   Object.assign(S, {
-    level: 4, t: 0, speed: S.speed || 1, conn: S.conn || "s", load: S.load ?? "motor", paused: false, valve: true, ch: S.ch || "fc",
+    level: 4, t: 0, speed: S.speed || 1, conn: S.conn || "s", pv: S.pv || "m", load: S.load ?? "motor", paused: false, valve: true, ch: S.ch || "fc",
     vH2: 40, vO2: 20, prod: 0, c: 0.55, fcS: 1, rpm: 0, rpmVis: 0, full: false,
     I: 0, V: 0, rate: 0, fcI: 0, fcV: 0, cons: 0,
     sw: { run: false, t: 0, h2: 0, level: 4 }, hist: [], lastHist: -1
@@ -792,11 +826,11 @@ resetState();
 let records = [];
 
 function step(dt) {
-  const Iph = IPH[S.level];
+  const Iph = iphAt(S.level);
   const I = solveOp(Iph, S.c);
   S.I = I; S.V = I > 0 ? vEl(I, S.c) : (Iph > 0 ? 0 : 0);
-  S.Voc = Iph > 0 ? PV.a * Math.log(Iph / PV.I0 + 1) : 0;
-  S.c += I > 0.05 ? (1 - S.c) * (1 - Math.exp(-dt / 200)) : -S.c * (1 - Math.exp(-dt / 1800));
+  S.Voc = pvVoc(Iph);
+  S.c += I > 0.01 ? (1 - S.c) * (1 - Math.exp(-dt / 200)) : -S.c * (1 - Math.exp(-dt / 1800));
   S.rate = h2Rate(I);
   const prod = S.rate * dt / 60;
   S.prod += prod;
@@ -836,7 +870,8 @@ function el(tag, attrs, parent) { const e = document.createElementNS(NS, tag); f
   const cw = 86, ch = 72, x0 = 274, y0 = 398;
   for (let r = 0; r < 3; r++) for (let c = 0; c < 2; c++) {
     const x = x0 + c * (cw + 6), y = y0 + r * (ch + 6);
-    el("rect", { x, y, width: cw, height: ch, rx: 2, fill: "url(#gCell)" }, g);
+    // alt sıra: üretici panelinde (4 hücre) kapalı gösterilir
+    el("rect", { x, y, width: cw, height: ch, rx: 2, fill: "url(#gCell)", class: r === 2 ? "pvExtra" : "" }, g);
     for (let k = 1; k < 4; k++) el("line", { x1: x + k * cw / 4, y1: y, x2: x + k * cw / 4, y2: y + ch, stroke: "#4d6493", "stroke-width": .6 }, g);
     el("line", { x1: x, y1: y + ch / 2, x2: x + cw, y2: y + ch / 2, stroke: "#8ea0c4", "stroke-width": 1 }, g);
   }
@@ -1042,13 +1077,13 @@ function updateUi() {
 }
 
 function updateEff(Ppv, Pfc, etaF, G) {
-  const Pin = G * PV.area;
+  const Pin = G * curPV().area;
   const pH2 = S.rate / 60 / VM * HHV;
   const fcIn = S.cons / 60 / VM * HHV;
   const rows = [
     ["effF", etaF, `${num(S.rate, 2)} / ${num(faradayRate(S.I), 2)} mL/${lang === "tr" ? "dk" : "min"}`],
     ["effE", Ppv > 0 ? pH2 / Ppv : 0, `${num(pH2, 2)} W / ${num(Ppv, 2)} W`],
-    ["effPV", Pin > 0 ? Ppv / Pin : 0, `${num(Ppv, 2)} W / (${Math.round(G)} W/m² × ${num(PV.area, 3)} m²)`],
+    ["effPV", Pin > 0 ? Ppv / Pin : 0, `${num(Ppv, 2)} W / (${Math.round(G)} W/m² × ${num(curPV().area, 3)} m²)`],
     ["effFC", fcIn > 0 ? Pfc / fcIn : 0, `${num(Pfc * 1000, 0)} mW / ${num(fcIn * 1000, 0)} mW`],
     ["effTot", Pin > 0 ? Pfc / Pin : 0, `${num(Pfc * 1000, 0)} mW / ${num(Pin, 1)} W`]
   ];
@@ -1064,12 +1099,26 @@ function updateEff(Ppv, Pfc, etaF, G) {
 }
 
 function buildFarTable() {
+  buildPvTable();
   $("#farBody").innerHTML = LAB20.map(([I, m]) => {
     const th = faradayRate(I) * 20, e = m / th;
     return `<tr><td>${num(I, 1)}</td><td>${m}</td><td>${num(th, 1)}</td><td>${pct(e * 100, 1)} ${e > 1 ? '<span class="pill warn">&gt;100</span>' : ""}</td></tr>`;
   }).join("");
 }
 
+// iki panelin her kademedeki çalışma noktası (ısınmış elektrolizör, c = 1)
+function buildPvTable() {
+  const cell = (P, lv) => { const I = solveOp(iphAt(lv, P), 1, P), V = I > 0 ? vEl(I, 1) : pvVoc(iphAt(lv, P), P);
+    return `<td>${num(I, 2)}</td><td>${num(V, 2)}</td><td>${num(I * V, 2)}</td><td>${num(h2Rate(I) * 20, 0)}</td>`; };
+  let h = "";
+  for (let lv = 1; lv <= NLV; lv++) h += `<tr${lv === S.level ? ' style="font-weight:700"' : ""}><td>${lv}</td><td>${Math.round(levelG(lv))}</td>${cell(PV, lv)}${cell(PVR, lv)}</tr>`;
+  $("#cmpBody").innerHTML = h;
+}
+function setPv(v) {
+  S.pv = v; document.querySelectorAll("#pvSeg button").forEach((b) => b.classList.toggle("on", b.dataset.pv === v));
+  if (v === "r") toast(t("pvRToast"));
+  updateUi(); updateCharts(); buildPvTable();
+}
 function toast(msg) { const el2 = $("#toast"); el2.textContent = msg; el2.classList.add("show"); clearTimeout(toast.h); toast.h = setTimeout(() => el2.classList.remove("show"), 2600); }
 
 /* records */
@@ -1124,7 +1173,10 @@ function makeCharts() {
   c2 = new Chart($("#c2"), { type: "scatter", data: { datasets: [
     { label: t("dsPV"), data: [], showLine: true, borderColor: sun, pointRadius: 0, borderWidth: 2.5 },
     { label: t("dsEL"), data: [], showLine: true, borderColor: h2, pointRadius: 0, borderWidth: 2, borderDash: [5, 4] },
-    { label: t("dsOP"), data: [], pointRadius: 7, pointBackgroundColor: acc, pointBorderColor: fg, pointBorderWidth: 1.5 } ] }, options: chartBase(t("xV"), t("yI")) });
+    { label: t("dsOP"), data: [], pointRadius: 7, pointBackgroundColor: acc, pointBorderColor: fg, pointBorderWidth: 1.5 },
+    { label: t("dsPVo"), data: [], showLine: true, borderColor: sun, pointRadius: 0, borderWidth: 1.5, borderDash: [3, 3] },
+    { label: t("dsOPo"), data: [], pointRadius: 6, pointBackgroundColor: "transparent", pointBorderColor: acc, pointBorderWidth: 2 } ] }, options: chartBase(t("xV"), t("yI")) });
+  c2.options.plugins.legend.labels.filter = (it, d) => d.datasets[it.datasetIndex].data.length > 0;
   c2.options.scales.x.min = 0; c2.options.scales.x.max = 3.8; c2.options.scales.y.max = 2.4;
   c3 = new Chart($("#c3"), { type: "scatter", data: { datasets: [
     { label: t("dsFar"), data: [{ x: 0, y: 0 }, { x: 2.1, y: faradayRate(2.1) * 20 }], showLine: true, borderColor: css("--muted"), borderDash: [6, 4], pointRadius: 0, borderWidth: 1.5 },
@@ -1179,8 +1231,15 @@ function updateCharts() {
   c1.data.datasets[0].data = S.hist.map((p) => ({ x: p.x, y: p.h }));
   c1.data.datasets[1].data = S.hist.map((p) => ({ x: p.x, y: p.o }));
   c1.update("none");
-  const Iph = IPH[S.level], pv = [], ez = [];
-  if (Iph > 0) { const Voc = PV.a * Math.log(Iph / PV.I0 + 1); for (let i = 0; i <= 60; i++) { const V = Voc * i / 60; pv.push({ x: V, y: Math.max(0, pvI(V, Iph)) }); } }
+  const ez = [];
+  // seçili panel (düz) ve diğer panel (kesikli) aynı ışıkta
+  const pvCurve = (P) => { const Iph = iphAt(S.level, P), out = []; if (Iph > 0) { const Voc = pvVoc(Iph, P); for (let i = 0; i <= 60; i++) { const V = Voc * i / 60; out.push({ x: V, y: Math.max(0, pvI(V, Iph, P)) }); } } return out; };
+  const other = S.pv === "r" ? PV : PVR, pv = pvCurve(curPV());
+  c2.data.datasets[0].label = t(S.pv === "r" ? "dsPVr" : "dsPVm");
+  c2.data.datasets[3].label = t(S.pv === "r" ? "dsPVm" : "dsPVr");
+  c2.data.datasets[3].data = $("#pvCmp").checked ? pvCurve(other) : [];
+  const Io = solveOp(iphAt(S.level, other), S.c, other);
+  c2.data.datasets[4].data = $("#pvCmp").checked && Io > 0 ? [{ x: vEl(Io, S.c), y: Io }] : [];
   for (let i = 0; i <= 40; i++) { const I = 2.3 * i / 40; ez.push({ x: vEl(I, S.c), y: I }); }
   c2.data.datasets[0].data = pv; c2.data.datasets[1].data = ez;
   c2.data.datasets[2].data = S.I > 0 ? [{ x: S.V, y: S.I }] : [];
@@ -1200,7 +1259,7 @@ function applyLang() {
 }
 
 /* ---------- events ---------- */
-function setLevel(l) { S.level = Math.max(0, Math.min(NLV, l)); if (S.sw.run) S.sw.level = S.level; updateUi(); updateCharts(); }
+function setLevel(l) { S.level = Math.max(0, Math.min(NLV, l)); if (S.sw.run) S.sw.level = S.level; updateUi(); updateCharts(); buildPvTable(); }
 $("#btnInc").addEventListener("click", () => setLevel(S.level + 1));
 $("#btnDec").addEventListener("click", () => setLevel(S.level - 1));
 document.addEventListener("keydown", (e) => { if (e.target.closest && e.target.closest("input")) return; if (e.key === "+" || e.key === "ArrowUp") setLevel(S.level + 1); if (e.key === "-" || e.key === "ArrowDown") setLevel(S.level - 1); });
@@ -1229,6 +1288,8 @@ function updateLoadUi() {
   $("#resSym").setAttribute("display", res ? "inline" : "none");
   $("#propWrap").setAttribute("opacity", S.load === "motor" ? 1 : 0.35);
   $("#loadTxt").textContent = res ? fmtR(S.load) : S.load === "open" ? "∞ Ω" : t("motorLbl");
+  document.querySelectorAll(".pvExtra").forEach((r) => r.setAttribute("opacity", S.pv === "r" ? 0.12 : 1));
+  $("#pvTitle").textContent = t(S.pv === "r" ? "pvLblR" : "pvLblM");
   $("#fcLinkS").setAttribute("display", S.conn === "s" ? "inline" : "none");
   $("#fcLinkP").setAttribute("display", S.conn === "p" ? "inline" : "none");
   $("#fcTitle").textContent = t(S.conn === "p" ? "fcLblP" : "fcLblS");
@@ -1239,6 +1300,8 @@ function updateLoadUi() {
   $("#btnIvSweep").disabled = sweeping;
 }
 function savePoint(q) { ivPts.push(q); updateC4(); }
+$("#pvSeg").addEventListener("click", (e) => { const b = e.target.closest("button"); if (b) setPv(b.dataset.pv); });
+$("#pvCmp").addEventListener("change", updateCharts);
 $("#connSeg").addEventListener("click", (e) => { const b = e.target.closest("button"); if (b && !sweeping) setConn(b.dataset.conn); });
 $("#loadSel").addEventListener("change", (e) => setLoad(e.target.value));
 $("#btnIvPt").addEventListener("click", () => {
