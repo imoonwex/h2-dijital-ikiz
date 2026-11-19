@@ -183,6 +183,23 @@ tbody tr:last-child td { border-bottom: 0; }
 .two { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 18px; margin-top: 16px; }
 @media (max-width: 860px) { .two { grid-template-columns: minmax(0, 1fr); } }
 .notes { max-width: 78ch; display: grid; gap: 10px; }
+.notes h3 { margin: 8px 0 0; }
+.nt-lead { font-size: .95rem; line-height: 1.5; }
+.nt-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 12px; }
+#notes { max-width: 1100px; }
+.nt-card { border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; display: grid; gap: 6px; align-content: start; background: var(--surface); }
+.nt-top { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 1rem; }
+.nt-ico { font-size: 1.2rem; }
+.nt-card p { font-size: .9rem; line-height: 1.45; }
+.nt-card ul { padding-left: 18px; gap: 3px; font-size: .86rem; color: var(--muted); }
+.nt-src { font-size: .7rem; font-weight: 700; padding: 1px 7px; border-radius: 9px; letter-spacing: .02em; }
+.nt-src.nt-lab { background: color-mix(in srgb, var(--h2) 20%, transparent); color: var(--h2); }
+.nt-src.nt-mfr { background: color-mix(in srgb, var(--accent) 16%, transparent); color: var(--accent); }
+.nt-src.nt-mod { background: color-mix(in srgb, var(--sun) 22%, transparent); color: color-mix(in srgb, var(--sun) 70%, var(--fg)); }
+.nt-list { margin: 0; padding-left: 20px; display: grid; gap: 8px; line-height: 1.5; }
+.nt-more { border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px; }
+.nt-more summary { cursor: pointer; font-weight: 600; }
+.nt-more ul { margin-top: 10px; font-size: .88rem; line-height: 1.5; }
 .notes p, .notes li { margin: 0; }
 .notes ul { margin: 0; padding-left: 20px; display: grid; gap: 6px; }
 .notes a { color: var(--accent); }
@@ -728,44 +745,74 @@ const I18N = {
     tFull: "H₂ storage full, excess gas is vented"
   }
 };
+// Model notları: her parça için kısa kart + bilinmesi gerekenler + (açılır) formüller
+const NOTE_SRC = { tr: { lab: "Ölçüm", mfr: "Üretici", mod: "Model" }, en: { lab: "Measured", mfr: "Manufacturer", mod: "Model" } };
+function noteCards(L, cards) {
+  const B = NOTE_SRC[L];
+  return `<div class="nt-grid">` + cards.map(([icon, title, what, facts, src]) =>
+    `<div class="nt-card"><div class="nt-top"><span class="nt-ico">${icon}</span><b>${title}</b>${src.map((k) => `<span class="nt-src nt-${k}">${B[k]}</span>`).join("")}</div>
+     <p>${what}</p><ul>${facts.map((f) => `<li>${f}</li>`).join("")}</ul></div>`).join("") + `</div>`;
+}
 const NOTES = {
-  tr: `<h3>Model ve veri kaynakları</h3>
+  tr: `<p class="nt-lead">Simülasyon zincirin her halkasını ayrı ayrı hesaplar. Aşağıda her parçanın ne yaptığı, temel değerleri ve bu değerlerin nereden geldiği var. Renkli etiketler kaynağı gösterir: <span class="nt-src nt-lab">Ölçüm</span> sizin laboratuvar veriniz, <span class="nt-src nt-mfr">Üretici</span> veri sayfası, <span class="nt-src nt-mod">Model</span> bizim varsayımımız.</p>
+${noteCards("tr", [
+  ["☀️", "Işık", "Artır/Azalt butonları 16 kademe arasında geçer. Her kademe bir deney grubunuza karşılık gelir.", ["Kademe 1 → 0,5 A … kademe 16 → 2,0 A", "En yüksek kademe ≈ 914 W/m²"], ["lab"]],
+  ["🔆", "Güneş paneli", "Işığı elektriğe çevirir. Varsayılan panel, elektrolizörünüzü sürebilen 6 hücreli bir eşdeğer paneldir.", ["Model paneli: V<sub>oc</sub> ≈ 3,5 V, I<sub>sc</sub> ≈ 2,2 A", "Üretici paneli (seçilebilir): 4 hücre, V<sub>oc</sub> 2,3 V, I<sub>sc</sub> 1,0 A, ≈1,7 W"], ["mfr", "mod"]],
+  ["💧", "Elektrolizör", "Suyu H₂ ve O₂'ye ayırır. Üretilen gaz miktarı doğrudan sizin ölçümlerinizden gelir.", ["20 dakikada 83 mL (0,5 A) … 329 mL (2,0 A)", "Gerilim soğukken 2,6–2,9 V, ısınınca ≈ 2,4 V"], ["lab"]],
+  ["🧪", "Gaz deposu", "H₂ ve O₂ ayrı silindirlerde birikir. O₂ her zaman H₂'nin yarısı kadardır.", ["Ölçek 0–400 mL", "Dolunca fazla gaz taşar (DOLU)"], ["lab", "mod"]],
+  ["⚡", "Yakıt hücresi", "H₂'yi yeniden elektriğe çevirir. İki hücre seri veya paralel bağlanabilir.", ["Seri: 0,8–1,96 V, en fazla 1,70 W (≈0,4 Ω yükte)", "Paralel: gerilim yarı, akım iki kat"], ["mfr"]],
+  ["🌀", "Yük ve motor", "Yakıt hücresine motor + pervane, 0,3–100 Ω arası bir direnç ya da hiçbir şey (açık devre) bağlanabilir.", ["Motor sınırı 3 V / 130 mA", "Seride ≈ 2100 rpm, paralelde ≈ 900 rpm"], ["mfr"]],
+])}
+<h3>Bilmeniz gereken üç şey</h3>
+<ol class="nt-list">
+<li><b>Model neden 6 hücreli panel kullanıyor?</b> Üreticinin paneli en fazla 2,3 V veriyor, sizin elektrolizörünüz ise ≈ 2,4 V'ta çalışıyor. Bu panelle en yüksek ışıkta bile yalnızca ≈ 0,17 A akar (20 dakikada 28 mL H₂). Ölçümlerinizi yeniden üretebilmek için daha yüksek gerilimli eşdeğer bir panel kullanıldı. İki paneli ışık panelinden değiştirip karşılaştırabilirsiniz.</li>
+<li><b>Bazı ölçümler %100'ü aşıyor.</b> Altı grupta ölçülen hacim Faraday yasasının üst sınırının üstünde: <span class="pill warn">0,5 A · %109</span> <span class="pill warn">0,6 A · %101</span> <span class="pill warn">0,8 A · %112</span> <span class="pill warn">0,9 A · %103</span> <span class="pill warn">1,8 A · %102</span> <span class="pill warn">2,0 A · %108</span>. Bu fiziksel olarak mümkün değildir; okuma hatası, sıcaklık/basınç farkı ya da depoda önceki gruptan kalan gaz olabilir. Diğer gruplar %89–99 arasında <span class="pill ok">tutarlı</span>. Simülasyon ölçümleri olduğu gibi kullanır.</li>
+<li><b>0,5 A'in altı tahmindir.</b> Bu akımlar ölçülmedi. Üretici paneliyle elde edilen düşük akımlardaki değerler modelin tahminidir.</li>
+</ol>
+<details class="nt-more"><summary>Formüller ve model ayrıntıları</summary>
 <ul>
-<li><b>Elektrolizör</b> davranışı laboratuvar ölçümlerinizden gelir: 20 dakikada üretilen H₂ (0,5 A → 83 mL … 2,0 A → 329 mL, 16 grup) akıma göre doğrusal ara değerlemeyle hesaplanır. Gerilim, ölçümlerde görüldüğü gibi soğuk başlangıçta 2,7–2,9 V'tan ısındıkça yaklaşık 2,4 V'a iner (zaman sabiti ≈ 200 s).</li>
-<li><b>Işık kademeleri</b> sizin 16 deney grubunuzla eşleşir. Kademe <i>n</i>, ısınmış elektrolizörde grup <i>n</i>'nin akımını (0,5 + 0,1·(n−1) A) verecek şekilde kalibre edilmiştir.</li>
-<li><b>PV paneli</b> tek diyot modeliyle hesaplanır: I = I<sub>ph</sub> − I<sub>0</sub>(e<sup>V/(n·V<sub>t</sub>·N<sub>s</sub>)</sup> − 1). Üreticinin 4 hücreli paneli (V<sub>oc</sub> 2,3 V, I<sub>sc</sub> 1 A) ölçümlerdeki 2,4 V'luk elektrolizörü süremez. Bu nedenle model, düzeneğinizi temsil eden 6 hücreli eşdeğer bir panel kullanır (1000 W/m²'de V<sub>oc</sub> ≈ 3,5 V, I<sub>sc</sub> ≈ 2,2 A; en yüksek kademe ≈ 920 W/m²).</li>
-<li><b>Üretici paneli modu</b>: Işık panelinden üreticinin gerçek 4 hücreli paneline geçilebilir (V<sub>oc</sub> 2,3 V, I<sub>sc</sub> 1,0 A, n = 1,7 ile P<sub>maks</sub> ≈ 1,71 W). Veri sayfasındaki lamba koşulu 1000 W/m² kabul edilmiştir; iki panel aynı ışınımı alır. Bu panel ısınmış elektrolizörü en yüksek kademede bile yalnızca ≈0,17 A ile sürer (20 dakikada ≈28 mL H₂, model panelinde 329 mL). 0,5 A altındaki elektrolizör davranışı ölçülmediği için bu değerler model tahminidir. Faraday ve verim sekmesindeki tablo iki paneli kademe kademe karşılaştırır.</li>
-<li><b>Yakıt hücresi</b>: çift PEM hücre, <b>seri</b> veya <b>paralel</b> bağlanabilir. Hücre gerilimi 0,98 V − 0,03·ln(1 + I/2 mA) − 0,175 Ω·I. Seride gerilimler toplanır (U = 2·U<sub>hücre</sub>, akım aynı); paralelde gerilim tek hücreninkidir, akım ikiye bölünür (I<sub>hücre</sub> = I/2). İç direnç 0,175 Ω, seri bağlantıda en yüksek gücü üretici değerine oturtur: 0,80 V'ta 1,70 W (≈0,38 Ω yükte). Paralelde aynı güç yarı gerilim ve iki kat akımla elde edilir. H₂ tüketimi hücre akımlarının toplamı/(2F): seride 2·I, paralelde I.</li>
-<li><b>Yük</b>: motor + pervane, yük modülündeki dirençlerden biri (0,3–100 Ω) veya açık devre seçilebilir. Çalışma noktası, yakıt hücresi eğrisinin yük eğrisini (direnç için I = U/R) kestiği noktadır. Direnç küçüldükçe akım artar, gerilim düşer; güç, yük direnci yakıt hücresinin iç direncine yaklaştığında en büyük olur.</li>
-<li><b>Motor</b>: üretici sınırı 3 V / 130 mA. Yük eğrisi I = 20 mA + V/30 Ω; devir sayısı ≈ 1500 rpm/V (0,3 V üzerinde), rotor ataleti 0,8 s.</li>
-<li><b>Depo</b> ölçeği 0–400 mL'dir, çünkü ölçümlerinizde 20 dakikada 329 mL'ye kadar gaz üretiliyor (Professional'ın kendi deposu 64 mL).</li>
-<li>Gaz hacmi 25 °C ve 1 atm için V<sub>m</sub> = 24,45 L/mol ile hesaplanır.</li>
-</ul>
-<h3>Dikkat çeken nokta</h3>
-<p>Altı grupta ölçülen hacim, Faraday yasasının izin verdiği üst sınıra ulaşıyor veya aşıyor: <span class="pill warn">0,5 A · %109</span> <span class="pill warn">0,6 A · %101</span> <span class="pill warn">0,8 A · %112</span> <span class="pill warn">0,9 A · %103</span> <span class="pill warn">1,8 A · %102</span> <span class="pill warn">2,0 A · %108</span>. %100'ün üzeri fiziksel olarak mümkün değildir. Okuma hatası, sıcaklık/basınç farkı veya önceki gruptan depoda kalan gaz olabilir. Öğrencilerle tartışmak için iyi bir örnektir. Diğer gruplar %89–99 aralığındadır <span class="pill ok">tutarlı</span>; 1,4–1,7 A arasında verim %89–95'e düşüyor. Ayrıca 1,8 ve 1,9 A gruplarının ikisi de 280 mL vermiş. Simülasyon, ölçülen değerleri olduğu gibi kullanır. Bu yüzden canlı η<sub>F</sub> göstergesi bu akımlarda %100'ün üzerine çıkar.</p>
+<li><b>Faraday:</b> V<sub>H₂</sub> = I·t/(2F)·V<sub>m</sub>, F = 96485 C/mol, V<sub>m</sub> = 24,45 L/mol (25 °C, 1 atm).</li>
+<li><b>PV (tek diyot):</b> I = I<sub>ph</sub> − I<sub>0</sub>(e<sup>V/(n·V<sub>t</sub>·N<sub>s</sub>)</sup> − 1). Model paneli N<sub>s</sub> = 6, n = 1,3; üretici paneli N<sub>s</sub> = 4, n = 1,7. Işık akımı ışınımla orantılı; veri sayfası lamba koşulu 1000 W/m² kabul edildi.</li>
+<li><b>Işık kademesi:</b> kademe <i>n</i>'deki ışık akımı, ısınmış elektrolizörde grup <i>n</i>'nin akımını (0,5 + 0,1·(n−1) A) verecek şekilde seçildi.</li>
+<li><b>Elektrolizör:</b> H₂ debisi, 20 dakikalık ölçümlerin akıma göre doğrusal ara değerlemesi. Gerilim ≈ 1,89 V + 0,06·ln(1 + I/0,5 mA) + 0,05·I + soğukluk payı (≤ 0,4 V, ısınma zaman sabiti ≈ 200 s).</li>
+<li><b>Yakıt hücresi:</b> U<sub>hücre</sub> = 0,98 − 0,03·ln(1 + I/2 mA) − 0,175·I. Seri: U = 2·U<sub>hücre</sub>(I). Paralel: U = U<sub>hücre</sub>(I/2). H₂ tüketimi = hücre akımları toplamı/(2F).</li>
+<li><b>Yük:</b> direnç için I = U/R; motor için I = 20 mA + U/30 Ω, devir ≈ 1500 rpm/V (0,3 V üzeri), atalet 0,8 s. Çalışma noktası iki eğrinin kesişimidir.</li>
+</ul></details>
 <h3>Kaynaklar</h3>
-<ul>
+<ul class="nt-list">
+<li>Laboratuvar ölçümleri: Devre_Tasarimi_Veriler_guncel (16 grup, 0,5–2,0 A) → <code>data/deney_verileri.json</code></li>
 <li><a href="https://www.heliocentrisacademia.com/dr-fuelcell-r-professional/p1478" target="_blank" rel="noopener">Heliocentris Academia: Dr FuelCell® Professional</a></li>
-<li><a href="https://www.kvant.sk/wp-content/uploads/2020/12/Professional.pdf" target="_blank" rel="noopener">Dr FuelCell® Professional teknik veri sayfası (PDF, Professional_EN_1101)</a></li>
+<li><a href="https://www.kvant.sk/wp-content/uploads/2020/12/Professional.pdf" target="_blank" rel="noopener">Dr FuelCell® Professional teknik veri sayfası (PDF)</a></li>
 </ul>`,
-  en: `<h3>Model and data sources</h3>
+  en: `<p class="nt-lead">The simulation computes each link of the chain separately. Below is what each part does, its key values and where those values come from. The coloured tags show the source: <span class="nt-src nt-lab">Measured</span> your lab data, <span class="nt-src nt-mfr">Manufacturer</span> the data sheet, <span class="nt-src nt-mod">Model</span> our assumption.</p>
+${noteCards("en", [
+  ["☀️", "Light", "The Increase/Decrease buttons step through 16 levels. Each level matches one of your measurement groups.", ["Level 1 → 0.5 A … level 16 → 2.0 A", "Top level ≈ 914 W/m²"], ["lab"]],
+  ["🔆", "Solar panel", "Turns light into electricity. The default panel is a 6-cell equivalent that can drive your electrolyzer.", ["Model panel: V<sub>oc</sub> ≈ 3.5 V, I<sub>sc</sub> ≈ 2.2 A", "Manufacturer panel (selectable): 4 cells, V<sub>oc</sub> 2.3 V, I<sub>sc</sub> 1.0 A, ≈1.7 W"], ["mfr", "mod"]],
+  ["💧", "Electrolyzer", "Splits water into H₂ and O₂. The amount of gas comes straight from your measurements.", ["83 mL (0.5 A) … 329 mL (2.0 A) in 20 minutes", "Voltage 2.6–2.9 V when cold, ≈ 2.4 V when warm"], ["lab"]],
+  ["🧪", "Gas storage", "H₂ and O₂ collect in separate cylinders. O₂ is always half of H₂.", ["Scale 0–400 mL", "Excess gas overflows when full (FULL)"], ["lab", "mod"]],
+  ["⚡", "Fuel cell", "Turns H₂ back into electricity. The two cells can be in series or parallel.", ["Series: 0.8–1.96 V, at most 1.70 W (≈0.4 Ω load)", "Parallel: half the voltage, twice the current"], ["mfr"]],
+  ["🌀", "Load and motor", "The fuel cell drives the motor + propeller, a 0.3–100 Ω resistor, or nothing (open circuit).", ["Motor limit 3 V / 130 mA", "≈ 2100 rpm in series, ≈ 900 rpm in parallel"], ["mfr"]],
+])}
+<h3>Three things to know</h3>
+<ol class="nt-list">
+<li><b>Why does the model use a 6-cell panel?</b> The manufacturer's panel gives at most 2.3 V, but your electrolyzer runs at ≈ 2.4 V. Even at full light only ≈ 0.17 A flows (28 mL H₂ in 20 minutes). To reproduce your measurements, a higher-voltage equivalent panel is used. You can switch between the two panels in the light panel and compare them.</li>
+<li><b>Some measurements exceed 100%.</b> In six groups the measured volume is above the Faraday limit: <span class="pill warn">0.5 A · 109%</span> <span class="pill warn">0.6 A · 101%</span> <span class="pill warn">0.8 A · 112%</span> <span class="pill warn">0.9 A · 103%</span> <span class="pill warn">1.8 A · 102%</span> <span class="pill warn">2.0 A · 108%</span>. That is physically impossible; it may be a reading error, a temperature or pressure difference, or gas left from the previous group. The other groups fall between 89% and 99% <span class="pill ok">consistent</span>. The simulation uses the measurements as they are.</li>
+<li><b>Below 0.5 A is an estimate.</b> These currents were not measured. Values at the low currents of the manufacturer panel are model estimates.</li>
+</ol>
+<details class="nt-more"><summary>Formulas and model details</summary>
 <ul>
-<li><b>Electrolyzer</b> behaviour comes from your lab measurements: H₂ produced in 20 minutes (0.5 A → 83 mL … 2.0 A → 329 mL, 16 groups) is linearly interpolated over current. Voltage starts at 2.7–2.9 V when cold and settles near 2.4 V as it warms (time constant ≈ 200 s), as in the measurements.</li>
-<li><b>Light levels</b> match your 16 measurement groups. Level <i>n</i> is calibrated to give group <i>n</i>'s current (0.5 + 0.1·(n−1) A) once the electrolyzer is warm.</li>
-<li><b>PV panel</b> uses the single-diode model: I = I<sub>ph</sub> − I<sub>0</sub>(e<sup>V/(n·V<sub>t</sub>·N<sub>s</sub>)</sup> − 1). The manufacturer's 4-cell panel (V<sub>oc</sub> 2.3 V, I<sub>sc</sub> 1 A) cannot drive the 2.4 V electrolyzer seen in the data, so the model uses an equivalent 6-cell panel (V<sub>oc</sub> ≈ 3.5 V, I<sub>sc</sub> ≈ 2.2 A at 1000 W/m²; top level ≈ 920 W/m²).</li>
-<li><b>Manufacturer panel mode</b>: the light panel can switch to the manufacturer's real 4-cell panel (V<sub>oc</sub> 2.3 V, I<sub>sc</sub> 1.0 A, P<sub>max</sub> ≈ 1.71 W with n = 1.7). The data-sheet lamp condition is taken as 1000 W/m²; both panels get the same irradiance. This panel drives the warm electrolyzer with only ≈0.17 A even at the top level (≈28 mL H₂ in 20 minutes, versus 329 mL with the model panel). Electrolyzer behaviour below 0.5 A was not measured, so these values are model estimates. The table in the Faraday and efficiency tab compares the two panels level by level.</li>
-<li><b>Fuel cell</b>: double PEM cell, connected in <b>series</b> or <b>parallel</b>. Cell voltage 0.98 V − 0.03·ln(1 + I/2 mA) − 0.175 Ω·I. In series the voltages add (U = 2·U<sub>cell</sub>, same current); in parallel the voltage is that of one cell and the current splits (I<sub>cell</sub> = I/2). The 0.175 Ω internal resistance puts the series maximum power at the manufacturer's value: 1.70 W at 0.80 V (≈0.38 Ω load). In parallel the same power comes at half the voltage and twice the current. H₂ use is the sum of cell currents/(2F): 2·I in series, I in parallel.</li>
-<li><b>Load</b>: motor + propeller, one of the load-module resistors (0.3–100 Ω) or open circuit. The operating point is where the fuel cell curve meets the load line (I = U/R for a resistor). Smaller resistance means more current and less voltage; power peaks when the load resistance approaches the fuel cell's internal resistance.</li>
-<li><b>Motor</b>: manufacturer limit 3 V / 130 mA. Load curve I = 20 mA + V/30 Ω; speed ≈ 1500 rpm/V above 0.3 V, rotor lag 0.8 s.</li>
-<li><b>Storage</b> scale is 0–400 mL because your measurements produce up to 329 mL in 20 minutes (the Professional's own storage is 64 mL).</li>
-<li>Gas volume uses V<sub>m</sub> = 24.45 L/mol (25 °C, 1 atm).</li>
-</ul>
-<h3>Worth discussing</h3>
-<p>In six groups the measured volume reaches or exceeds the limit set by Faraday's law: <span class="pill warn">0.5 A · 109%</span> <span class="pill warn">0.6 A · 101%</span> <span class="pill warn">0.8 A · 112%</span> <span class="pill warn">0.9 A · 103%</span> <span class="pill warn">1.8 A · 102%</span> <span class="pill warn">2.0 A · 108%</span>. Above 100% is physically impossible. It may be a reading error, a temperature or pressure difference, or gas left in storage from the previous group, and it makes a good class discussion. The other groups fall between 89% and 99% <span class="pill ok">consistent</span>; efficiency drops to 89–95% between 1.4 and 1.7 A. The 1.8 A and 1.9 A groups both gave 280 mL. The simulation uses the measured values as they are, so the live η<sub>F</sub> reading goes above 100% at these currents.</p>
+<li><b>Faraday:</b> V<sub>H₂</sub> = I·t/(2F)·V<sub>m</sub>, F = 96485 C/mol, V<sub>m</sub> = 24.45 L/mol (25 °C, 1 atm).</li>
+<li><b>PV (single diode):</b> I = I<sub>ph</sub> − I<sub>0</sub>(e<sup>V/(n·V<sub>t</sub>·N<sub>s</sub>)</sup> − 1). Model panel N<sub>s</sub> = 6, n = 1.3; manufacturer panel N<sub>s</sub> = 4, n = 1.7. Light current is proportional to irradiance; the data-sheet lamp condition is taken as 1000 W/m².</li>
+<li><b>Light level:</b> the light current at level <i>n</i> is chosen so the warm electrolyzer draws group <i>n</i>'s current (0.5 + 0.1·(n−1) A).</li>
+<li><b>Electrolyzer:</b> H₂ flow is a linear interpolation of the 20-minute measurements over current. Voltage ≈ 1.89 V + 0.06·ln(1 + I/0.5 mA) + 0.05·I + a cold-start term (≤ 0.4 V, warm-up time constant ≈ 200 s).</li>
+<li><b>Fuel cell:</b> U<sub>cell</sub> = 0.98 − 0.03·ln(1 + I/2 mA) − 0.175·I. Series: U = 2·U<sub>cell</sub>(I). Parallel: U = U<sub>cell</sub>(I/2). H₂ use = sum of cell currents/(2F).</li>
+<li><b>Load:</b> I = U/R for a resistor; for the motor I = 20 mA + U/30 Ω, speed ≈ 1500 rpm/V above 0.3 V, lag 0.8 s. The operating point is where the two curves cross.</li>
+</ul></details>
 <h3>Sources</h3>
-<ul>
+<ul class="nt-list">
+<li>Lab measurements: Devre_Tasarimi_Veriler_guncel (16 groups, 0.5–2.0 A) → <code>data/deney_verileri.json</code></li>
 <li><a href="https://www.heliocentrisacademia.com/dr-fuelcell-r-professional/p1478" target="_blank" rel="noopener">Heliocentris Academia: Dr FuelCell® Professional</a></li>
-<li><a href="https://www.kvant.sk/wp-content/uploads/2020/12/Professional.pdf" target="_blank" rel="noopener">Dr FuelCell® Professional data sheet (PDF, Professional_EN_1101)</a></li>
+<li><a href="https://www.kvant.sk/wp-content/uploads/2020/12/Professional.pdf" target="_blank" rel="noopener">Dr FuelCell® Professional data sheet (PDF)</a></li>
 </ul>`
 };
 let lang = "tr";
