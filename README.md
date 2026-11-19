@@ -19,7 +19,7 @@ Zincir: **Işık → PV panel → PEM elektrolizör (H₂/O₂) → gaz depolar�
 | `docs/Gelistirme_Notlari.md` | Tasarım planı, model açıklaması, geliştirme yazışmaları |
 
 ## Model özeti
-- **Işık:** 0–8 kademe; kademe 1–8 laboratuvar deney gruplarına (0,5…1,2 A) karşılık gelir.
+- **Işık:** 0–16 kademe; kademe 1–16 laboratuvar deney gruplarına (0,5…2,0 A) karşılık gelir. Kademe sayısı `data/deney_verileri.json` içindeki `ozet_20dk` listesinden otomatik çıkar.
 - **PV:** Tek diyot modeli; elektrolizör I–V eğrisiyle kesişimi ölçülen akımı verecek şekilde kalibre.
 - **Elektrolizör:** Isınma geçişli gerilim (≈2,8 V → 2,4 V); H₂ debisi ölçüm tablosundan interpolasyon, Faraday teorik değeriyle karşılaştırma.
 - **Yakıt hücresi:** Seri bağlı çift hücre, üretici değerlerine (0,8–1,8 V, ≤1,7 W) kalibre.
@@ -27,8 +27,9 @@ Zincir: **Işık → PV panel → PEM elektrolizör (H₂/O₂) → gaz depolar�
 - Ayrıntılar: uygulamadaki **Model notları** sekmesi ve `docs/Gelistirme_Notlari.md`.
 
 ## Bilinen notlar
-- 0,5 / 0,8 / 0,9 A gruplarında ölçülen hacim Faraday sınırını aşıyor (%109, %112, %103) — derste tartışma konusu.
-- 0,6 A için 20 dk değeri yok; 92 mL interpolasyonla bulundu.
+- Güncel veri: 16 grup, 0,5–2,0 A, 20 dk'da 83–329 mL H₂ (Devre_Tasarimi_Veriler_guncel, 13.11.2026).
+- 0,5 / 0,6 / 0,8 / 0,9 / 1,8 / 2,0 A gruplarında ölçülen hacim Faraday sınırına ulaşıyor veya aşıyor (%109, %101, %112, %103, %102, %108) — derste tartışma konusu. 1,4–1,7 A arasında verim %89–95.
+- Depo ölçeği 0–400 mL.
 - Adres sonuna `?record` eklenirse video kaydı için kare kare kayıt modu açılır.
 
 ## Öğrenciler için: nasıl katkı yaparım?
@@ -42,5 +43,5 @@ Zincir: **Işık → PV panel → PEM elektrolizör (H₂/O₂) → gaz depolar�
 - [ ] Yük direnci seçimi (0,3–100 Ω) ve yakıt hücresi I–V / güç eğrisi deneyi
 - [ ] Paralel/seri yakıt hücresi bağlantı seçeneği
 - [ ] Gerçek PV paneli (4 hücre, Voc 2,3 V) ile karşılaştırma modu
-- [ ] Ölçüm verisinin `data/deney_verileri.json` dosyasından dinamik yüklenmesi
+- [x] Ölçüm verisinin `data/deney_verileri.json` dosyasından dinamik yüklenmesi (yerel sunucu/Live Server veya GitHub Pages gerekir; dosyaya çift tıklanınca gömülü yedek veri kullanılır)
 - [ ] Öğrenci deney föyü / quiz modu
