@@ -16,6 +16,8 @@ Zincir: **Işık → PV panel → PEM elektrolizör (H₂/O₂) → gaz depolar�
 | `index.html` | Uygulamanın tamamı (SVG sahne, model, grafikler, TR/EN, açık/koyu tema) |
 | `data/deney_verileri.json` | Laboratuvar Excel ölçümleri ve üretici teknik değerleri |
 | `H2_Dijital_Ikiz_Tanitim_uyumlu.mp4` | 61 sn tanıtım videosu |
+| `H2_Dijital_Ikiz_Kisa_30sn_TR.mp4` | 30 sn kısa tanıtım, Türkçe altyazılı (son sürüm) |
+| `H2_Digital_Twin_Short_30s_EN.mp4` | 30 s short demo, English captions (latest version) |
 | `docs/Gelistirme_Notlari.md` | Tasarım planı, model açıklaması, geliştirme yazışmaları |
 
 ## Model özeti
@@ -41,7 +43,7 @@ Zincir: **Işık → PV panel → PEM elektrolizör (H₂/O₂) → gaz depolar�
 4. Ana projeye eklenmesini istediğiniz değişiklik için **Pull Request** açın.
 
 ### Geliştirme fikirleri
-- [ ] İngilizce altyazılı / 30 sn kısa tanıtım videosu
+- [x] İngilizce altyazılı / 30 sn kısa tanıtım videosu (`H2_Dijital_Ikiz_Kisa_30sn_TR.mp4`, `H2_Digital_Twin_Short_30s_EN.mp4`)
 - [x] Yük direnci seçimi (0,3–100 Ω) ve yakıt hücresi I–V / güç eğrisi deneyi
 - [x] Paralel/seri yakıt hücresi bağlantı seçeneği
 - [x] Gerçek PV paneli (4 hücre, Voc 2,3 V) ile karşılaştırma modu
