@@ -13,6 +13,7 @@ Bu depo hocanın projesinin (akyuz11/h2-dijital-ikiz) fork'u. Canlı sürüm: ht
 - `data/deney_verileri.json` — laboratuvar ölçümleri (16 grup, 0,5–2,0 A). `ozet_20dk` = [akım A, 20 dk H₂ mL]. Uygulama bunu `loadData()` ile okur; okunamazsa `LAB20` içindeki gömülü yedeği kullanır.
 - `H2_Dijital_Ikiz_Kisa_30sn_TR.mp4`, `H2_Digital_Twin_Short_30s_EN.mp4` — 30 sn tanıtım (altyazılı, efekt sesli; seslendirme yok — kullanıcı böyle istedi). Uygulamada üst menüdeki "▶ Tanıtım videosu" düğmesi (`#btnVid`) bunları `<dialog id="vidDlg">` içinde, seçili dile göre (`VIDS`) oynatır.
 - `README.md` — geliştirme listesi (hepsi [x]).
+- `favicon.svg`, `apple-touch-icon.png`, `og-image.png` — sekme simgesi ve paylaşım önizlemesi. `og:url`/`og:image` mutlak adresleri imoonwex.github.io'yu gösterir; hocanın deposuna PR açılırsa bunlar akyuz11 adresine çevrilmeli.
 
 ## Çalıştırma
 JSON `fetch` ile okunduğu için dosyaya çift tıklamak yetmez: VS Code **Live Server** (sağ tık → Open with Live Server, port 5500) veya `python -m http.server`.
@@ -26,7 +27,7 @@ JSON `fetch` ile okunduğu için dosyaya çift tıklamak yetmez: VS Code **Live 
 - Test kancası: `window.__twin` (S, step, setLevel, solveFc, setLoad, setConn …). `?record` → kare kare kayıt modu (`__twin.tick`).
 
 ## Sekmeler (alt bölüm)
-📘 Konu anlatımı (`#tp6`, varsayılan açık; `LESSONS` dizisi, 8 ders) · Grafikler (`#tp1`, Chart.js CDN; c0–c4) · Ölçüm tablosu · Faraday ve verim (+ PV karşılaştırma tablosu) · Deney föyü ve quiz (`#tp5`; `WS_TXT`, `QUIZ`, localStorage `h2twin-ws`) · Model notları (`NOTES`, kartlar + açılır formüller).
+📘 Konu anlatımı (`#tp6`, varsayılan açık; `LESSONS` dizisi: [0] numarasız başlangıç rehberi (`guide: true`, `LESSONS.unshift`, "Göster" düğmeleri `data-show` → `showSpot`), ardından 8 ders; üstteki `#btnHelp` rehberi açar, ilk ziyarette localStorage `h2twin-seen` ile bir kez ipucu çıkar) · Faraday ve verim sekmesinin başında canlı `sankeySvg()` ve altında açılır açıklama (`SK_HOW`). Sankey ayrı bir ders olmasın — kullanıcı açıklamanın diyagramın yanında, sekmede durmasını istedi. Dil ve tema sol üstteki ☰ menüsünde (`#btnMenu`, `#langSeg`, `#themeSeg`, `syncMenu()`); sekme adlarında emoji var · Grafikler (`#tp1`, Chart.js CDN; c0–c4) · Ölçüm tablosu · Faraday ve verim (+ PV karşılaştırma tablosu) · Deney föyü ve quiz (`#tp5`; `WS_TXT`, `QUIZ`, localStorage `h2twin-ws`) · Model notları (`NOTES`, kartlar + açılır formüller).
 
 ## Kurallar
 - **Her metin iki dilli**: arayüz metinleri `I18N.tr` / `I18N.en` (anahtar + `data-i18n`), dersler/föy kendi tr/en nesnelerinde. Birini eklersen ötekini de ekle.

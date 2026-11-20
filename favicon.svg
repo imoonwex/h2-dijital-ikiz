@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <rect width="64" height="64" rx="14" fill="#0a5cad"/>
+  <circle cx="46" cy="18" r="7.5" fill="#ffc23d"/>
+  <g stroke="#ffc23d" stroke-width="3" stroke-linecap="round">
+    <path d="M46 4.5v3.5M46 28v3.5M32.5 18h3.5M56 18h3.5M36.5 8.5l2.4 2.4M53.1 25.1l2.4 2.4M36.5 27.5l2.4-2.4M53.1 10.9l2.4-2.4"/>
+  </g>
+  <text x="6" y="57" font-family="Arial, Helvetica, sans-serif" font-weight="700" font-size="34" fill="#ffffff">H</text>
+  <text x="31" y="59" font-family="Arial, Helvetica, sans-serif" font-weight="700" font-size="20" fill="#7fdcff">2</text>
+</svg>

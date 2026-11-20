@@ -5,6 +5,23 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <!--ARTIFACT-START-->
 <title>Güneş-Hidrojen Dijital İkizi</title>
+<meta name="description" content="Güneş–hidrojen uzak deney setinin tarayıcıda çalışan dijital ikizi: ışık → güneş paneli → elektrolizör → H₂ deposu → yakıt hücresi → pervane. Konu anlatımı, grafikler, ölçüm tablosu, deney föyü ve quiz.">
+<!-- sekme simgesi ve paylaşım önizlemesi (WhatsApp, LinkedIn, X …) -->
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="theme-color" content="#0a5cad">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="H2 Dijital İkiz">
+<meta property="og:title" content="Güneş-Hidrojen Dijital İkizi">
+<meta property="og:description" content="Tarayıcıda çalışan uzak deney seti: ışığı aç, hidrojen üret, yakıt hücresiyle pervaneyi döndür. Dersler, grafikler, deney föyü ve quiz. TR / EN.">
+<meta property="og:url" content="https://imoonwex.github.io/h2-dijital-ikiz/">
+<meta property="og:image" content="https://imoonwex.github.io/h2-dijital-ikiz/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Güneş-Hidrojen Dijital İkizi: ışık, güneş paneli, elektrolizör, H₂ deposu, yakıt hücresi ve pervaneden oluşan enerji zinciri">
+<meta property="og:locale" content="tr_TR">
+<meta property="og:locale:alternate" content="en_US">
+<meta name="twitter:card" content="summary_large_image">
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -151,6 +168,26 @@ label.chk { display: flex; gap: 6px; align-items: center; font-size: .88rem; col
 .ls-svg .ls-t { font: 500 12px var(--font-body); fill: var(--fg); }
 .ls-svg .ls-h { font: 700 15px var(--font-display); fill: var(--fg); }
 .ls-nav { flex-wrap: wrap; }
+/* başlarken rehberi */
+.ls-steps { counter-reset: st; list-style: none; padding-left: 0 !important; gap: 10px !important; }
+.ls-steps li { counter-increment: st; display: grid; grid-template-columns: 34px minmax(0, 1fr) auto; gap: 10px; align-items: start; border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; background: var(--surface); }
+.ls-steps li::before { content: counter(st); width: 30px; height: 30px; border-radius: 50%; background: var(--accent); color: var(--accent-fg); display: grid; place-items: center; font: 700 1rem var(--font-display); }
+.ls-steps .btn { white-space: nowrap; }
+@media (max-width: 560px) { .ls-steps li { grid-template-columns: 30px minmax(0, 1fr); } .ls-steps .btn { grid-column: 2; justify-self: start; } }
+.spot { outline: 3px solid var(--sun) !important; outline-offset: 4px; border-radius: 10px; animation: spotPulse .9s ease-in-out 3; }
+@keyframes spotPulse { 0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--sun) 60%, transparent); } 50% { box-shadow: 0 0 0 12px color-mix(in srgb, var(--sun) 0%, transparent); } }
+@media (prefers-reduced-motion: reduce) { .spot { animation: none; } }
+/* sankey */
+.sk-wrap { border: 1px solid var(--line); border-radius: 10px; padding: 10px; background: var(--surface); margin-bottom: 16px; }
+.sk-wrap h3 { margin: 0 0 4px; }
+.sk-wrap .hint { margin-bottom: 6px; }
+.sk-leg { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: .84rem; color: var(--fg); margin-top: 6px; }
+.sk-leg span { display: inline-flex; align-items: center; gap: 7px; }
+.sk-leg i { display: inline-block; width: 30px; height: 12px; border-radius: 3px; flex: none; }
+.sk-leg .sk-n { color: var(--muted); }
+.sk-how { margin-top: 12px; }
+.sk-how ul { margin: 10px 0 0; padding-left: 20px; display: grid; gap: 5px; font-size: .9rem; line-height: 1.5; }
+.sk-how p { margin: 10px 0 0; font-size: .9rem; line-height: 1.5; max-width: 90ch; }
 @media (max-width: 800px) { .ls { grid-template-columns: 1fr; } .ls-toc { position: static; grid-template-columns: 1fr 1fr; } .ls-toc b { grid-column: 1 / -1; } }
 /* deney föyü ve quiz */
 .ws-bar { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; margin-bottom: 14px; }
@@ -231,6 +268,18 @@ tbody tr:last-child td { border-bottom: 0; }
 .pill.ok { background: color-mix(in srgb, var(--ok) 18%, transparent); color: var(--ok); }
 .toast { position: fixed; left: 50%; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--fg); color: var(--bg); padding: 8px 16px; border-radius: 8px; font-size: .9rem; opacity: 0; transition: opacity .25s; pointer-events: none; z-index: 20; }
 .toast.show { opacity: 1; }
+/* sol üst menü (dil ve tema) */
+.hdr-left { display: flex; align-items: center; gap: 14px; min-width: 0; }
+.menu { position: relative; flex: none; }
+.menu-btn { width: 42px; height: 42px; display: grid; place-items: center; color: var(--band-fg); background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.35); border-radius: 8px; cursor: pointer; padding: 0; }
+.menu-btn:hover, .menu-btn[aria-expanded="true"] { background: rgba(255,255,255,.26); }
+.menu-btn svg { width: 22px; height: 22px; }
+.menu-panel { position: absolute; top: calc(100% + 8px); left: 0; z-index: 30; width: min(270px, calc(100vw - 32px)); background: var(--surface); color: var(--fg); border: 1px solid var(--line); border-radius: 10px; box-shadow: 0 12px 32px rgba(0,0,0,.28); padding: 14px; display: grid; gap: 14px; }
+.menu-panel[hidden] { display: none; }
+.menu-row { display: grid; gap: 6px; }
+.menu-row > span { font: 600 .78rem var(--font-display); text-transform: uppercase; letter-spacing: .08em; color: var(--muted); }
+.hdr-actions button.hdr-main { background: #ffffff; color: #0a5cad; border-color: #ffffff; }
+.hdr-actions button.hdr-main:hover { background: #e8f1fb; }
 /* tanıtım videosu penceresi */
 .hdr-actions { flex-wrap: wrap; }
 .vid-dlg { width: min(960px, calc(100vw - 32px)); padding: 0; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); color: var(--fg); overflow: hidden; }
@@ -258,14 +307,26 @@ footer.wrap { padding-block: 0 28px; color: var(--muted); font-size: .8rem; }
 <body>
 <header class="band">
   <div class="wrap">
-    <div class="brand">
-      <h1 data-i18n="title">Güneş-Hidrojen Dijital İkizi</h1>
-      <p data-i18n="subtitle">Dr FuelCell® Professional uzak deney seti · ışık → PV → elektrolizör → H₂ deposu → yakıt hücresi → pervane</p>
+    <div class="hdr-left">
+      <div class="menu">
+        <button id="btnMenu" class="menu-btn" type="button" aria-expanded="false" aria-controls="menuPanel" aria-label="Menü">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+        </button>
+        <div id="menuPanel" class="menu-panel" hidden>
+          <div class="menu-row"><span data-i18n="mLang">Dil</span>
+            <div class="seg" id="langSeg"><button type="button" data-lang="tr">Türkçe</button><button type="button" data-lang="en">English</button></div></div>
+          <div class="menu-row"><span data-i18n="theme">Tema</span>
+            <div class="seg" id="themeSeg"><button type="button" data-th="light" data-i18n="thLight">☀️ Açık</button><button type="button" data-th="dark" data-i18n="thDark">🌙 Koyu</button></div></div>
+        </div>
+      </div>
+      <div class="brand">
+        <h1 data-i18n="title">Güneş-Hidrojen Dijital İkizi</h1>
+        <p data-i18n="subtitle">Dr FuelCell® Professional uzak deney seti · ışık → PV → elektrolizör → H₂ deposu → yakıt hücresi → pervane</p>
+      </div>
     </div>
     <div class="hdr-actions">
+      <button id="btnHelp" type="button" class="hdr-main" data-i18n="helpBtn">❓ Nasıl kullanılır?</button>
       <button id="btnVid" type="button" data-i18n="vidBtn">▶ Tanıtım videosu</button>
-      <button id="btnLang" type="button" aria-label="Language">EN</button>
-      <button id="btnTheme" type="button" data-i18n="theme">Tema</button>
     </div>
   </div>
 </header>
@@ -503,7 +564,7 @@ footer.wrap { padding-block: 0 28px; color: var(--muted); font-size: .8rem; }
     </div>
 
     <aside class="console">
-      <div class="panel">
+      <div class="panel" id="pnlLight">
         <h2 data-i18n="lightH">Işık şiddeti</h2>
         <div class="light-ctl">
           <button class="big dec" id="btnDec" type="button">
@@ -524,7 +585,7 @@ footer.wrap { padding-block: 0 28px; color: var(--muted); font-size: .8rem; }
         <div class="lvl-info"><span><span data-i18n="level">Kademe</span> <b id="lvlNum">4/16</b></span><span><b id="lvlG">0</b> W/m²</span><span><span data-i18n="group">Grup</span> <b id="lvlGrp">4</b></span></div>
       </div>
 
-      <div class="panel">
+      <div class="panel" id="pnlTime">
         <h2 data-i18n="timeH">Zaman</h2>
         <div class="seg" id="speedSeg">
           <button type="button" data-speed="1" class="on">1×</button>
@@ -542,7 +603,7 @@ footer.wrap { padding-block: 0 28px; color: var(--muted); font-size: .8rem; }
         </div>
       </div>
 
-      <div class="panel">
+      <div class="panel" id="pnlLoad">
         <h2 data-i18n="loadH">Yakıt hücresi ve yük</h2>
         <div class="seg" id="connSeg">
           <button type="button" data-conn="s" class="on" data-i18n="series">Seri</button>
@@ -562,7 +623,7 @@ footer.wrap { padding-block: 0 28px; color: var(--muted); font-size: .8rem; }
         <p class="hint" style="margin:0" data-i18n="loadHint">Direnç seçip noktaları kaydedin; I–V ve güç eğrisi Grafikler sekmesinde çizilir.</p>
       </div>
 
-      <div class="panel">
+      <div class="panel" id="pnlSw">
         <h2 data-i18n="swH">Kronometre ölçümü</h2>
         <div class="row" style="justify-content:space-between">
           <span class="sw-display" id="swTime">00:00</span>
@@ -590,11 +651,11 @@ footer.wrap { padding-block: 0 28px; color: var(--muted); font-size: .8rem; }
   <section class="tabs">
     <div class="tablist" role="tablist">
       <button class="tab" role="tab" aria-selected="true" aria-controls="tp6" id="tb6" data-i18n="tLearn">📘 Konu anlatımı</button>
-      <button class="tab" role="tab" aria-selected="false" aria-controls="tp1" id="tb1" data-i18n="tCharts">Grafikler</button>
-      <button class="tab" role="tab" aria-selected="false" aria-controls="tp2" id="tb2" data-i18n="tTable">Ölçüm tablosu</button>
-      <button class="tab" role="tab" aria-selected="false" aria-controls="tp3" id="tb3" data-i18n="tEff">Faraday ve verim</button>
-      <button class="tab" role="tab" aria-selected="false" aria-controls="tp5" id="tb5" data-i18n="tWs">Deney föyü ve quiz</button>
-      <button class="tab" role="tab" aria-selected="false" aria-controls="tp4" id="tb4" data-i18n="tNotes">Model notları</button>
+      <button class="tab" role="tab" aria-selected="false" aria-controls="tp1" id="tb1" data-i18n="tCharts">📈 Grafikler</button>
+      <button class="tab" role="tab" aria-selected="false" aria-controls="tp2" id="tb2" data-i18n="tTable">📋 Ölçüm tablosu</button>
+      <button class="tab" role="tab" aria-selected="false" aria-controls="tp3" id="tb3" data-i18n="tEff">⚡ Faraday ve verim</button>
+      <button class="tab" role="tab" aria-selected="false" aria-controls="tp5" id="tb5" data-i18n="tWs">📝 Deney föyü ve quiz</button>
+      <button class="tab" role="tab" aria-selected="false" aria-controls="tp4" id="tb4" data-i18n="tNotes">🧮 Model notları</button>
     </div>
 
     <div class="tabpanel" role="tabpanel" id="tp6" aria-labelledby="tb6"></div>
@@ -629,6 +690,12 @@ footer.wrap { padding-block: 0 28px; color: var(--muted); font-size: .8rem; }
     </div>
 
     <div class="tabpanel" role="tabpanel" id="tp3" aria-labelledby="tb3" hidden>
+      <div class="sk-wrap">
+        <h3 data-i18n="skH">Enerji akışı (Sankey diyagramı)</h3>
+        <p class="hint" data-i18n="skP">Panele düşen ışığın yakıt hücresine kadar ne kadarının ulaştığını gösterir. Değerler canlıdır; ışığı ya da yükü değiştirince güncellenir.</p>
+        <div id="sankey"></div>
+        <details class="nt-more sk-how"><summary id="skHowSum">📖 Sankey diyagramı nasıl okunur?</summary><div id="skHow"></div></details>
+      </div>
       <div class="eff-grid" id="effGrid"></div>
       <div class="two">
         <div>
@@ -681,6 +748,10 @@ const I18N = {
     title: "Güneş-Hidrojen Dijital İkizi",
     subtitle: "Dr FuelCell® Professional uzak deney seti · ışık → PV → elektrolizör → H₂ deposu → yakıt hücresi → pervane",
     vidBtn: "▶ Tanıtım videosu", vidTitle: "Tanıtım videosu (30 sn)", vidClose: "Kapat",
+    helpBtn: "❓ Nasıl kullanılır?", tFirst: "İlk kez mi geldiniz? Üstteki “❓ Nasıl kullanılır?” düğmesi adım adım gösterir.",
+    skH: "Enerji akışı (Sankey diyagramı)",
+    skP: "Panele düşen ışığın yakıt hücresine kadar ne kadarının ulaştığını gösterir. Değerler canlıdır; ışığı ya da yükü değiştirince güncellenir.",
+    mLang: "Dil", thLight: "☀️ Açık", thDark: "🌙 Koyu", menuLbl: "Menü: dil ve tema",
     theme: "Tema", lampLbl: "PAR lamba", chFC: "YH · Motor", meterLbl: "Ölçüm ünitesi · 0–2 / 0–20 A·V",
     motorLbl: "Motor", loadLbl: "Yük modülü", fcLbl: "PEM yakıt hücresi (çift, seri)", pvLbl: "Güneş paneli",
     pvMeter: "PV ölçümü", pvMV: "Gerilim", pvMA: "Akım", pvMP: "Güç", h2Rate: "H₂ üretim hızı", mlmin: "mL/dk",
@@ -693,7 +764,7 @@ const I18N = {
     swH: "Kronometre ölçümü", start: "Başlat", stop: "Durdur", clear: "Sıfırla", record: "Anlık kaydet",
     auto20: "20 dakikada otomatik durdur ve kaydet",
     cLight: "Işık", cPV: "Güneş paneli", cELZ: "Elektrolizör", cTank: "Gaz deposu", cFC: "Yakıt hücresi", cFan: "Pervane",
-    tCharts: "Grafikler", tTable: "Ölçüm tablosu", tEff: "Faraday ve verim", tNotes: "Model notları", tLearn: "📘 Konu anlatımı", tWs: "Deney föyü ve quiz",
+    tCharts: "📈 Grafikler", tTable: "📋 Ölçüm tablosu", tEff: "⚡ Faraday ve verim", tNotes: "🧮 Model notları", tLearn: "📘 Konu anlatımı", tWs: "📝 Deney föyü ve quiz",
     ch1: "Depodaki gaz hacmi – zaman", ch1p: "Yakıt hücresi tüketimi düşülmüş net hacim.",
     ch2: "PV I–V eğrisi ve çalışma noktası", ch2p: "Panel eğrisinin elektrolizör eğrisini kestiği nokta çalışma noktasıdır.",
     ch3: "Akım – 20 dakikada H₂", ch3p: "Laboratuvar ölçümleri, Faraday doğrusu ve sizin kronometre ölçümleriniz.",
@@ -736,6 +807,10 @@ const I18N = {
     title: "Solar Hydrogen Digital Twin",
     subtitle: "Dr FuelCell® Professional remote lab · light → PV → electrolyzer → H₂ storage → fuel cell → propeller",
     vidBtn: "▶ Intro video", vidTitle: "Intro video (30 s)", vidClose: "Close",
+    helpBtn: "❓ How to use", tFirst: "First time here? The “❓ How to use” button at the top shows you step by step.",
+    skH: "Energy flow (Sankey diagram)",
+    skP: "Shows how much of the light on the panel reaches the fuel cell. Values are live; they update when you change the light or the load.",
+    mLang: "Language", thLight: "☀️ Light", thDark: "🌙 Dark", menuLbl: "Menu: language and theme",
     theme: "Theme", lampLbl: "PAR lamp", chFC: "FC · Motor", meterLbl: "Measuring unit · 0–2 / 0–20 A·V",
     motorLbl: "Motor", loadLbl: "Load module", fcLbl: "PEM fuel cell (double, series)", pvLbl: "Solar panel",
     pvMeter: "PV meter", pvMV: "Voltage", pvMA: "Current", pvMP: "Power", h2Rate: "H₂ production rate", mlmin: "mL/min",
@@ -748,7 +823,7 @@ const I18N = {
     swH: "Stopwatch measurement", start: "Start", stop: "Stop", clear: "Clear", record: "Record now",
     auto20: "Stop and record automatically at 20 minutes",
     cLight: "Light", cPV: "Solar panel", cELZ: "Electrolyzer", cTank: "Gas storage", cFC: "Fuel cell", cFan: "Propeller",
-    tCharts: "Charts", tTable: "Measurements", tEff: "Faraday & efficiency", tNotes: "Model notes", tLearn: "📘 Lessons", tWs: "Worksheet & quiz",
+    tCharts: "📈 Charts", tTable: "📋 Measurements", tEff: "⚡ Faraday & efficiency", tNotes: "🧮 Model notes", tLearn: "📘 Lessons", tWs: "📝 Worksheet & quiz",
     ch1: "Stored gas volume vs time", ch1p: "Net volume after fuel cell consumption.",
     ch2: "PV I–V curve and operating point", ch2p: "The operating point is where the panel curve meets the electrolyzer curve.",
     ch3: "Current vs H₂ in 20 minutes", ch3p: "Lab measurements, Faraday line and your stopwatch runs.",
@@ -1220,6 +1295,65 @@ function updateEff(Ppv, Pfc, etaF, G) {
     d.querySelector("i").style.width = `${Math.min(100, v * 100)}%`;
     d.querySelector(".f").textContent = f;
   });
+  // canlı Sankey: yalnızca "Faraday ve verim" sekmesi açıkken çizilir
+  if (!$("#tp3").hidden) {
+    $("#sankey").innerHTML = Pin > 0 && Ppv > 0
+      ? sankeySvg([Ppv / Pin, pH2 / Ppv, fcIn > 0 ? Pfc / fcIn : null])
+      : `<p class="hint">${lang === "en" ? "The light is off. Turn the light up to see the energy flow." : "Işık kapalı. Enerji akışını görmek için ışığı artırın."}</p>`;
+  }
+}
+
+/* Sankey açıklaması: Faraday ve verim sekmesinde diyagramın altındaki açılır kutu */
+const SK_HOW = {
+  tr: { sum: "📖 Sankey diyagramı nasıl okunur?", body: `<ul>
+    <li>Diyagram <b>soldan sağa</b> okunur: ışık → panel → hidrojen → yakıt hücresi.</li>
+    <li>Panele düşen ışık <b>100 birim</b> kabul edilir. <b>Bandın kalınlığı, taşıdığı enerjiyle orantılıdır.</b></li>
+    <li>Her aşamada bant ikiye ayrılır: sağa devam eden <b>renkli kısım</b> bir sonraki aşamaya geçen enerjidir, aşağı kıvrılan <b>gri kısım</b> kayıptır (çoğunlukla ısı).</li>
+    <li>Bandın <b>en çok inceldiği yer</b>, kaybın en büyük olduğu yerdir. Bu düzenekte bu yer güneş panelidir: ışığın yaklaşık %88'i elektriğe dönüşmez.</li></ul>
+    <p><b>Enerji korunur:</b> yok olmaz, yalnızca işe yaramayan bir biçime (ısıya) dönüşür. Bu yüzden gri kayıpların ve sona ulaşan enerjinin toplamı her zaman 100'dür. Örnek (kademe 8, motor seride): 88 + 4,8 + 3,0 + 4,2 = 100.</p>` },
+  en: { sum: "📖 How to read the Sankey diagram", body: `<ul>
+    <li>Read the diagram <b>from left to right</b>: light → panel → hydrogen → fuel cell.</li>
+    <li>The light on the panel counts as <b>100 units</b>. <b>The thickness of a band is proportional to the energy it carries.</b></li>
+    <li>At each stage the band splits in two: the <b>coloured part</b> going on to the right is the energy passed to the next stage, the <b>grey part</b> curving down is the loss (mostly heat).</li>
+    <li>Where the band <b>gets thinnest</b> is where the biggest loss is. In this kit that is the solar panel: about 88% of the light does not become electricity.</li></ul>
+    <p><b>Energy is conserved:</b> it is not destroyed, it only turns into a form we cannot use (heat). So the grey losses plus the energy reaching the end always add up to 100. Example (level 8, motor in series): 88 + 4.8 + 3.0 + 4.2 = 100.</p>` },
+};
+/* ---------- Sankey diyagramı ----------
+   eta = [η_PV, η_elektrolizör (HHV), η_yakıt hücresi (HHV)]; η_YH null ise yakıt hücresi H₂ harcamıyordur.
+   Panele düşen ışık 100 birimdir; bant kalınlığı enerjiyle orantılı, aşağı kıvrılan bantlar kayıptır.
+   Hem "Faraday ve verim" sekmesinde (canlı) hem "Verim" dersinde (örnek değerlerle) kullanılır. */
+function sankeySvg(eta) {
+  const T = (tr, en) => (lang === "en" ? en : tr);
+  const names = [T("Panele düşen ışık", "Light on the panel"), T("Panelden elektrik", "Electricity from panel"), T("H₂'de saklanan enerji", "Energy stored in H₂"), T("Yakıt hücresinden elektrik", "Electricity from fuel cell")];
+  const cols = ["var(--sun)", "var(--accent)", "var(--h2)", "var(--ok)"];
+  const p = [100];
+  eta.forEach((e) => { if (e != null) p.push(p[p.length - 1] * Math.max(0, Math.min(1, e))); });
+  const n = p.length, X0 = 20, GAP = 200, NW = 12, Y0 = 56, HM = 150, YB = Y0 + HM + 50;
+  const w = p.map((v) => Math.max(1.5, HM * v / 100));
+  const fmt = (v) => pct(v, v < 10 ? 1 : 0);
+  let g = "";
+  for (let i = 0; i < n; i++) {
+    const x = X0 + i * GAP;
+    if (i < n - 1) {
+      const a = x + NW, b = x + GAP, d = w[i] - w[i + 1], y1 = Y0 + w[i + 1], y2 = Y0 + w[i], c = a + 18;
+      g += `<rect x="${a}" y="${Y0}" width="${b - a}" height="${w[i + 1].toFixed(1)}" fill="${cols[i]}" opacity=".45"/>`;
+      g += `<path d="M${a},${y1.toFixed(1)} C${(c + d).toFixed(1)},${y1.toFixed(1)} ${(c + d).toFixed(1)},${y1.toFixed(1)} ${(c + d).toFixed(1)},${YB} L${c},${YB} C${c},${y2.toFixed(1)} ${c},${y2.toFixed(1)} ${a},${y2.toFixed(1)} Z" fill="var(--muted)" opacity=".3"/>`;
+      g += `<text x="${(c + d / 2).toFixed(1)}" y="${YB + 16}" class="ls-t" text-anchor="middle" style="font-weight:700">−${fmt(p[i] - p[i + 1])}</text>`;
+    }
+    g += `<rect x="${x}" y="${Y0}" width="${NW}" height="${w[i].toFixed(1)}" rx="2" fill="${cols[i]}"/>`;
+    const anc = i === 0 ? "start" : "middle", tx = i === 0 ? x : x + NW / 2;
+    g += `<text x="${tx}" y="${Y0 - 28}" class="ls-t" text-anchor="${anc}">${names[i]}</text><text x="${tx}" y="${Y0 - 10}" class="ls-h" text-anchor="${anc}">${fmt(p[i])}</text>`;
+  }
+  const xl = X0 + (n - 1) * GAP + NW, wl = w[n - 1];
+  g += `<path d="M${xl},${Y0} L${xl + 26},${Y0} L${xl + 38},${(Y0 + wl / 2).toFixed(1)} L${xl + 26},${(Y0 + wl).toFixed(1)} L${xl},${(Y0 + wl).toFixed(1)} Z" fill="${cols[n - 1]}" opacity=".45"/>`;
+  if (n < 4) g += `<text x="${xl + 52}" y="${Y0 + 10}" class="ls-t" style="font-weight:700">${T("Yakıt hücresi şu an H₂ harcamıyor", "The fuel cell is not using H₂ now")}</text><text x="${xl + 52}" y="${Y0 + 26}" class="ls-t" style="fill:var(--muted)">${T("(vana kapalı, açık devre ya da depo boş)", "(valve closed, open circuit or tank empty)")}</text>`;
+  const title = T("Enerji akışı: ışıktan yakıt hücresine", "Energy flow: from light to fuel cell");
+  // lejant: bant renklerinin anlamı grafiğin altında
+  const legend = `<div class="sk-leg">
+    <span><i style="background:linear-gradient(90deg,var(--sun),var(--accent),var(--h2),var(--ok));opacity:.75"></i>${T("Bir sonraki aşamaya geçen enerji", "Energy passed to the next stage")}</span>
+    <span><i style="background:var(--muted);opacity:.35"></i>${T("Kayıp: ısıya dönüşen enerji (panelde ışığın bir kısmı da yansır)", "Loss: energy turned into heat (at the panel some light is also reflected)")}</span>
+    <span class="sk-n">${T("Sayılar: panele düşen ışığın yüzdesi", "Numbers: percent of the light on the panel")}</span></div>`;
+  return `<svg viewBox="0 0 740 ${YB + 24}" class="ls-svg" role="img" aria-label="${title}" xmlns="http://www.w3.org/2000/svg"><title>${title}</title>${g}</svg>${legend}`;
 }
 
 function buildFarTable() {
@@ -1243,7 +1377,7 @@ function setPv(v) {
   if (v === "r") toast(t("pvRToast"));
   updateUi(); updateCharts(); buildPvTable();
 }
-function toast(msg) { const el2 = $("#toast"); el2.textContent = msg; el2.classList.add("show"); clearTimeout(toast.h); toast.h = setTimeout(() => el2.classList.remove("show"), 2600); }
+function toast(msg, ms = 2600) { const el2 = $("#toast"); el2.textContent = msg; el2.classList.add("show"); clearTimeout(toast.h); toast.h = setTimeout(() => el2.classList.remove("show"), ms); }
 
 /* records */
 function addRecord(kind) {
@@ -1376,7 +1510,9 @@ function applyLang() {
   document.documentElement.lang = lang;
   document.querySelectorAll("[data-i18n]").forEach((e) => { const k = e.getAttribute("data-i18n"); if (I18N[lang][k]) e.textContent = I18N[lang][k]; });
   document.title = t("title");
-  $("#btnLang").textContent = lang === "tr" ? "EN" : "TR";
+  $("#btnMenu").setAttribute("aria-label", t("menuLbl"));
+  $("#skHowSum").textContent = SK_HOW[lang].sum; $("#skHow").innerHTML = SK_HOW[lang].body;
+  syncMenu();
   $("#notes").innerHTML = NOTES[lang];
   buildFarTable(); renderRecords(); buildLoadSel(); renderWs(); renderLessons(); makeCharts(); updateUi();
   try { localStorage.setItem("h2twin-lang", lang); } catch (e) {}
@@ -1614,11 +1750,11 @@ $("#tp5").addEventListener("click", (e) => {
 });
 
 /* ---------- konu anlatımı ----------
-   8 kısa ders. Her ders: özet kutusu, anlatım, çizim (SVG, modelden hesaplanır), bu düzenekten örnek,
+   Başlangıç rehberi (numarasız, LESSONS[0], guide: true) + 8 kısa ders. Her ders: özet kutusu, anlatım, çizim (SVG, modelden hesaplanır), bu düzenekten örnek,
    formül kutusu ve "Simülasyonda dene" düğmesi. Metinler LS_TXT ve LESSONS içinde (tr/en). */
 const LS_TXT = {
-  tr: { toc: "Dersler", short: "Kısaca", ex: "Bu düzenekte", f: "Formül", tryIt: "Simülasyonda dene", prev: "← Önceki", next: "Sonraki →", of: (i, n) => `Ders ${i} / ${n}` },
-  en: { toc: "Lessons", short: "In short", ex: "In this setup", f: "Formula", tryIt: "Try it in the simulation", prev: "← Previous", next: "Next →", of: (i, n) => `Lesson ${i} of ${n}` },
+  tr: { toc: "Dersler", short: "Kısaca", ex: "Bu düzenekte", f: "Formül", tryIt: "Simülasyonda dene", prev: "← Önceki", next: "Sonraki →", of: (i, n) => `Ders ${i} / ${n}`, guide: "Başlangıç rehberi", quick: "Hızlı başlat: ilk ölçümü al" },
+  en: { toc: "Lessons", short: "In short", ex: "In this setup", f: "Formula", tryIt: "Try it in the simulation", prev: "← Previous", next: "Next →", of: (i, n) => `Lesson ${i} of ${n}`, guide: "Getting started guide", quick: "Quick start: take a first measurement" },
 };
 let lsIdx = 0;
 const L = (tr, en) => (lang === "en" ? en : tr);
@@ -1711,10 +1847,25 @@ const D = {
     return plot(520, 300, 3, 2.1, L("Akım (A)", "Current (A)"), L("Gerilim (V)", "Voltage (V)"), [{ pts: pts("s"), color: "var(--accent)", label: L("yakıt hücresi (seri)", "fuel cell (series)"), lab: [1.2, 1.35] }, ...lines], marks);
   },
   eff() {
-    const steps = [[L("Panele düşen ışık", "Light on the panel"), 100, "var(--sun)"], [L("Panelden çıkan elektrik", "Electricity from the panel"), 12, "var(--accent)"], [L("H₂'de saklanan enerji", "Energy stored in H₂"), 7.2, "var(--h2)"], [L("Yakıt hücresinden elektrik", "Electricity from the fuel cell"), 4.2, "var(--ok)"]];
-    let g = ""; steps.forEach(([t, p, c], i) => { const y = 16 + i * 46, w = Math.max(6, 4.4 * p);
-      g += `<rect x="190" y="${y}" width="${w}" height="30" rx="4" fill="${c}" opacity=".85"/><text x="182" y="${y + 20}" class="ls-t" text-anchor="end">${t}</text><text x="${196 + w}" y="${y + 20}" class="ls-t" style="font-weight:700">%${num(p, p < 10 ? 1 : 0)}</text>`; });
-    return svgWrap(680, 200, g);
+    // her aşamanın kendi verimi ve toplam (çarpım); ders örneği: kademe 8, motor seride
+    const steps = [[L("Güneş paneli", "Solar panel"), "η<tspan baseline-shift='sub' font-size='9'>PV</tspan>", 12, "var(--sun)"], [L("Elektrolizör", "Electrolyzer"), "η<tspan baseline-shift='sub' font-size='9'>" + L("elz", "ely") + "</tspan>", 60, "var(--h2)"], [L("Yakıt hücresi", "Fuel cell"), "η<tspan baseline-shift='sub' font-size='9'>" + L("YH", "FC") + "</tspan>", 58, "var(--ok)"], [L("Toplam (çarpım)", "Total (product)"), "η<tspan baseline-shift='sub' font-size='9'>" + L("toplam", "total") + "</tspan>", 4.2, "var(--accent)"]];
+    let g = `<line x1="190" y1="8" x2="190" y2="196" stroke="var(--line)"/><line x1="630" y1="8" x2="630" y2="196" stroke="var(--line)" stroke-dasharray="4 4"/><text x="630" y="212" class="ls-t" text-anchor="middle" style="fill:var(--muted)">%100</text>`;
+    steps.forEach(([t, e, p, c], i) => { const y = 14 + i * 46, w = Math.max(6, 4.4 * p);
+      g += `<rect x="190" y="${y}" width="${w}" height="30" rx="4" fill="${c}" opacity=".85"/><text x="182" y="${y + 14}" class="ls-t" text-anchor="end" style="font-weight:700">${t}</text><text x="182" y="${y + 28}" class="ls-t" text-anchor="end" style="fill:var(--muted)">${e}</text><text x="${196 + w}" y="${y + 20}" class="ls-t" style="font-weight:700">${pct(p, p < 10 ? 1 : 0)}</text>`; });
+    return svgWrap(680, 218, g);
+  },
+  guide() {
+    // sayfa krokisi: masaüstü düzeni, numaralar rehberdeki adımlarla eşleşir
+    const box = (x, y, w, h, n, t1, t2, c) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="8" fill="color-mix(in srgb, ${c} 14%, var(--surface))" stroke="${c}" stroke-width="1.6"/>
+      <circle cx="${x + 18}" cy="${y + 18}" r="11" fill="${c}"/><text x="${x + 18}" y="${y + 22.5}" text-anchor="middle" style="font:700 12px var(--font-display);fill:#fff">${n}</text>
+      <text x="${x + 36}" y="${y + 23}" class="ls-t" style="font-weight:700">${t1}</text>${t2 ? `<text x="${x + 14}" y="${y + 44}" class="ls-t" style="fill:var(--muted)">${t2}</text>` : ""}`;
+    let g = `<rect x="4" y="4" width="632" height="30" rx="6" fill="var(--accent)"/><text x="14" y="24" style="font:600 13px var(--font-display);fill:#fff">☰ ${L("Menü: dil ve tema", "Menu: language and theme")}</text>
+      <text x="624" y="24" text-anchor="end" style="font:500 11px var(--font-body);fill:#fff">❓ ${L("Nasıl kullanılır?", "How to use")} · ▶ ${L("Tanıtım videosu", "Intro video")}</text>`;
+    g += box(4, 44, 400, 170, "1", L("Deney rafı (sahne)", "Test rig (scene)"), L("Cihazlar canlı çalışır; ölçü aletlerini okuyun", "Devices run live; read the meters"), "var(--sun)");
+    g += box(414, 44, 222, 170, "2", L("Kontrol paneli", "Control panel"), L("ışık · zaman · yük · kronometre", "light · time · load · stopwatch"), "var(--accent)");
+    g += box(4, 224, 632, 54, "3", L("Enerji zinciri: her aşamanın anlık değeri", "Energy chain: live value of each stage"), "", "var(--h2)");
+    g += box(4, 288, 632, 70, "4", L("Sekmeler", "Tabs"), L("dersler · grafikler · ölçüm tablosu · verim · föy ve quiz · notlar", "lessons · charts · data table · efficiency · worksheet and quiz · notes"), "var(--ok)");
+    return svgWrap(640, 362, g);
   },
 };
 // --- dersler ---
@@ -1844,25 +1995,70 @@ const LESSONS = [
       <li><b>Elektrolizör:</b> iki verimi vardır. <b>Faraday verimi</b>, akımın ne kadarının gerçekten H₂ ürettiğidir (≈ %90–99). <b>Enerji verimi</b>, H₂'de saklanan enerjinin harcanan elektriğe oranıdır: ≈ 1,48 V / 2,4 V ≈ %60.</li>
       <li><b>Yakıt hücresi:</b> çıkan elektriğin, harcanan H₂'nin enerjisine oranı; hücre başına ≈ U / 1,48 V. Motorla seride ≈ %58.</li></ul>
       <p>Zincirdeki toplam verim bunların çarpımıdır: 0,12 × 0,60 × 0,58 ≈ <b>%4</b>. Düşük görünse de hidrojenin değeri, enerjiyi uzun süre saklayıp başka bir yerde ve zamanda kullanabilmesindedir.</p>
+      <p>Bu verimlerin zincir boyunca enerjiyi adım adım nasıl azalttığını <b>Faraday ve verim</b> sekmesindeki canlı <b>Sankey diyagramı</b> gösterir; nasıl okunduğu diyagramın hemen altında anlatılıyor.</p>
       <p class="hint">Not: Hidrojenin enerjisi burada üst ısıl değerle (HHV, 286 kJ/mol) hesaplanmıştır; 1,48 V bu değere karşılık gelir.</p>`,
       `<p>Each conversion has its own efficiency:</p>
       <ul><li><b>Solar panel:</b> η<sub>PV</sub> = P<sub>electrical</sub> / (G · A). Most of the light becomes heat; ≈ 12% in this kit.</li>
       <li><b>Electrolyzer:</b> two efficiencies. <b>Faraday efficiency</b> is how much of the current really makes H₂ (≈ 90–99%). <b>Energy efficiency</b> is the energy stored in H₂ divided by the electricity used: ≈ 1.48 V / 2.4 V ≈ 60%.</li>
       <li><b>Fuel cell:</b> electricity out divided by the energy of the H₂ used; per cell ≈ U / 1.48 V. In series with the motor ≈ 58%.</li></ul>
       <p>The total efficiency of the chain is the product: 0.12 × 0.60 × 0.58 ≈ <b>4%</b>. It looks low, but hydrogen's value is that it can store energy for a long time and deliver it at another place and time.</p>
+      <p>The live <b>Sankey diagram</b> in the <b>Faraday &amp; efficiency</b> tab shows how these efficiencies shrink the energy step by step along the chain; how to read it is explained right below the diagram.</p>
       <p class="hint">Note: hydrogen's energy is counted here with the higher heating value (HHV, 286 kJ/mol); 1.48 V corresponds to this value.</p>`),
     d: () => D.eff(),
-    e: () => L(`Kademe 8'de: panele düşen ışık ≈ 549 W/m² × 0,045 m² ≈ 24,7 W; panel ≈ 2,9 W elektrik verir (%12). Elektrolizör ≈ 1,7 W'lık hidrojen üretir (%60). Yakıt hücresi 228 mW'lık hidrojenden 132 mW elektrik üretir (%58). Canlı değerler <b>Faraday ve verim</b> sekmesinde.`,
-      `At level 8: light on the panel ≈ 549 W/m² × 0.045 m² ≈ 24.7 W; the panel delivers ≈ 2.9 W (12%). The electrolyzer turns that into ≈ 1.7 W of hydrogen (60%). The fuel cell makes 132 mW of electricity from 228 mW of hydrogen (58%). Live values are in the <b>Faraday and efficiency</b> tab.`),
+    e: () => L(`Kademe 8'de: panele düşen ışık ≈ 549 W/m² × 0,045 m² ≈ 24,7 W; panel ≈ 2,9 W elektrik verir (%12). Elektrolizör ≈ 1,7 W'lık hidrojen üretir (%60). Yakıt hücresi 228 mW'lık hidrojenden 132 mW elektrik üretir (%58). Canlı Sankey diyagramı ve değerler <b>Faraday ve verim</b> sekmesinde: ışığı ya da yükü değiştirip bantların nasıl değiştiğini izleyin.`,
+      `At level 8: light on the panel ≈ 549 W/m² × 0.045 m² ≈ 24.7 W; the panel delivers ≈ 2.9 W (12%). The electrolyzer turns that into ≈ 1.7 W of hydrogen (60%). The fuel cell makes 132 mW of electricity from 228 mW of hydrogen (58%). The live Sankey diagram and values are in the <b>Faraday &amp; efficiency</b> tab: change the light or the load and watch the bands change.`),
     f: () => `η = P<sub>${L("çıkış", "out")}</sub> / P<sub>${L("giriş", "in")}</sub> &nbsp;·&nbsp; η<sub>${L("toplam", "total")}</sub> = η<sub>PV</sub> · η<sub>${L("elz", "ely")}</sub> · η<sub>${L("YH", "FC")}</sub>`,
-    a: () => { setLevel(8); $("#tb3").click(); $("#tb3").scrollIntoView({ behavior: REC ? "auto" : "smooth", block: "start" }); } },
+    a: () => { setLevel(8); $("#tb3").click(); $("#tb3").scrollIntoView({ behavior: REC ? "auto" : "smooth", block: "start" }); }, noScroll: true },
 ];
+// --- başlarken rehberi: sayfaya ilk giren kişi için, derslerin önünde (numarasız) ---
+const showBtn = (sel) => `<button class="btn" type="button" data-show="${sel}">👁 ${L("Göster", "Show")}</button>`;
+LESSONS.unshift({ ic: "🚀", guide: true, t: () => L("Başlarken: sayfa nasıl kullanılır?", "Getting started: how to use this page"),
+  s: () => L("Bu sayfa, laboratuvardaki güneş–hidrojen deney setinin tarayıcıda çalışan kopyasıdır. Işığı açarsınız, panel elektrik üretir, elektrolizör hidrojen üretir, yakıt hücresi bu hidrojenle pervaneyi döndürür. Aşağıdaki adımları sırayla izleyin; her adımdaki “Göster” düğmesi ilgili yeri ekranda parlatır.",
+    "This page is a browser copy of the solar–hydrogen lab kit. You turn on the light, the panel makes electricity, the electrolyzer makes hydrogen and the fuel cell uses that hydrogen to spin the propeller. Follow the steps below in order; the “Show” button in each step highlights that part of the screen."),
+  d: () => D.guide(),
+  b: () => L(`<p><b>Sayfanın krokisi:</b> yukarıdaki numaralar sayfadaki bölümlerdir. Telefonda bölümler alt alta sıralanır.</p>
+    <p><b>İlk deneyiniz, adım adım:</b></p>
+    <ol class="ls-steps">
+      <li><span><b>Işığı açın.</b> Kontrol panelindeki <b>Artır</b> düğmesiyle ışık kademesini yükseltin (klavyede + / − tuşları da olur). Her kademe, laboratuvardaki bir ölçüm grubuna karşılık gelir.</span>${showBtn("#pnlLight")}</li>
+      <li><span><b>Sahneyi izleyin.</b> Panel elektrik üretir, elektrolizörde kabarcıklar çıkar, silindirlerde gaz birikir. Ölçü aletlerinden gerilimi (V) ve akımı (A) okuyun.</span>${showBtn(".stage")}</li>
+      <li><span><b>Zamanı hızlandırın.</b> Gerçek deney 20 dakika sürer. Beklememek için <b>60×</b> seçin: 20 dakika 20 saniyede geçer.</span>${showBtn("#pnlTime")}</li>
+      <li><span><b>Ölçüm alın.</b> Kronometrede <b>Başlat</b>'a basın. 20 dakika dolunca ölçüm kendiliğinden durur ve <b>Ölçüm tablosu</b>na eklenir; laboratuvarda yaptığınızın aynısı.</span>${showBtn("#pnlSw")}</li>
+      <li><span><b>Hidrojeni kullanın.</b> Yakıt hücresini <b>seri</b> ya da <b>paralel</b> bağlayın, yük olarak motoru ya da bir direnci seçin. Pervanenin hızı ve ölçülen güç değişir.</span>${showBtn("#pnlLoad")}</li>
+      <li><span><b>Sonuçları okuyun.</b> Enerji zinciri satırı her aşamanın anlık değerini gösterir. Ayrıntılar sekmelerde: <b>Grafikler</b>, <b>Ölçüm tablosu</b> (CSV indirilebilir), <b>Faraday ve verim</b> (Sankey diyagramı).</span>${showBtn(".chain")}</li>
+      <li><span><b>Öğrenin ve kendinizi sınayın.</b> Soldaki listeden dersleri sırayla okuyun; her dersin sonundaki “Simülasyonda dene” düğmesi konuyu sahnede gösterir. Sonra <b>Deney föyü ve quiz</b> sekmesini deneyin.</span>${showBtn(".tablist")}</li>
+    </ol>
+    <p class="hint">İpuçları: <b>Sıfırla</b> deneyi baştan başlatır. <b>H₂ vanası</b> kapatılırsa gaz yalnızca depoda birikir. Üstteki <b>▶ Tanıtım videosu</b> 30 saniyelik bir özet gösterir; <b>❓ Nasıl kullanılır?</b> sizi bu sayfaya geri getirir. Dili ve temayı (açık/koyu) sol üstteki <b>☰</b> menüsünden değiştirebilirsiniz.</p>`,
+    `<p><b>Page map:</b> the numbers above are the parts of the page. On a phone the parts are stacked one under another.</p>
+    <p><b>Your first experiment, step by step:</b></p>
+    <ol class="ls-steps">
+      <li><span><b>Turn on the light.</b> Raise the light level with the <b>Increase</b> button on the control panel (the + / − keys also work). Each level matches one measurement group from the lab.</span>${showBtn("#pnlLight")}</li>
+      <li><span><b>Watch the scene.</b> The panel makes electricity, bubbles rise in the electrolyzer and gas collects in the cylinders. Read the voltage (V) and current (A) on the meters.</span>${showBtn(".stage")}</li>
+      <li><span><b>Speed up time.</b> The real experiment takes 20 minutes. To avoid waiting, choose <b>60×</b>: 20 minutes pass in 20 seconds.</span>${showBtn("#pnlTime")}</li>
+      <li><span><b>Take a measurement.</b> Press <b>Start</b> on the stopwatch. After 20 minutes it stops by itself and the result is added to the <b>Measurements</b> tab, just like in the lab.</span>${showBtn("#pnlSw")}</li>
+      <li><span><b>Use the hydrogen.</b> Connect the fuel cells in <b>series</b> or <b>parallel</b> and choose the motor or a resistor as the load. The propeller speed and the measured power change.</span>${showBtn("#pnlLoad")}</li>
+      <li><span><b>Read the results.</b> The energy chain row shows the live value of each stage. Details are in the tabs: <b>Charts</b>, <b>Measurements</b> (CSV download), <b>Faraday &amp; efficiency</b> (Sankey diagram).</span>${showBtn(".chain")}</li>
+      <li><span><b>Learn and test yourself.</b> Read the lessons in the list on the left in order; the “Try it in the simulation” button at the end of each lesson shows the topic in the scene. Then try the <b>Worksheet &amp; quiz</b> tab.</span>${showBtn(".tablist")}</li>
+    </ol>
+    <p class="hint">Tips: <b>Reset</b> starts the experiment again. If the <b>H₂ valve</b> is closed, gas only collects in storage. The <b>▶ Intro video</b> at the top is a 30-second summary; <b>❓ How to use</b> brings you back here. Change the language and the theme (light/dark) from the <b>☰</b> menu at the top left.</p>`),
+  e: () => { const r = LAB20[7] || LAB20[LAB20.length - 1];
+    return L(`Hızlı bir başlangıç için aşağıdaki düğmeye basın: ışık kademe 8'e (${n2(r[0], 1)} A) çıkar, zaman 60× hızlanır ve kronometre başlar. Yaklaşık 20 saniye sonra ölçüm tabloya eklenir; laboratuvarda bu akımda 20 dakikada <b>${r[1]} mL</b> H₂ ölçülmüştü.`,
+      `For a quick start press the button below: the light goes to level 8 (${n2(r[0], 1)} A), time runs 60× faster and the stopwatch starts. After about 20 seconds the measurement is added to the table; in the lab <b>${r[1]} mL</b> of H₂ was measured in 20 minutes at this current.`); },
+  a: () => { setPv("m"); setConn("s"); setLoad("motor"); S.valve = true; setLevel(8);
+    const b60 = document.querySelector('#speedSeg button[data-speed="60"]'); if (b60) b60.click();
+    if (!S.sw.run) { resetSw(); $("#btnSw").click(); } } });
+function showSpot(sel) {
+  const el = document.querySelector(sel); if (!el) return;
+  if (showSpot.el) showSpot.el.classList.remove("spot");
+  el.scrollIntoView({ behavior: REC ? "auto" : "smooth", block: "center" });
+  void el.offsetWidth; el.classList.add("spot"); showSpot.el = el;
+  clearTimeout(showSpot.h); showSpot.h = setTimeout(() => el.classList.remove("spot"), 3000);
+}
 function renderLessons() {
   const T = LS_TXT[lang] || LS_TXT.tr, Ls = LESSONS[lsIdx];
   $("#tp6").innerHTML = `<div class="ls">
-    <nav class="ls-toc" aria-label="${T.toc}"><b>${T.toc}</b>${LESSONS.map((x, i) => `<button type="button" data-ls="${i}" class="${i === lsIdx ? "on" : ""}"><span>${x.ic}</span> ${i + 1}. ${x.t()}</button>`).join("")}</nav>
+    <nav class="ls-toc" aria-label="${T.toc}"><b>${T.toc}</b>${LESSONS.map((x, i) => `<button type="button" data-ls="${i}" class="${i === lsIdx ? "on" : ""}"><span>${x.ic}</span> ${x.guide ? "" : i + ". "}${x.t()}</button>`).join("")}</nav>
     <article class="ls-body">
-      <p class="ls-of">${T.of(lsIdx + 1, LESSONS.length)}</p>
+      <p class="ls-of">${Ls.guide ? T.guide : T.of(lsIdx, LESSONS.length - 1)}</p>
       <h3>${Ls.ic} ${Ls.t()}</h3>
       <div class="ls-short"><b>${T.short}:</b> ${Ls.s()}</div>
       <div class="ls-fig">${Ls.d()}</div>
@@ -1870,7 +2066,7 @@ function renderLessons() {
       ${Ls.f ? `<div class="ls-formula"><b>${T.f}:</b> ${Ls.f()}</div>` : ""}
       <div class="ls-ex"><b>${T.ex}:</b> ${Ls.e()}</div>
       <div class="row ls-nav">
-        <button class="btn primary" type="button" id="lsTry">▶ ${T.tryIt}</button>
+        <button class="btn primary" type="button" id="lsTry">▶ ${Ls.guide ? T.quick : T.tryIt}</button>
         <span style="flex:1"></span>
         <button class="btn" type="button" id="lsPrev" ${lsIdx === 0 ? "disabled" : ""}>${T.prev}</button>
         <button class="btn" type="button" id="lsNext" ${lsIdx === LESSONS.length - 1 ? "disabled" : ""}>${T.next}</button>
@@ -1882,7 +2078,8 @@ $("#tp6").addEventListener("click", (e) => {
   if (b.dataset.ls) { lsIdx = +b.dataset.ls; renderLessons(); $("#tp6").scrollIntoView({ block: "start" }); }
   else if (b.id === "lsPrev" && lsIdx > 0) { lsIdx--; renderLessons(); $("#tp6").scrollIntoView({ block: "start" }); }
   else if (b.id === "lsNext" && lsIdx < LESSONS.length - 1) { lsIdx++; renderLessons(); $("#tp6").scrollIntoView({ block: "start" }); }
-  else if (b.id === "lsTry") { const L0 = LESSONS[lsIdx]; L0.a(); if (lsIdx !== 7) goStage(); }
+  else if (b.id === "lsTry") { const L0 = LESSONS[lsIdx]; L0.a(); if (!L0.noScroll) goStage(); }
+  else if (b.dataset.show) showSpot(b.dataset.show);
 });
 
 function setCh(c) { S.ch = c; $("#chPV").classList.toggle("on", c === "pv"); $("#chFC").classList.toggle("on", c === "fc"); updateUi(); }
@@ -1904,7 +2101,27 @@ document.querySelectorAll(".tab").forEach((tb) => tb.addEventListener("click", (
   document.querySelectorAll(".tab").forEach((x) => { const on = x === tb; x.setAttribute("aria-selected", on); document.getElementById(x.getAttribute("aria-controls")).hidden = !on; });
   if (tb.id === "tb1") { [c0, c1, c2, c3, c4].forEach((c) => c && c.resize()); }
 }));
-$("#btnLang").addEventListener("click", () => { lang = lang === "tr" ? "en" : "tr"; applyLang(); });
+/* ---------- sol üst menü: dil ve tema ---------- */
+function curTheme() { const c = document.documentElement.getAttribute("data-theme"); return c || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"); }
+function syncMenu() {
+  document.querySelectorAll("#langSeg button").forEach((b) => { const on = b.dataset.lang === lang; b.classList.toggle("on", on); b.setAttribute("aria-pressed", on); });
+  const th = curTheme();
+  document.querySelectorAll("#themeSeg button").forEach((b) => { const on = b.dataset.th === th; b.classList.toggle("on", on); b.setAttribute("aria-pressed", on); });
+}
+function setMenu(open) { $("#menuPanel").hidden = !open; $("#btnMenu").setAttribute("aria-expanded", open); if (open) syncMenu(); }
+$("#btnMenu").addEventListener("click", (e) => { e.stopPropagation(); setMenu($("#menuPanel").hidden); });
+document.addEventListener("click", (e) => { if (!$("#menuPanel").hidden && !e.target.closest(".menu")) setMenu(false); });
+document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !$("#menuPanel").hidden) { setMenu(false); $("#btnMenu").focus(); } });
+$("#langSeg").addEventListener("click", (e) => { const b = e.target.closest("button"); if (!b || b.dataset.lang === lang) return; lang = b.dataset.lang; applyLang(); });
+$("#themeSeg").addEventListener("click", (e) => {
+  const b = e.target.closest("button"); if (!b || b.dataset.th === curTheme()) return;
+  document.documentElement.setAttribute("data-theme", b.dataset.th); makeCharts(); syncMenu();
+});
+/* ---------- "Nasıl kullanılır?": başlangıç rehberini açar ---------- */
+$("#btnHelp").addEventListener("click", () => {
+  $("#tb6").click(); lsIdx = 0; renderLessons();
+  $("#tp6").scrollIntoView({ behavior: "smooth", block: "start" });
+});
 /* ---------- tanıtım videosu (seçili dile göre TR/EN) ---------- */
 const VIDS = { tr: "H2_Dijital_Ikiz_Kisa_30sn_TR.mp4", en: "H2_Digital_Twin_Short_30s_EN.mp4" };
 const vidDlg = $("#vidDlg"), vidEl = $("#vidEl");
@@ -1916,12 +2133,7 @@ $("#btnVid").addEventListener("click", () => {
 $("#vidClose").addEventListener("click", () => vidDlg.close());
 vidDlg.addEventListener("click", (e) => { if (e.target === vidDlg) vidDlg.close(); });   // pencere dışına tıklayınca kapan
 vidDlg.addEventListener("close", () => vidEl.pause());
-$("#btnTheme").addEventListener("click", () => {
-  const root = document.documentElement, cur = root.getAttribute("data-theme");
-  const isDark = cur ? cur === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
-  root.setAttribute("data-theme", isDark ? "light" : "dark"); makeCharts();
-});
-if (window.matchMedia) matchMedia("(prefers-color-scheme: dark)").addEventListener("change", makeCharts);
+if (window.matchMedia) matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => { makeCharts(); syncMenu(); });
 
 /* ---------- loop ---------- */
 let last = performance.now(), uiAcc = 0, chAcc = 0, recNow = 0;
@@ -1976,6 +2188,9 @@ async function loadData() {
 applyLang();
 loadData();
 if (!REC) requestAnimationFrame(frame);
+// ilk ziyarette bir kez: rehberin yerini göster
+if (!REC) { let seen = true; try { seen = !!localStorage.getItem("h2twin-seen"); localStorage.setItem("h2twin-seen", "1"); } catch (e) {}
+  if (!seen) setTimeout(() => { toast(t("tFirst"), 7000); $("#btnHelp").classList.add("spot"); setTimeout(() => $("#btnHelp").classList.remove("spot"), 3000); }, 1200); }
 })();
 </script>
 <!--ARTIFACT-END-->
