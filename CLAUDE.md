@@ -11,7 +11,7 @@ Bu depo hocanın projesinin (akyuz11/h2-dijital-ikiz) fork'u. Canlı sürüm: ht
 ## Dosyalar
 - `index.html` — uygulamanın tamamı (SVG sahne, model, grafikler, TR/EN, açık/koyu tema). Tek dosya; derleme yok.
 - `data/deney_verileri.json` — laboratuvar ölçümleri (16 grup, 0,5–2,0 A). `ozet_20dk` = [akım A, 20 dk H₂ mL]. Uygulama bunu `loadData()` ile okur; okunamazsa `LAB20` içindeki gömülü yedeği kullanır.
-- `H2_Dijital_Ikiz_Kisa_30sn_TR.mp4`, `H2_Digital_Twin_Short_30s_EN.mp4` — 30 sn tanıtım (altyazılı, efekt sesli; seslendirme yok — kullanıcı böyle istedi).
+- `H2_Dijital_Ikiz_Kisa_30sn_TR.mp4`, `H2_Digital_Twin_Short_30s_EN.mp4` — 30 sn tanıtım (altyazılı, efekt sesli; seslendirme yok — kullanıcı böyle istedi). Uygulamada üst menüdeki "▶ Tanıtım videosu" düğmesi (`#btnVid`) bunları `<dialog id="vidDlg">` içinde, seçili dile göre (`VIDS`) oynatır.
 - `README.md` — geliştirme listesi (hepsi [x]).
 
 ## Çalıştırma
