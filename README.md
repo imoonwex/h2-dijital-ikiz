@@ -49,3 +49,4 @@ Zincir: **Işık → PV panel → PEM elektrolizör (H₂/O₂) → gaz depolar�
 - [x] Gerçek PV paneli (4 hücre, Voc 2,3 V) ile karşılaştırma modu
 - [x] Ölçüm verisinin `data/deney_verileri.json` dosyasından dinamik yüklenmesi (yerel sunucu/Live Server veya GitHub Pages gerekir; dosyaya çift tıklanınca gömülü yedek veri kullanılır)
 - [x] Öğrenci deney föyü / quiz modu ("Deney föyü ve quiz" sekmesi: 3 rehberli deney, otomatik kontrol, 10 soruluk quiz, yazdır/PDF)
+- [x] Konu anlatımı ("📘 Konu anlatımı" sekmesi, sayfa açılınca ilk görünen): 8 ders — enerji zinciri, güneş pili ve I–V eğrisi, elektroliz ve Faraday yasası, hidrojen depolama, yakıt hücresi, seri/paralel bağlantı, yük direnci ve en yüksek güç, verim. Her derste çizim, bu düzenekten sayısal örnek ve "Simülasyonda dene" düğmesi var.

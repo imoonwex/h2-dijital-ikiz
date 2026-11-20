@@ -129,6 +129,29 @@ label.chk { display: flex; gap: 6px; align-items: center; font-size: .88rem; col
 .tab { background: none; border: 0; border-bottom: 3px solid transparent; padding: 12px 16px; font: 600 .95rem var(--font-display); letter-spacing: .05em; text-transform: uppercase; color: var(--muted); cursor: pointer; white-space: nowrap; }
 .tab[aria-selected="true"] { color: var(--accent); border-bottom-color: var(--accent); }
 .tabpanel { padding: 16px; min-width: 0; }
+/* konu anlatımı */
+.ls { display: grid; grid-template-columns: 250px minmax(0, 1fr); gap: 22px; align-items: start; }
+.ls-toc { display: grid; gap: 4px; position: sticky; top: 10px; }
+.ls-toc b { font: 600 .8rem var(--font-display); text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin-bottom: 4px; }
+.ls-toc button { text-align: left; background: none; border: 1px solid transparent; border-radius: 8px; padding: 8px 10px; color: var(--fg); font: 500 .92rem var(--font-body); cursor: pointer; }
+.ls-toc button:hover { background: var(--surface-2); }
+.ls-toc button.on { background: color-mix(in srgb, var(--accent) 12%, transparent); border-color: var(--accent); font-weight: 700; }
+.ls-body { max-width: 80ch; display: grid; gap: 12px; font-size: .97rem; line-height: 1.6; }
+.ls-body h3 { margin: 0; font: 600 1.45rem var(--font-display); }
+.ls-body p, .ls-body ul { margin: 0; }
+.ls-body ul { padding-left: 20px; display: grid; gap: 4px; }
+.ls-of { font-size: .8rem; color: var(--muted); }
+.ls-short { border-left: 4px solid var(--accent); background: color-mix(in srgb, var(--accent) 8%, transparent); padding: 10px 14px; border-radius: 0 8px 8px 0; }
+.ls-formula { font-family: var(--font-data); background: var(--surface-2); border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; overflow-x: auto; }
+.ls-ex { border: 1px solid color-mix(in srgb, var(--ok) 50%, var(--line)); background: color-mix(in srgb, var(--ok) 7%, transparent); border-radius: 8px; padding: 10px 14px; }
+.ls-ex > * + * { margin-top: 6px; }
+.ls-ex table { font-size: .88rem; }
+.ls-fig { border: 1px solid var(--line); border-radius: 10px; padding: 10px; background: var(--surface); }
+.ls-svg { width: 100%; height: auto; max-height: 330px; display: block; color: var(--fg); }
+.ls-svg .ls-t { font: 500 12px var(--font-body); fill: var(--fg); }
+.ls-svg .ls-h { font: 700 15px var(--font-display); fill: var(--fg); }
+.ls-nav { flex-wrap: wrap; }
+@media (max-width: 800px) { .ls { grid-template-columns: 1fr; } .ls-toc { position: static; grid-template-columns: 1fr 1fr; } .ls-toc b { grid-column: 1 / -1; } }
 /* deney föyü ve quiz */
 .ws-bar { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; margin-bottom: 14px; }
 .ws-bar .seg { min-width: 240px; }
@@ -558,14 +581,17 @@ footer.wrap { padding-block: 0 28px; color: var(--muted); font-size: .8rem; }
 
   <section class="tabs">
     <div class="tablist" role="tablist">
-      <button class="tab" role="tab" aria-selected="true" aria-controls="tp1" id="tb1" data-i18n="tCharts">Grafikler</button>
+      <button class="tab" role="tab" aria-selected="true" aria-controls="tp6" id="tb6" data-i18n="tLearn">📘 Konu anlatımı</button>
+      <button class="tab" role="tab" aria-selected="false" aria-controls="tp1" id="tb1" data-i18n="tCharts">Grafikler</button>
       <button class="tab" role="tab" aria-selected="false" aria-controls="tp2" id="tb2" data-i18n="tTable">Ölçüm tablosu</button>
       <button class="tab" role="tab" aria-selected="false" aria-controls="tp3" id="tb3" data-i18n="tEff">Faraday ve verim</button>
       <button class="tab" role="tab" aria-selected="false" aria-controls="tp5" id="tb5" data-i18n="tWs">Deney föyü ve quiz</button>
       <button class="tab" role="tab" aria-selected="false" aria-controls="tp4" id="tb4" data-i18n="tNotes">Model notları</button>
     </div>
 
-    <div class="tabpanel" role="tabpanel" id="tp1" aria-labelledby="tb1">
+    <div class="tabpanel" role="tabpanel" id="tp6" aria-labelledby="tb6"></div>
+
+    <div class="tabpanel" role="tabpanel" id="tp1" aria-labelledby="tb1" hidden>
       <div class="charts">
         <div class="chart-box"><h3 data-i18n="ch0">PV gerilim, akım ve H₂ üretim hızı – zaman</h3><div class="cv"><canvas id="c0"></canvas></div><p data-i18n="ch0p">Işığı artırıp azalttıkça üç büyüklük birlikte basamaklanır. Sol eksen V ve A, sağ eksen mL/dk.</p></div>
         <div class="chart-box"><h3 data-i18n="ch1">Depodaki gaz hacmi – zaman</h3><div class="cv"><canvas id="c1"></canvas></div><p data-i18n="ch1p">Yakıt hücresi tüketimi düşülmüş net hacim.</p></div>
@@ -651,7 +677,7 @@ const I18N = {
     swH: "Kronometre ölçümü", start: "Başlat", stop: "Durdur", clear: "Sıfırla", record: "Anlık kaydet",
     auto20: "20 dakikada otomatik durdur ve kaydet",
     cLight: "Işık", cPV: "Güneş paneli", cELZ: "Elektrolizör", cTank: "Gaz deposu", cFC: "Yakıt hücresi", cFan: "Pervane",
-    tCharts: "Grafikler", tTable: "Ölçüm tablosu", tEff: "Faraday ve verim", tNotes: "Model notları", tWs: "Deney föyü ve quiz",
+    tCharts: "Grafikler", tTable: "Ölçüm tablosu", tEff: "Faraday ve verim", tNotes: "Model notları", tLearn: "📘 Konu anlatımı", tWs: "Deney föyü ve quiz",
     ch1: "Depodaki gaz hacmi – zaman", ch1p: "Yakıt hücresi tüketimi düşülmüş net hacim.",
     ch2: "PV I–V eğrisi ve çalışma noktası", ch2p: "Panel eğrisinin elektrolizör eğrisini kestiği nokta çalışma noktasıdır.",
     ch3: "Akım – 20 dakikada H₂", ch3p: "Laboratuvar ölçümleri, Faraday doğrusu ve sizin kronometre ölçümleriniz.",
@@ -705,7 +731,7 @@ const I18N = {
     swH: "Stopwatch measurement", start: "Start", stop: "Stop", clear: "Clear", record: "Record now",
     auto20: "Stop and record automatically at 20 minutes",
     cLight: "Light", cPV: "Solar panel", cELZ: "Electrolyzer", cTank: "Gas storage", cFC: "Fuel cell", cFan: "Propeller",
-    tCharts: "Charts", tTable: "Measurements", tEff: "Faraday & efficiency", tNotes: "Model notes", tWs: "Worksheet & quiz",
+    tCharts: "Charts", tTable: "Measurements", tEff: "Faraday & efficiency", tNotes: "Model notes", tLearn: "📘 Lessons", tWs: "Worksheet & quiz",
     ch1: "Stored gas volume vs time", ch1p: "Net volume after fuel cell consumption.",
     ch2: "PV I–V curve and operating point", ch2p: "The operating point is where the panel curve meets the electrolyzer curve.",
     ch3: "Current vs H₂ in 20 minutes", ch3p: "Lab measurements, Faraday line and your stopwatch runs.",
@@ -1335,7 +1361,7 @@ function applyLang() {
   document.title = t("title");
   $("#btnLang").textContent = lang === "tr" ? "EN" : "TR";
   $("#notes").innerHTML = NOTES[lang];
-  buildFarTable(); renderRecords(); buildLoadSel(); renderWs(); makeCharts(); updateUi();
+  buildFarTable(); renderRecords(); buildLoadSel(); renderWs(); renderLessons(); makeCharts(); updateUi();
   try { localStorage.setItem("h2twin-lang", lang); } catch (e) {}
 }
 
@@ -1570,6 +1596,278 @@ $("#tp5").addEventListener("click", (e) => {
   else if (b.id === "wsClear") { Object.keys(ws).forEach((k) => { if (wsView === "quiz" ? /^q\d+$/.test(k) : !/^q\d+$/.test(k) && !k.startsWith("info_")) delete ws[k]; }); wsSave(); renderWs(); }
 });
 
+/* ---------- konu anlatımı ----------
+   8 kısa ders. Her ders: özet kutusu, anlatım, çizim (SVG, modelden hesaplanır), bu düzenekten örnek,
+   formül kutusu ve "Simülasyonda dene" düğmesi. Metinler LS_TXT ve LESSONS içinde (tr/en). */
+const LS_TXT = {
+  tr: { toc: "Dersler", short: "Kısaca", ex: "Bu düzenekte", f: "Formül", tryIt: "Simülasyonda dene", prev: "← Önceki", next: "Sonraki →", of: (i, n) => `Ders ${i} / ${n}` },
+  en: { toc: "Lessons", short: "In short", ex: "In this setup", f: "Formula", tryIt: "Try it in the simulation", prev: "← Previous", next: "Next →", of: (i, n) => `Lesson ${i} of ${n}` },
+};
+let lsIdx = 0;
+const L = (tr, en) => (lang === "en" ? en : tr);
+const n2 = (x, d = 2) => num(x, d);
+// --- çizim yardımcıları ---
+const svgWrap = (w, h, body) => `<svg viewBox="0 0 ${w} ${h}" class="ls-svg" role="img" xmlns="http://www.w3.org/2000/svg">${body}</svg>`;
+const arrowDef = `<defs><marker id="lsArr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="currentColor"/></marker></defs>`;
+function plot(w, h, xmax, ymax, xl, yl, series, marks = []) {
+  // basit çizgi grafik: series = [{pts:[[x,y]], color, dash, label}], marks = [{x,y,label,color}]
+  const m = { l: 46, r: 14, t: 14, b: 38 }, W = w - m.l - m.r, H = h - m.t - m.b;
+  const X = (x) => m.l + (x / xmax) * W, Y = (y) => m.t + H - (y / ymax) * H;
+  let g = `<rect x="${m.l}" y="${m.t}" width="${W}" height="${H}" fill="none" stroke="var(--line)"/>`;
+  const step = (v) => [0.25, 0.5, 1, 2, 5, 10, 20].find((k) => v / k <= 6);   // düzgün eksen aralığı
+  const sx = step(xmax), sy = step(ymax), dec = (k) => (k < 1 ? (k < 0.5 ? 2 : 1) : 0);
+  for (let xv = 0; xv <= xmax + 1e-9; xv += sx) g += `<text x="${X(xv)}" y="${h - 20}" class="ls-t" text-anchor="middle">${num(xv, dec(sx))}</text>`;
+  for (let yv = 0; yv <= ymax + 1e-9; yv += sy) g += `<text x="${m.l - 6}" y="${Y(yv) + 4}" class="ls-t" text-anchor="end">${num(yv, dec(sy))}</text><line x1="${m.l}" x2="${m.l + W}" y1="${Y(yv)}" y2="${Y(yv)}" stroke="var(--line)" stroke-width=".6"/>`;
+  g += `<text x="${m.l + W / 2}" y="${h - 4}" class="ls-t" text-anchor="middle">${xl}</text><text x="12" y="${m.t + H / 2}" class="ls-t" text-anchor="middle" transform="rotate(-90 12 ${m.t + H / 2})">${yl}</text>`;
+  series.forEach((s) => { const pts = s.pts.filter(([x, y]) => x <= xmax * 1.001 && y >= 0 && y <= ymax * 1.05).map(([x, y]) => `${X(x).toFixed(1)},${Y(Math.min(y, ymax)).toFixed(1)}`).join(" ");
+    g += `<polyline points="${pts}" fill="none" stroke="${s.color}" stroke-width="2.5" ${s.dash ? 'stroke-dasharray="6 4"' : ""}/>`;
+    if (s.label) { const [lx, ly] = s.lab || s.pts[Math.floor(s.pts.length * 0.35)]; g += `<text x="${X(lx) + 6}" y="${Y(ly) - 6}" class="ls-t" fill="${s.color}" style="fill:${s.color};font-weight:700">${s.label}</text>`; } });
+  marks.forEach((k) => { g += `<circle cx="${X(k.x)}" cy="${Y(k.y)}" r="5" fill="${k.color || "var(--fg)"}"/><text x="${X(k.x) + (k.dx ?? 8)}" y="${Y(k.y) + (k.dy ?? -8)}" class="ls-t" style="font-weight:700" text-anchor="${k.anchor || "start"}">${k.label}</text>`; });
+  return svgWrap(w, h, g);
+}
+// --- çizimler ---
+const D = {
+  chain() {
+    const box = ["☀️|" + L("Işık", "Light"), "🔆|" + L("Güneş paneli", "Solar panel"), "💧|" + L("Elektrolizör", "Electrolyzer"), "🧪|" + L("H₂ deposu", "H₂ storage"), "⚡|" + L("Yakıt hücresi", "Fuel cell"), "🌀|" + L("Motor", "Motor")];
+    const en = [L("ışık", "light"), L("elektrik", "electrical"), L("kimyasal", "chemical"), L("kimyasal", "chemical"), L("elektrik", "electrical")];
+    let g = arrowDef;
+    box.forEach((b, i) => { const [ic, tx] = b.split("|"), x = 8 + i * 128;
+      g += `<rect x="${x}" y="24" width="104" height="74" rx="10" fill="var(--surface)" stroke="var(--line)" stroke-width="1.5"/><text x="${x + 52}" y="56" font-size="24" text-anchor="middle">${ic}</text><text x="${x + 52}" y="84" class="ls-t" text-anchor="middle" style="font-weight:700">${tx}</text>`;
+      if (i < 5) g += `<line x1="${x + 106}" y1="61" x2="${x + 126}" y2="61" stroke="var(--muted)" stroke-width="2" marker-end="url(#lsArr)" style="color:var(--muted)"/><text x="${x + 116}" y="120" class="ls-t" text-anchor="middle" style="fill:var(--accent)">${en[i]}</text>`; });
+    return svgWrap(776, 132, g);
+  },
+  pv() {
+    const lv = NLV, mk = (P) => { const Iph = iphAt(lv, P), Voc = pvVoc(Iph, P), pts = []; for (let i = 0; i <= 80; i++) { const V = Voc * i / 80; pts.push([V, Math.max(0, pvI(V, Iph, P))]); } return pts; };
+    const ez = []; for (let i = 1; i <= 60; i++) { const I = 2.3 * i / 60; ez.push([vEl(I, 1), I]); }
+    const Im = solveOp(iphAt(lv, PV), 1, PV), Ir = solveOp(iphAt(lv, PVR), 1, PVR);
+    const Iph = iphAt(lv, PV); let best = [0, 0]; for (let i = 0; i <= 400; i++) { const V = pvVoc(Iph, PV) * i / 400, I = pvI(V, Iph, PV); if (V * I > best[0] * best[1]) best = [V, I]; }
+    return plot(520, 300, 4, 2.4, L("Gerilim (V)", "Voltage (V)"), L("Akım (A)", "Current (A)"), [
+      { pts: mk(PV), color: "var(--sun)", label: L("6 hücreli panel", "6-cell panel"), lab: [0.3, 2.25] },
+      { pts: mk(PVR), color: "var(--sun)", dash: true, label: L("4 hücreli panel", "4-cell panel"), lab: [0.3, 1.05] },
+      { pts: ez, color: "var(--h2)", label: L("elektrolizör", "electrolyzer"), lab: [2.55, 1.2] }],
+      [{ x: 0, y: Iph, label: 'I<tspan baseline-shift="sub" font-size="9">sc</tspan>', dx: 8, dy: 16 }, { x: pvVoc(Iph, PV), y: 0, label: 'V<tspan baseline-shift="sub" font-size="9">oc</tspan>', anchor: "end", dx: -8, dy: -8 }, { x: best[0], y: best[1], label: "MPP", dx: 8, dy: 18, color: "var(--sun)" },
+       { x: vEl(Im, 1), y: Im, label: L("çalışma noktası", "operating point"), color: "var(--accent)", anchor: "end", dx: -8, dy: 18 }, { x: vEl(Ir, 1), y: Ir, label: `${n2(Ir)} A`, color: "var(--warn)", dx: 8, dy: 4 }]);
+  },
+  ely(fc) {
+    // PEM hücresi: sol anot, orta membran, sağ katot. fc=true → yakıt hücresi (ters yön)
+    const red = "var(--o2)", blu = "var(--h2)";
+    let g = arrowDef + `<rect x="60" y="60" width="180" height="150" rx="8" fill="color-mix(in srgb, ${red} 12%, transparent)" stroke="${red}"/><rect x="280" y="60" width="180" height="150" rx="8" fill="color-mix(in srgb, ${blu} 12%, transparent)" stroke="${blu}"/>
+      <rect x="240" y="50" width="40" height="170" fill="color-mix(in srgb, var(--sun) 45%, transparent)" stroke="var(--sun)"/><text x="260" y="240" class="ls-t" text-anchor="middle">${L("membran", "membrane")}</text>`;
+    for (let i = 0; i < 3; i++) g += `<line x1="${fc ? 300 : 220}" y1="${95 + i * 40}" x2="${fc ? 220 : 300}" y2="${95 + i * 40}" stroke="var(--fg)" stroke-width="2" marker-end="url(#lsArr)" style="color:var(--fg)"/><text x="260" y="${90 + i * 40}" class="ls-t" text-anchor="middle" style="font-weight:700">H⁺</text>`;
+    // elektron yolu
+    g += `<path d="M150,60 V24 H370 V60" fill="none" stroke="var(--muted)" stroke-width="2"/><text x="260" y="18" class="ls-t" text-anchor="middle" style="font-weight:700">${fc ? "e⁻ → " + L("yük (motor)", "load (motor)") + " → e⁻" : L("güneş paneli (+ −)", "solar panel (+ −)")}</text>
+      <line x1="${fc ? 330 : 190}" y1="24" x2="${fc ? 300 : 220}" y2="24" stroke="var(--muted)" stroke-width="2" marker-end="url(#lsArr)" style="color:var(--muted)"/>
+      <line x1="${fc ? 210 : 330}" y1="24" x2="${fc ? 240 : 300}" y2="24" stroke="var(--muted)" stroke-width="2" style="color:var(--muted)"/>`;
+    for (let i = 0; i < 7; i++) { const yy = 190 - i * 18; g += `<circle cx="${90 + (i * 37) % 120}" cy="${yy}" r="${4 + (i % 3)}" fill="none" stroke="${red}" stroke-width="1.5"/><circle cx="${310 + (i * 53) % 130}" cy="${yy - 4}" r="${4 + ((i + 1) % 3)}" fill="none" stroke="${blu}" stroke-width="1.5"/>`; }
+    g += fc
+      ? `<text x="150" y="275" class="ls-t" text-anchor="middle" style="fill:${red};font-weight:700">${L("Katot", "Cathode")}: O₂ + 4H⁺ + 4e⁻ → 2H₂O</text><text x="370" y="275" class="ls-t" text-anchor="middle" style="fill:${blu};font-weight:700">${L("Anot", "Anode")}: 2H₂ → 4H⁺ + 4e⁻</text>`
+      : `<text x="150" y="275" class="ls-t" text-anchor="middle" style="fill:${red};font-weight:700">${L("Anot (+)", "Anode (+)")}: 2H₂O → O₂ + 4H⁺ + 4e⁻</text><text x="370" y="275" class="ls-t" text-anchor="middle" style="fill:${blu};font-weight:700">${L("Katot (−)", "Cathode (−)")}: 4H⁺ + 4e⁻ → 2H₂</text>`;
+    g += `<text x="100" y="82" class="ls-t" text-anchor="middle" style="fill:${red};font-weight:700">O₂${fc ? " + H₂O" : " (+ H₂O)"}</text><text x="420" y="82" class="ls-t" text-anchor="middle" style="fill:${blu};font-weight:700">H₂</text>`;
+    return svgWrap(520, 290, g);
+  },
+  tank() {
+    let g = "";
+    [["O₂", "var(--o2)", 100, 0.5], ["H₂", "var(--h2)", 260, 1]].forEach(([n, c, x, f]) => {
+      g += `<rect x="${x}" y="30" width="70" height="170" rx="8" fill="none" stroke="var(--muted)" stroke-width="2"/><rect x="${x + 3}" y="${30 + 3}" width="64" height="${(164) * (1 - f * 0.8)}" rx="6" fill="color-mix(in srgb, ${c} 10%, transparent)"/>
+        <rect x="${x + 3}" y="${33 + 164 * (1 - f * 0.8)}" width="64" height="${164 * f * 0.8}" rx="6" fill="color-mix(in srgb, var(--h2) 22%, transparent)"/>
+        <text x="${x + 35}" y="222" class="ls-t" text-anchor="middle" style="fill:${c};font-weight:700">${n}: ${f === 1 ? "2V" : "V"}</text>`; });
+    g += `<text x="215" y="120" class="ls-t" text-anchor="middle" style="font-weight:700">2 : 1</text>`;
+    return svgWrap(430, 236, g);
+  },
+  conn() {
+    // iki şema: seri ve paralel; hücre sembolü: uzun/kısa çizgi
+    const cell = (x, y, v) => `<line x1="${x}" y1="${y - 14}" x2="${x}" y2="${y + 14}" stroke="var(--fg)" stroke-width="3"/><line x1="${x + 10}" y1="${y - 8}" x2="${x + 10}" y2="${y + 8}" stroke="var(--fg)" stroke-width="6"/><text x="${x + 5}" y="${y - 22}" class="ls-t" text-anchor="middle">${v}</text>`;
+    const W = "var(--muted)";
+    let g = `<text x="140" y="20" class="ls-h" text-anchor="middle">${L("Seri", "Series")}</text><text x="420" y="20" class="ls-h" text-anchor="middle">${L("Paralel", "Parallel")}</text>`;
+    // seri
+    g += cell(80, 90, "0,9 V") + cell(170, 90, "0,9 V") + `<path d="M40,90 H80 M90,90 H170 M180,90 H240 V190 H40 V90" fill="none" stroke="${W}" stroke-width="2"/><rect x="110" y="178" width="60" height="24" rx="4" fill="var(--surface)" stroke="var(--fg)"/><text x="140" y="195" class="ls-t" text-anchor="middle">${L("yük", "load")}</text>
+      <text x="140" y="230" class="ls-t" text-anchor="middle" style="font-weight:700">U = 0,9 + 0,9 ≈ 1,8 V</text><text x="140" y="250" class="ls-t" text-anchor="middle">${L("akım: her hücreden aynı I", "current: the same I through each cell")}</text>`;
+    // paralel
+    g += cell(405, 70, "0,9 V") + cell(405, 130, "0,9 V") + `<path d="M405,70 H340 V190 H500 V70 H415 M405,130 H340 M415,130 H500" fill="none" stroke="${W}" stroke-width="2"/><rect x="390" y="178" width="60" height="24" rx="4" fill="var(--surface)" stroke="var(--fg)"/><text x="420" y="195" class="ls-t" text-anchor="middle">${L("yük", "load")}</text>
+      <text x="420" y="230" class="ls-t" text-anchor="middle" style="font-weight:700">U ≈ 0,9 V</text><text x="420" y="250" class="ls-t" text-anchor="middle">I = I₁ + I₂</text>`;
+    return svgWrap(560, 262, g);
+  },
+  load() {
+    const pts = (c) => { const o = []; for (let i = 0; i <= 80; i++) { const I = 3 * i / 80; o.push([I, stackV(I, 1, c)]); } return o; };
+    const lines = [10, 2, 0.4].map((R) => ({ pts: [[0, 0], [Math.min(3, 2.1 / R), Math.min(3 * R, 2.1)]], color: "var(--muted)", dash: true }));   // yük doğruları I = U/R
+    const marks = [10, 2, 0.4].map((R) => { const f = solveFc(1, "s", R); return { x: f.I, y: f.V, label: `${fmtR(R)}`, color: "var(--accent)", dx: 8, dy: -6 }; });
+    return plot(520, 300, 3, 2.1, L("Akım (A)", "Current (A)"), L("Gerilim (V)", "Voltage (V)"), [{ pts: pts("s"), color: "var(--accent)", label: L("yakıt hücresi (seri)", "fuel cell (series)"), lab: [1.2, 1.35] }, ...lines], marks);
+  },
+  eff() {
+    const steps = [[L("Panele düşen ışık", "Light on the panel"), 100, "var(--sun)"], [L("Panelden çıkan elektrik", "Electricity from the panel"), 12, "var(--accent)"], [L("H₂'de saklanan enerji", "Energy stored in H₂"), 7.2, "var(--h2)"], [L("Yakıt hücresinden elektrik", "Electricity from the fuel cell"), 4.2, "var(--ok)"]];
+    let g = ""; steps.forEach(([t, p, c], i) => { const y = 16 + i * 46, w = Math.max(6, 4.4 * p);
+      g += `<rect x="190" y="${y}" width="${w}" height="30" rx="4" fill="${c}" opacity=".85"/><text x="182" y="${y + 20}" class="ls-t" text-anchor="end">${t}</text><text x="${196 + w}" y="${y + 20}" class="ls-t" style="font-weight:700">%${num(p, p < 10 ? 1 : 0)}</text>`; });
+    return svgWrap(680, 200, g);
+  },
+};
+// --- dersler ---
+const fcRow = (c, R) => { const f = solveFc(1, c, R); return `<tr><td>${L(c === "s" ? "Seri" : "Paralel", c === "s" ? "Series" : "Parallel")}</td><td>${fmtR(R)}</td><td>${n2(f.V)}</td><td>${n2(f.I)}</td><td>${n2(f.V * f.I)}</td></tr>`; };
+const fcTable = (rows) => `<div class="tbl-wrap"><table><thead><tr><th>${L("Bağlantı", "Connection")}</th><th>${L("Yük", "Load")}</th><th>U (V)</th><th>I (A)</th><th>P (W)</th></tr></thead><tbody>${rows.map(([c, R]) => fcRow(c, R)).join("")}</tbody></table></div>`;
+const goStage = () => { document.querySelector(".stage").scrollIntoView({ behavior: REC ? "auto" : "smooth", block: "start" }); };
+const LESSONS = [
+  { ic: "🔗", t: () => L("Enerji zinciri", "The energy chain"),
+    s: () => L("Bu düzenek güneş enerjisini hidrojende saklar, sonra yeniden elektriğe çevirir. Hidrojen burada bir yakıt değil, bir enerji deposudur.", "This setup stores solar energy in hydrogen and turns it back into electricity later. Here hydrogen is not a fuel source but an energy store."),
+    b: () => L(`<p>Güneş her zaman parlamaz ve ürettiği elektrik anında kullanılmak zorunda değildir. Fazla elektriği saklamanın bir yolu, onunla suyu ayrıştırıp <b>hidrojen</b> üretmektir. Hidrojen depolanır; ihtiyaç olduğunda yakıt hücresinde yeniden elektriğe çevrilir.</p>
+      <p>Zincirde enerji her adımda biçim değiştirir: <b>ışık</b> → <b>elektrik</b> (güneş paneli) → <b>kimyasal enerji</b> (elektrolizör, H₂) → <b>elektrik</b> (yakıt hücresi) → <b>hareket</b> (motor ve pervane). Her dönüşümde enerjinin bir kısmı ısıya gider; bunu son derste hesaplayacağız.</p>
+      <p>Sahnede her halkanın kendi ölçü aleti var: PV ölçümü panel ile elektrolizör arasını, üstteki ölçüm ünitesi yakıt hücresi ile motor arasını gösterir. Silindirlerdeki gaz hacmi ise üretilen hidrojeni gösterir.</p>`,
+      `<p>The sun does not always shine, and its electricity does not have to be used at once. One way to store surplus electricity is to split water into <b>hydrogen</b>. The hydrogen is stored and turned back into electricity in a fuel cell when it is needed.</p>
+      <p>Energy changes form at every step: <b>light</b> → <b>electrical</b> (solar panel) → <b>chemical</b> (electrolyzer, H₂) → <b>electrical</b> (fuel cell) → <b>motion</b> (motor and propeller). Some energy is lost as heat in every conversion; we calculate this in the last lesson.</p>
+      <p>Each link has its own meter in the scene: the PV meter sits between panel and electrolyzer, the measuring unit at the top between fuel cell and motor. The gas volume in the cylinders shows the hydrogen produced.</p>`),
+    d: () => D.chain(),
+    e: () => L(`Kademe 8'de (1,2 A) panel ≈ 2,9 W elektrik verir, elektrolizör dakikada ≈ 9 mL H₂ üretir, yakıt hücresi motoru 1,71 V ve 77 mA ile ≈ 2100 rpm döndürür.`, `At level 8 (1.2 A) the panel delivers ≈ 2.9 W, the electrolyzer makes ≈ 9 mL of H₂ per minute and the fuel cell drives the motor at 1.71 V and 77 mA, ≈ 2100 rpm.`),
+    a: () => { setPv("m"); setConn("s"); setLoad("motor"); S.valve = true; setLevel(8); } },
+  { ic: "🔆", t: () => L("Güneş pili ve I–V eğrisi", "Solar cells and the I–V curve"),
+    s: () => L("Güneş pili ışıkla akım üretir. Gerilim arttıkça akım önce neredeyse sabit kalır, V_oc'a yaklaşınca hızla sıfıra iner. Hücreler seri bağlanınca gerilimler toplanır.", "A solar cell makes current from light. As voltage rises the current first stays nearly constant, then drops quickly to zero near V_oc. Cells in series add their voltages."),
+    b: () => L(`<p>Güneş pili bir yarı iletken eklemdir (p–n eklemi). Işık elektronları serbest bırakır, eklemdeki elektrik alanı onları bir yöne iter ve dış devreden akım akar. <b>Işık şiddeti iki katına çıkarsa akım da yaklaşık iki katına çıkar.</b></p>
+      <p>Panelin davranışı <b>I–V eğrisiyle</b> anlatılır. Üç önemli nokta vardır:</p>
+      <ul><li><b>I<sub>sc</sub> (kısa devre akımı):</b> uçlar kısa devre edildiğinde akan akım. Gerilim sıfırdır.</li>
+      <li><b>V<sub>oc</sub> (açık devre gerilimi):</b> hiçbir şey bağlı değilken uçlardaki gerilim. Akım sıfırdır. Tek bir silisyum hücre ≈ 0,5–0,6 V verir.</li>
+      <li><b>MPP (en yüksek güç noktası):</b> U·I çarpımının en büyük olduğu nokta. Eğrinin "dirsek" kısmındadır.</li></ul>
+      <p>Panel tek başına nerede çalışacağına karar vermez: <b>çalışma noktası</b>, panel eğrisinin bağlı cihazın eğrisini kestiği yerdir. Elektrolizör ≈ 2,4 V'un altında neredeyse hiç akım çekmez. Bu yüzden panelin V<sub>oc</sub> değeri bundan büyük olmalıdır. Hücreler seri bağlanınca gerilimleri toplanır: 4 hücre ≈ 2,3 V, 6 hücre ≈ 3,5 V.</p>`,
+      `<p>A solar cell is a semiconductor junction (p–n junction). Light frees electrons, the junction's electric field pushes them one way and a current flows through the outside circuit. <b>Double the light and the current roughly doubles.</b></p>
+      <p>A panel is described by its <b>I–V curve</b>. Three points matter:</p>
+      <ul><li><b>I<sub>sc</sub> (short-circuit current):</b> the current with the terminals shorted. Voltage is zero.</li>
+      <li><b>V<sub>oc</sub> (open-circuit voltage):</b> the voltage with nothing connected. Current is zero. One silicon cell gives ≈ 0.5–0.6 V.</li>
+      <li><b>MPP (maximum power point):</b> where U·I is largest, at the "knee" of the curve.</li></ul>
+      <p>The panel does not choose where it works on its own: the <b>operating point</b> is where the panel curve crosses the curve of what it drives. The electrolyzer draws almost no current below ≈ 2.4 V, so the panel's V<sub>oc</sub> must be higher than that. Cells in series add their voltages: 4 cells ≈ 2.3 V, 6 cells ≈ 3.5 V.</p>`),
+    d: () => D.pv(),
+    e: () => { const Im = solveOp(iphAt(NLV, PV), 1, PV), Ir = solveOp(iphAt(NLV, PVR), 1, PVR);
+      return L(`En yüksek ışıkta (≈ 914 W/m²) 6 hücreli panel elektrolizörü ${n2(Im)} A ile sürer. Üreticinin 4 hücreli paneli (V<sub>oc</sub> 2,3 V) ise aynı ışıkta yalnızca ${n2(Ir)} A verebilir, çünkü çalışma noktası kendi V<sub>oc</sub> değerine çok yakındır.`,
+        `At full light (≈ 914 W/m²) the 6-cell panel drives the electrolyzer with ${n2(Im)} A. The manufacturer's 4-cell panel (V<sub>oc</sub> 2.3 V) gives only ${n2(Ir)} A under the same light, because its operating point sits very close to its own V<sub>oc</sub>.`); },
+    f: () => `I = I<sub>ph</sub> − I<sub>0</sub>·(e<sup>V/(n·V<sub>t</sub>·N<sub>s</sub>)</sup> − 1) &nbsp;·&nbsp; P = U·I`,
+    a: () => { setLevel(NLV); setPv(S.pv === "r" ? "m" : "r"); } },
+  { ic: "💧", t: () => L("Elektroliz ve Faraday yasası", "Electrolysis and Faraday's law"),
+    s: () => L("Elektrolizör elektrikle suyu hidrojen ve oksijene ayırır. Üretilen hidrojen miktarı yalnızca akıma ve süreye bağlıdır: her H₂ molekülü için 2 elektron gerekir.", "The electrolyzer uses electricity to split water into hydrogen and oxygen. The amount of hydrogen depends only on current and time: each H₂ molecule needs 2 electrons."),
+    b: () => L(`<p>Düzenekteki elektrolizör bir <b>PEM</b> (proton geçirgen membran) hücresidir. İki elektrotun arasında yalnızca H⁺ iyonlarını geçiren ince bir membran vardır.</p>
+      <ul><li><b>Anotta (+)</b> su ayrışır: oksijen gazı, H⁺ iyonları ve elektronlar oluşur.</li>
+      <li><b>H⁺ iyonları</b> membrandan katota geçer, <b>elektronlar</b> ise dış devreden (güneş panelinden) dolaşır.</li>
+      <li><b>Katotta (−)</b> H⁺ iyonları elektronlarla birleşip hidrojen gazı olur.</li></ul>
+      <p><b>Faraday yasası:</b> devreden geçen her 2 elektron bir H₂ molekülü üretir. Yani üretim hızı <b>akımla doğru orantılıdır</b>; gerilim ne olursa olsun, aynı akım aynı miktarda hidrojen verir. Ölçülen hacmin teorik hacme oranına <b>Faraday verimi</b> denir; gerçekte %100'ün biraz altındadır.</p>
+      <p>Suyu ayırmak için kuramsal olarak 1,23 V yeterlidir; ısı kayıpları da hesaba katılınca 1,48 V gerekir. Gerçek hücre ise ≈ 2,4 V ister: aradaki fark elektrot tepkimelerini başlatmak ve membrandan akım geçirmek için harcanır ve ısıya dönüşür. Soğuk hücrede bu kayıplar daha büyüktür; ölçümlerde gerilimin 2,6–2,9 V'tan 2,4 V'a inmesinin nedeni budur.</p>`,
+      `<p>The electrolyzer in the kit is a <b>PEM</b> (proton exchange membrane) cell. Between the two electrodes is a thin membrane that lets only H⁺ ions through.</p>
+      <ul><li><b>At the anode (+)</b> water splits into oxygen gas, H⁺ ions and electrons.</li>
+      <li><b>The H⁺ ions</b> cross the membrane to the cathode, while the <b>electrons</b> travel through the outside circuit (the solar panel).</li>
+      <li><b>At the cathode (−)</b> the H⁺ ions combine with electrons to form hydrogen gas.</li></ul>
+      <p><b>Faraday's law:</b> every 2 electrons through the circuit make one H₂ molecule. So the production rate is <b>proportional to current</b>; whatever the voltage, the same current gives the same amount of hydrogen. The ratio of measured to theoretical volume is the <b>Faraday efficiency</b>; in practice it is a little below 100%.</p>
+      <p>In theory 1.23 V is enough to split water; counting heat, 1.48 V is needed. The real cell needs ≈ 2.4 V: the difference is spent starting the electrode reactions and pushing current through the membrane, and turns into heat. These losses are larger in a cold cell, which is why the measured voltage falls from 2.6–2.9 V to 2.4 V.</p>`),
+    d: () => D.ely(false),
+    e: () => L(`1,0 A akım 20 dakikada (1200 s): V = 1,0 · 1200 / (2 · 96485) · 24,45 L/mol ≈ <b>152 mL</b> H₂. Ölçümünüz 150 mL, yani Faraday verimi ≈ %99. 2,0 A'de kuram 304 mL der, siz 329 mL ölçtünüz (%108): bu, bir ölçüm hatasına işaret eder.`,
+      `1.0 A for 20 minutes (1200 s): V = 1.0 · 1200 / (2 · 96485) · 24.45 L/mol ≈ <b>152 mL</b> of H₂. You measured 150 mL, so the Faraday efficiency is ≈ 99%. At 2.0 A theory says 304 mL and you measured 329 mL (108%): this points to a measurement error.`),
+    f: () => `V<sub>H₂</sub> = I · t / (2F) · V<sub>m</sub> &nbsp;·&nbsp; F = 96485 C/mol, V<sub>m</sub> = 24,45 L/mol`,
+    a: () => { setPv("m"); setLevel(10); if (!S.sw.run) $("#btnSw").click(); } },
+  { ic: "🧪", t: () => L("Hidrojenin depolanması", "Storing hydrogen"),
+    s: () => L("Elektrolizörde her zaman oksijenin iki katı hacimde hidrojen oluşur. Depo, üretim ile tüketimi birbirinden ayırır: güneş varken biriktirir, yokken kullandırır.", "The electrolyzer always makes twice as much hydrogen as oxygen by volume. Storage separates production from use: it fills while the sun shines and supplies gas when it does not."),
+    b: () => L(`<p>Tepkime 2H₂O → 2H₂ + O₂ olduğu için, aynı sıcaklık ve basınçta <b>H₂ hacmi O₂ hacminin iki katıdır</b>. Sahnede iki silindirin farklı hızda dolması bunu gösterir.</p>
+      <p>Düzenekteki depolar suyla dolu ters silindirlerdir: gaz yukarıda birikir ve suyu aşağı iter. Hacim ölçeğinden doğrudan okunur; laboratuvarda yaptığınız gibi.</p>
+      <p>Yakıt hücresi depodan gaz çeker. <b>Üretim tüketimden fazlaysa depo dolar, azsa boşalır.</b> H₂ vanası kapatılırsa gaz yalnızca depoda birikir ve yakıt hücresi durur. Gerçek sistemlerde hidrojen basınçlı tüplerde, sıvı hâlde ya da metal hidrürlerde saklanır.</p>`,
+      `<p>Because the reaction is 2H₂O → 2H₂ + O₂, at the same temperature and pressure <b>the H₂ volume is twice the O₂ volume</b>. The two cylinders filling at different speeds in the scene show this.</p>
+      <p>The kit's storage tanks are upturned cylinders full of water: gas collects at the top and pushes the water down. The volume is read straight off the scale, just as in your lab.</p>
+      <p>The fuel cell draws gas from storage. <b>If production is greater than use, storage fills; if smaller, it empties.</b> Closing the H₂ valve makes gas only collect in storage, and the fuel cell stops. Real systems store hydrogen in pressure tanks, as a liquid or in metal hydrides.</p>`),
+    d: () => D.tank(),
+    e: () => L(`En yüksek ışıkta elektrolizör dakikada ≈ 16,5 mL H₂ üretir. Seri bağlı yakıt hücresi motoru sürerken dakikada ≈ 1,2 mL harcar; depo dolar. 0,3 Ω yükte ise dakikada ≈ 36 mL harcar; depo hızla boşalır.`,
+      `At full light the electrolyzer makes ≈ 16.5 mL of H₂ per minute. The series fuel cell driving the motor uses ≈ 1.2 mL per minute, so storage fills. With a 0.3 Ω load it uses ≈ 36 mL per minute and storage empties fast.`),
+    f: () => `2H₂O → 2H₂ + O₂ &nbsp;·&nbsp; V<sub>H₂</sub> : V<sub>O₂</sub> = 2 : 1`,
+    a: () => { toggleValve(); } },
+  { ic: "⚡", t: () => L("Yakıt hücresi", "The fuel cell"),
+    s: () => L("Yakıt hücresi elektrolizin tersidir: hidrojen ve oksijeni birleştirip su ve elektrik üretir. Bir hücre ≈ 1 V verir; çekilen akım arttıkça gerilimi düşer.", "A fuel cell is electrolysis in reverse: it combines hydrogen and oxygen into water and electricity. One cell gives ≈ 1 V; its voltage drops as more current is drawn."),
+    b: () => L(`<p>Yakıt hücresi de bir PEM hücresidir, ama tepkime ters yönde işler:</p>
+      <ul><li><b>Anotta</b> hidrojen H⁺ iyonlarına ve elektronlara ayrılır.</li>
+      <li><b>Elektronlar</b> dış devreden, yani yükten (motor, direnç) geçerek iş yapar.</li>
+      <li><b>H⁺ iyonları</b> membrandan geçer; <b>katotta</b> oksijen ve elektronlarla birleşip su olur.</li></ul>
+      <p>Bir hücrenin kuramsal gerilimi 1,23 V'tur; boşta ölçülen ≈ 0,95–1 V'tur. Akım çekildikçe gerilim düşer, çünkü (1) tepkimeyi başlatmak için bir miktar gerilim harcanır, (2) hücrenin <b>iç direnci</b> vardır ve U = I·R kadar gerilim kaybettirir. Gerilimin akıma göre bu düşüşüne <b>polarizasyon eğrisi</b> denir.</p>
+      <p>Tükettiği hidrojen de Faraday yasasına uyar: her 2 elektron için bir H₂ molekülü. Yani <b>ne kadar akım çekilirse o kadar hidrojen harcanır</b>.</p>`,
+      `<p>A fuel cell is also a PEM cell, but the reaction runs the other way:</p>
+      <ul><li><b>At the anode</b> hydrogen splits into H⁺ ions and electrons.</li>
+      <li><b>The electrons</b> do work as they pass through the outside circuit, the load (motor, resistor).</li>
+      <li><b>The H⁺ ions</b> cross the membrane and, <b>at the cathode</b>, combine with oxygen and electrons to form water.</li></ul>
+      <p>The theoretical voltage of one cell is 1.23 V; with no load it measures ≈ 0.95–1 V. The voltage falls as current is drawn because (1) some voltage is spent starting the reaction, and (2) the cell has an <b>internal resistance</b> that loses U = I·R. This fall of voltage with current is called the <b>polarisation curve</b>.</p>
+      <p>The hydrogen it uses also follows Faraday's law: one H₂ molecule for every 2 electrons. So <b>the more current you draw, the more hydrogen is used</b>.</p>`),
+    d: () => D.ely(true),
+    e: () => fcTable([["s", 100], ["s", 10], ["s", 2], ["s", 0.5]]) + L(`<p class="hint" style="margin-top:6px">Direnç küçüldükçe akım artar, gerilim düşer: polarizasyon eğrisi.</p>`, `<p class="hint" style="margin-top:6px">As the resistance gets smaller, current rises and voltage falls: the polarisation curve.</p>`),
+    f: () => `U<sub>${L("hücre", "cell")}</sub> ≈ 0,98 − 0,03·ln(1 + I/2 mA) − 0,175 Ω · I`,
+    a: () => { setConn("s"); setLoad(2); S.valve = true; } },
+  { ic: "🔋", t: () => L("Seri ve paralel bağlantı", "Series and parallel connection"),
+    s: () => L("Seride gerilimler toplanır, akım aynı kalır. Paralelde gerilim tek hücreninki kadardır, akımlar toplanır. Toplam en yüksek güç ikisinde de aynıdır.", "In series the voltages add and the current stays the same. In parallel the voltage is that of one cell and the currents add. The total maximum power is the same either way."),
+    b: () => L(`<p>Düzenekte iki yakıt hücresi var. Bunları iki şekilde bağlayabiliriz:</p>
+      <ul><li><b>Seri:</b> birinci hücrenin (+) ucu ikincinin (−) ucuna bağlanır. Akımın tek bir yolu vardır, iki hücreden de <b>aynı akım</b> geçer. <b>Gerilimler toplanır</b>: U = U₁ + U₂. Pilleri uç uca dizmek gibidir.</li>
+      <li><b>Paralel:</b> iki hücrenin (+) uçları birbirine, (−) uçları birbirine bağlanır. Akım iki yola ayrılır, <b>akımlar toplanır</b>: I = I₁ + I₂. Gerilim tek bir hücreninki kadardır.</li></ul>
+      <p>Hangisi daha iyi? <b>Yüke bağlıdır.</b> Motor çalışmak için gerilime ihtiyaç duyar (0,3 V'un üstünde döner, devri gerilimle artar), bu yüzden seride çok daha hızlı döner. Paralel bağlantı ise düşük gerilimde büyük akım isteyen yükler için uygundur. Her iki bağlantıda da her hücre aynı işi yapar; bu yüzden <b>en yüksek toplam güç aynıdır</b> (≈ 1,7 W), yalnızca farklı gerilim ve akımda elde edilir.</p>
+      <p>Aynı kural güneş panelindeki hücreler ve evdeki piller için de geçerlidir.</p>`,
+      `<p>The kit has two fuel cells. They can be connected in two ways:</p>
+      <ul><li><b>Series:</b> the (+) of the first cell goes to the (−) of the second. There is one path, so <b>the same current</b> flows through both cells. <b>The voltages add</b>: U = U₁ + U₂. Like stacking batteries end to end.</li>
+      <li><b>Parallel:</b> both (+) terminals are joined and both (−) terminals are joined. The current splits into two paths and <b>the currents add</b>: I = I₁ + I₂. The voltage is that of one cell.</li></ul>
+      <p>Which is better? <b>It depends on the load.</b> The motor needs voltage (it turns above 0.3 V and speeds up with voltage), so it runs much faster in series. Parallel suits loads that need a large current at low voltage. In both cases each cell does the same work, so <b>the total maximum power is the same</b> (≈ 1.7 W), just at a different voltage and current.</p>
+      <p>The same rule applies to the cells in a solar panel and to batteries at home.</p>`),
+    d: () => D.conn(),
+    e: () => { const s = solveFc(1, "s", "motor"), p = solveFc(1, "p", "motor");
+      return L(`<p>Motorla: seride ${n2(s.V)} V ve ${Math.round(s.I * 1000)} mA, pervane ≈ ${Math.round((s.V - 0.3) * 1500)} rpm; paralelde ${n2(p.V)} V ve ${Math.round(p.I * 1000)} mA, pervane ≈ ${Math.round((p.V - 0.3) * 1500)} rpm.</p>`,
+        `<p>With the motor: in series ${n2(s.V)} V and ${Math.round(s.I * 1000)} mA, propeller ≈ ${Math.round((s.V - 0.3) * 1500)} rpm; in parallel ${n2(p.V)} V and ${Math.round(p.I * 1000)} mA, propeller ≈ ${Math.round((p.V - 0.3) * 1500)} rpm.</p>`) + fcTable([["s", 2], ["p", 2], ["s", 0.5], ["p", 0.5]]); },
+    f: () => `${L("Seri", "Series")}: U = U₁ + U₂, I = I₁ = I₂ &nbsp;·&nbsp; ${L("Paralel", "Parallel")}: U = U₁ = U₂, I = I₁ + I₂`,
+    a: () => { setLoad("motor"); setConn(S.conn === "p" ? "s" : "p"); S.valve = true; } },
+  { ic: "🎯", t: () => L("Yük direnci ve en yüksek güç", "Load resistance and maximum power"),
+    s: () => L("Çalışma noktası, kaynağın eğrisi ile yükün doğrusunun kesiştiği yerdir. En yüksek güç, yük direnci kaynağın iç direncine yaklaştığında alınır.", "The operating point is where the source curve meets the load line. Maximum power is drawn when the load resistance is close to the source's internal resistance."),
+    b: () => L(`<p>Bir direnç için <b>Ohm yasası</b> I = U / R der. Gerilim–akım grafiğinde bu, eğimi R olan bir doğrudur: <b>yük doğrusu</b>. Yakıt hücresi ise kendi eğrisi üzerinde bir yerde çalışmak zorundadır. İkisinin <b>kesiştiği nokta</b> devrenin gerçek çalışma noktasıdır.</p>
+      <ul><li><b>Büyük direnç</b> (100 Ω): neredeyse açık devre. Gerilim yüksek, akım çok küçük → güç küçük.</li>
+      <li><b>Çok küçük direnç</b>: neredeyse kısa devre. Akım büyük ama gerilim düşük → güç yine küçülür.</li>
+      <li><b>Arada bir değerde</b> U·I çarpımı en büyük olur. Kural (en yüksek güç aktarımı): yük direnci kaynağın <b>iç direncine</b> eşitken güç en büyüktür.</li></ul>
+      <p>Bu düzenekte seri bağlı yakıt hücresinin en yüksek gücü ≈ 0,4 Ω'luk yükte ≈ 1,7 W'tır. Paralelde iç direnç dörtte birine iner (≈ 0,1 Ω), bu yüzden yük modülündeki en küçük direnç (0,3 Ω) bile en yüksek güce ulaşmak için yetmez.</p>`,
+      `<p>For a resistor, <b>Ohm's law</b> says I = U / R. On a voltage–current graph this is a straight line with slope R: the <b>load line</b>. The fuel cell must work somewhere on its own curve. The <b>point where they cross</b> is the circuit's real operating point.</p>
+      <ul><li><b>Large resistance</b> (100 Ω): nearly open circuit. High voltage, tiny current → small power.</li>
+      <li><b>Very small resistance</b>: nearly short circuit. Large current but low voltage → power falls again.</li>
+      <li><b>Somewhere in between</b> U·I is largest. The rule (maximum power transfer): power peaks when the load resistance equals the source's <b>internal resistance</b>.</li></ul>
+      <p>In this kit the series fuel cell peaks at ≈ 1.7 W with a ≈ 0.4 Ω load. In parallel the internal resistance drops to a quarter (≈ 0.1 Ω), so even the smallest resistor on the load module (0.3 Ω) is not enough to reach maximum power.</p>`),
+    d: () => D.load(),
+    e: () => fcTable([["s", 10], ["s", 2], ["s", 1], ["s", 0.5], ["s", 0.4], ["s", 0.3]]),
+    f: () => `I = U / R &nbsp;·&nbsp; P = U · I = U² / R &nbsp;·&nbsp; P<sub>max</sub> ⇔ R<sub>${L("yük", "load")}</sub> ≈ R<sub>${L("iç", "int")}</sub>`,
+    a: () => { setConn("s"); S.valve = true; $("#btnIvSweep").click(); } },
+  { ic: "📉", t: () => L("Verim", "Efficiency"),
+    s: () => L("Verim, istenen çıktı enerjisinin giren enerjiye oranıdır. Zincirdeki verimler çarpılır; bu yüzden güneşten yakıt hücresine kadar enerjinin yalnızca ≈ %4'ü elektrik olarak geri alınır.", "Efficiency is the useful output energy divided by the input energy. The efficiencies along the chain multiply, so only ≈ 4% of the sunlight comes back as electricity from the fuel cell."),
+    b: () => L(`<p>Her dönüşümün kendi verimi vardır:</p>
+      <ul><li><b>Güneş paneli:</b> η<sub>PV</sub> = P<sub>elektrik</sub> / (G · A). Işığın çoğu ısıya dönüşür; bu düzenekte ≈ %12.</li>
+      <li><b>Elektrolizör:</b> iki verimi vardır. <b>Faraday verimi</b>, akımın ne kadarının gerçekten H₂ ürettiğidir (≈ %90–99). <b>Enerji verimi</b>, H₂'de saklanan enerjinin harcanan elektriğe oranıdır: ≈ 1,48 V / 2,4 V ≈ %60.</li>
+      <li><b>Yakıt hücresi:</b> çıkan elektriğin, harcanan H₂'nin enerjisine oranı; hücre başına ≈ U / 1,48 V. Motorla seride ≈ %58.</li></ul>
+      <p>Zincirdeki toplam verim bunların çarpımıdır: 0,12 × 0,60 × 0,58 ≈ <b>%4</b>. Düşük görünse de hidrojenin değeri, enerjiyi uzun süre saklayıp başka bir yerde ve zamanda kullanabilmesindedir.</p>
+      <p class="hint">Not: Hidrojenin enerjisi burada üst ısıl değerle (HHV, 286 kJ/mol) hesaplanmıştır; 1,48 V bu değere karşılık gelir.</p>`,
+      `<p>Each conversion has its own efficiency:</p>
+      <ul><li><b>Solar panel:</b> η<sub>PV</sub> = P<sub>electrical</sub> / (G · A). Most of the light becomes heat; ≈ 12% in this kit.</li>
+      <li><b>Electrolyzer:</b> two efficiencies. <b>Faraday efficiency</b> is how much of the current really makes H₂ (≈ 90–99%). <b>Energy efficiency</b> is the energy stored in H₂ divided by the electricity used: ≈ 1.48 V / 2.4 V ≈ 60%.</li>
+      <li><b>Fuel cell:</b> electricity out divided by the energy of the H₂ used; per cell ≈ U / 1.48 V. In series with the motor ≈ 58%.</li></ul>
+      <p>The total efficiency of the chain is the product: 0.12 × 0.60 × 0.58 ≈ <b>4%</b>. It looks low, but hydrogen's value is that it can store energy for a long time and deliver it at another place and time.</p>
+      <p class="hint">Note: hydrogen's energy is counted here with the higher heating value (HHV, 286 kJ/mol); 1.48 V corresponds to this value.</p>`),
+    d: () => D.eff(),
+    e: () => L(`Kademe 8'de: panele düşen ışık ≈ 549 W/m² × 0,045 m² ≈ 24,7 W; panel ≈ 2,9 W elektrik verir (%12). Elektrolizör ≈ 1,7 W'lık hidrojen üretir (%60). Yakıt hücresi 228 mW'lık hidrojenden 132 mW elektrik üretir (%58). Canlı değerler <b>Faraday ve verim</b> sekmesinde.`,
+      `At level 8: light on the panel ≈ 549 W/m² × 0.045 m² ≈ 24.7 W; the panel delivers ≈ 2.9 W (12%). The electrolyzer turns that into ≈ 1.7 W of hydrogen (60%). The fuel cell makes 132 mW of electricity from 228 mW of hydrogen (58%). Live values are in the <b>Faraday and efficiency</b> tab.`),
+    f: () => `η = P<sub>${L("çıkış", "out")}</sub> / P<sub>${L("giriş", "in")}</sub> &nbsp;·&nbsp; η<sub>${L("toplam", "total")}</sub> = η<sub>PV</sub> · η<sub>${L("elz", "ely")}</sub> · η<sub>${L("YH", "FC")}</sub>`,
+    a: () => { setLevel(8); $("#tb3").click(); $("#tb3").scrollIntoView({ behavior: REC ? "auto" : "smooth", block: "start" }); } },
+];
+function renderLessons() {
+  const T = LS_TXT[lang] || LS_TXT.tr, Ls = LESSONS[lsIdx];
+  $("#tp6").innerHTML = `<div class="ls">
+    <nav class="ls-toc" aria-label="${T.toc}"><b>${T.toc}</b>${LESSONS.map((x, i) => `<button type="button" data-ls="${i}" class="${i === lsIdx ? "on" : ""}"><span>${x.ic}</span> ${i + 1}. ${x.t()}</button>`).join("")}</nav>
+    <article class="ls-body">
+      <p class="ls-of">${T.of(lsIdx + 1, LESSONS.length)}</p>
+      <h3>${Ls.ic} ${Ls.t()}</h3>
+      <div class="ls-short"><b>${T.short}:</b> ${Ls.s()}</div>
+      <div class="ls-fig">${Ls.d()}</div>
+      ${Ls.b()}
+      ${Ls.f ? `<div class="ls-formula"><b>${T.f}:</b> ${Ls.f()}</div>` : ""}
+      <div class="ls-ex"><b>${T.ex}:</b> ${Ls.e()}</div>
+      <div class="row ls-nav">
+        <button class="btn primary" type="button" id="lsTry">▶ ${T.tryIt}</button>
+        <span style="flex:1"></span>
+        <button class="btn" type="button" id="lsPrev" ${lsIdx === 0 ? "disabled" : ""}>${T.prev}</button>
+        <button class="btn" type="button" id="lsNext" ${lsIdx === LESSONS.length - 1 ? "disabled" : ""}>${T.next}</button>
+      </div>
+    </article></div>`;
+}
+$("#tp6").addEventListener("click", (e) => {
+  const b = e.target.closest("button"); if (!b) return;
+  if (b.dataset.ls) { lsIdx = +b.dataset.ls; renderLessons(); $("#tp6").scrollIntoView({ block: "start" }); }
+  else if (b.id === "lsPrev" && lsIdx > 0) { lsIdx--; renderLessons(); $("#tp6").scrollIntoView({ block: "start" }); }
+  else if (b.id === "lsNext" && lsIdx < LESSONS.length - 1) { lsIdx++; renderLessons(); $("#tp6").scrollIntoView({ block: "start" }); }
+  else if (b.id === "lsTry") { const L0 = LESSONS[lsIdx]; L0.a(); if (lsIdx !== 7) goStage(); }
+});
+
 function setCh(c) { S.ch = c; $("#chPV").classList.toggle("on", c === "pv"); $("#chFC").classList.toggle("on", c === "fc"); updateUi(); }
 [["#chPV", "pv"], ["#chFC", "fc"]].forEach(([s, c]) => { const n = $(s); n.addEventListener("click", () => setCh(c)); n.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setCh(c); } }); });
 $("#btnSw").addEventListener("click", () => { S.sw.run ? stopSw(false) : startSw(); updateUi(); });
@@ -1638,6 +1936,7 @@ async function loadData() {
     $("#dataSrc").textContent = t("srcJson");
     calibrate();
     if (S.level > NLV) S.level = NLV;
+    renderLessons();
     buildFarTable(); updateUi(); updateCharts();
     if (c3) { c3.data.datasets[1].data = LAB20.map(([x, y]) => ({ x, y })); c3.update("none"); }
     console.info("[veri] deney_verileri.json yüklendi:", LAB20.length, "nokta");
