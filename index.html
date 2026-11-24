@@ -163,6 +163,18 @@ main.wrap { padding-block: 18px 40px; display: grid; gap: 18px; }
 .sb-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 12px; }
 .sb-head b { font: 600 .95rem var(--font-display); text-transform: uppercase; letter-spacing: .07em; color: var(--muted); }
 .sb-row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; }
+.sb-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 12px 22px; }
+.sb-grp { display: grid; gap: 6px; align-content: start; min-width: 0; }
+.sb-ang { grid-column: 1 / -1; border-top: 1px dashed var(--line); padding-top: 10px; }
+.sb-l { font-size: .9rem; font-weight: 600; display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 10px; }
+.sb-l .hint { font-weight: 400; }
+.temp-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.temp-row .btn { padding: 6px 10px; }
+.temp-row input[type=range] { flex: 1 1 110px; min-width: 0; accent-color: var(--o2); }
+.temp-mid { font: 1.2rem var(--font-data); min-width: 4.6ch; text-align: center; font-variant-numeric: tabular-nums; }
+.temp-mid.hot { color: var(--o2); }
+.temp-mid.cold { color: var(--h2); }
+.chart-box .chk { margin-top: 2px; }
 .ang-pre { flex: 0 1 auto; }
 .ang-pre button { padding: 6px 10px; font-family: var(--font-data); font-weight: 400; }
 .sb-row .ang-row { flex: 1 1 220px; }
@@ -658,9 +670,29 @@ footer.wrap { padding-block: 0 28px; color: var(--muted); font-size: .8rem; }
         <path id="beam" d="M146,556 L250,380 L472,380 L472,690 L250,690 L146,664 Z" fill="url(#gBeam)" opacity=".5" style="mix-blend-mode:screen" pointer-events="none"/>
         <text id="irrTxt" x="190" y="760" text-anchor="middle" class="lbl-tick" style="fill:var(--muted)">0 W/m²</text>
       </svg>
-      <!-- panel açısı: sahnenin altında, panelin olduğu sütunda -->
+      <!-- Panel çubuğu: panelin özellikleri (tip, sıcaklık, açı) sahnenin altında, panelin olduğu sütunda -->
       <div class="stage-bar" id="angBar">
-        <div class="sb-head"><b data-i18n="angH">Panel açısı θ</b><span class="hint" id="angInfo"></span></div>
+        <div class="sb-head"><b data-i18n="panelH">Panel</b></div>
+        <div class="sb-grid">
+        <div class="sb-grp">
+          <span class="sb-l" data-i18n="pvType">Panel tipi</span>
+          <div class="seg" id="pvSeg">
+            <button type="button" data-pv="m" class="on" data-i18n="pvMs">Model (6 hücre)</button>
+            <button type="button" data-pv="r" data-i18n="pvRs">Üretici (4 hücre)</button>
+          </div>
+        </div>
+        <div class="sb-grp">
+          <span class="sb-l"><span data-i18n="tempH">Panel sıcaklığı</span><span class="hint" id="tInfo"></span></span>
+          <div class="temp-row">
+            <button class="btn" type="button" data-dt="-5" aria-label="−5 °C">❄️ −5</button>
+            <output id="tBarVal" class="temp-mid">25 °C</output>
+            <button class="btn" type="button" data-dt="5" aria-label="+5 °C">🔥 +5</button>
+            <input type="range" id="tBarRng" min="0" max="100" step="1" value="25" aria-label="T (°C)">
+          </div>
+          <span class="hint" data-i18n="tempHint">25 °C = laboratuvar koşulu. Ayrıntılı hesap: ⚡ Verim › Panel ve sıcaklık</span>
+        </div>
+        <div class="sb-grp sb-ang">
+        <span class="sb-l"><span data-i18n="angH">Panel açısı θ</span><span class="hint" id="angInfo"></span></span>
         <div class="sb-row">
           <div class="seg ang-pre" id="angPre" role="group" aria-label="θ">
             <button type="button" data-a="0">0°</button><button type="button" data-a="15">15°</button><button type="button" data-a="30">30°</button><button type="button" data-a="45">45°</button><button type="button" data-a="60">60°</button><button type="button" data-a="75">75°</button><button type="button" data-a="90">90°</button>
@@ -671,6 +703,8 @@ footer.wrap { padding-block: 0 28px; color: var(--muted); font-size: .8rem; }
           </div>
         </div>
         <span class="hint" data-i18n="angHint">0° = panel lambaya dik (laboratuvar ölçümleri bu konumda alındı)</span>
+        </div>
+        </div>
       </div>
     </div>
 
@@ -688,11 +722,6 @@ footer.wrap { padding-block: 0 28px; color: var(--muted); font-size: .8rem; }
           </button>
         </div>
         <div class="meter" id="meterBars" aria-hidden="true"></div>
-        <div class="seg" id="pvSeg">
-          <button type="button" data-pv="m" class="on" data-i18n="pvMs">Model (6 hücre)</button>
-          <button type="button" data-pv="r" data-i18n="pvRs">Üretici (4 hücre)</button>
-        </div>
-        <label class="chk"><input type="checkbox" id="pvCmp" checked> <span data-i18n="pvCmp">Grafikte diğer paneli de göster</span></label>
         <div class="lvl-info"><span><span data-i18n="level">Kademe</span> <b id="lvlNum">4/16</b></span><span><b id="lvlG">0</b> W/m²</span><span><span data-i18n="group">Grup</span> <b id="lvlGrp">4</b></span></div>
       </div>
 
@@ -708,14 +737,15 @@ footer.wrap { padding-block: 0 28px; color: var(--muted); font-size: .8rem; }
           <button class="btn" id="btnReset" type="button" data-i18n="reset">Sıfırla</button>
           <span class="sw-sub"><span data-i18n="simTime">Deney süresi</span> <b id="simT" style="color:var(--fg)">00:00</b></span>
         </div>
-        <div class="switch">
-          <span><b data-i18n="valveH">H₂ vanası</b><br><span class="hint" data-i18n="valveHint">Kapatınca gaz yalnızca depoda birikir</span></span>
-          <button class="toggle" id="btnValve" type="button" aria-pressed="true" aria-label="H2"></button>
-        </div>
       </div>
 
       <div class="panel" id="pnlLoad">
         <h2 data-i18n="loadH">Yakıt hücresi ve yük</h2>
+        <!-- H₂ vanası: depodan yakıt hücresine giden gaz -->
+        <div class="switch">
+          <span><b data-i18n="valveH">H₂ vanası</b><br><span class="hint" data-i18n="valveHint">Kapatınca gaz yalnızca depoda birikir</span></span>
+          <button class="toggle" id="btnValve" type="button" aria-pressed="true" aria-label="H2"></button>
+        </div>
         <div class="seg" id="connSeg">
           <button type="button" data-conn="s" class="on" data-i18n="series">Seri</button>
           <button type="button" data-conn="p" data-i18n="parallel">Paralel</button>
@@ -775,7 +805,7 @@ footer.wrap { padding-block: 0 28px; color: var(--muted); font-size: .8rem; }
       <div class="charts">
         <div class="chart-box"><h3 data-i18n="ch0">PV gerilim, akım ve H₂ üretim hızı – zaman</h3><div class="cv"><canvas id="c0"></canvas></div><p data-i18n="ch0p">Işığı artırıp azalttıkça üç büyüklük birlikte basamaklanır. Sol eksen V ve A, sağ eksen mL/dk.</p></div>
         <div class="chart-box"><h3 data-i18n="ch1">Depodaki gaz hacmi – zaman</h3><div class="cv"><canvas id="c1"></canvas></div><p data-i18n="ch1p">Yakıt hücresi tüketimi düşülmüş net hacim.</p></div>
-        <div class="chart-box"><h3 data-i18n="ch2">PV I–V eğrisi ve çalışma noktası</h3><div class="cv"><canvas id="c2"></canvas></div><p data-i18n="ch2p">Panel eğrisinin elektrolizör eğrisini kestiği nokta çalışma noktasıdır.</p></div>
+        <div class="chart-box"><h3 data-i18n="ch2">PV I–V eğrisi ve çalışma noktası</h3><div class="cv"><canvas id="c2"></canvas></div><p data-i18n="ch2p">Panel eğrisinin elektrolizör eğrisini kestiği nokta çalışma noktasıdır.</p><label class="chk"><input type="checkbox" id="pvCmp" checked> <span data-i18n="pvCmp">Grafikte diğer paneli de göster</span></label></div>
         <div class="chart-box"><h3 data-i18n="ch3">Akım – 20 dakikada H₂</h3><div class="cv"><canvas id="c3"></canvas></div><p data-i18n="ch3p">Laboratuvar ölçümleri, Faraday doğrusu ve sizin kronometre ölçümleriniz.</p></div>
         <div class="chart-box"><h3 data-i18n="ch4">Yakıt hücresi I–V ve güç eğrisi</h3><div class="cv"><canvas id="c4"></canvas></div><p data-i18n="ch4p">Çizgiler model eğrisidir (H₂ yeterliyken): düz çizgi seri, kesikli çizgi paralel. Noktalar sizin kaydettiğiniz ölçümlerdir. Sol eksen V, sağ eksen W.</p></div>
       </div>
@@ -882,6 +912,7 @@ const I18N = {
     skH: "Enerji akışı (Sankey diyagramı)",
     skP: "Panele düşen ışığın yakıt hücresine kadar ne kadarının ulaştığını gösterir. Değerler canlıdır; ışığı ya da yükü değiştirince güncellenir.",
     mLang: "Dil", thLight: "☀️ Açık", thDark: "🌙 Koyu", menuLbl: "Menü: dil ve tema",
+    panelH: "Panel", pvType: "Panel tipi", tempH: "Panel sıcaklığı", tempHint: "25 °C = laboratuvar koşulu. Ayrıntılı hesap: ⚡ Verim › Panel ve sıcaklık",
     angH: "Panel açısı θ", angHint: "0° = panel lambaya dik (laboratuvar ölçümleri bu konumda alındı)", topView: "Üstten görünüş", thAng: "Açı θ (°)",
     theme: "Tema", lampLbl: "PAR lamba", chFC: "YH · Motor", meterLbl: "Ölçüm ünitesi · 0–2 / 0–20 A·V",
     motorLbl: "Motor", loadLbl: "Yük modülü", fcLbl: "PEM yakıt hücresi (çift, seri)", pvLbl: "Güneş paneli",
@@ -943,6 +974,7 @@ const I18N = {
     skH: "Energy flow (Sankey diagram)",
     skP: "Shows how much of the light on the panel reaches the fuel cell. Values are live; they update when you change the light or the load.",
     mLang: "Language", thLight: "☀️ Light", thDark: "🌙 Dark", menuLbl: "Menu: language and theme",
+    panelH: "Panel", pvType: "Panel type", tempH: "Panel temperature", tempHint: "25 °C = lab condition. Detailed working: ⚡ Efficiency › Panel and temperature",
     angH: "Panel angle θ", angHint: "0° = panel facing the lamp (the lab measurements were taken here)", topView: "Top view", thAng: "Angle θ (°)",
     theme: "Theme", lampLbl: "PAR lamp", chFC: "FC · Motor", meterLbl: "Measuring unit · 0–2 / 0–20 A·V",
     motorLbl: "Motor", loadLbl: "Load module", fcLbl: "PEM fuel cell (double, series)", pvLbl: "Solar panel",
@@ -1623,6 +1655,13 @@ function setTemp(v) {
 function updateTempUi() {
   const tx = $("#pvTemp"); tx.textContent = `🌡 ${S.Tp} °C`;
   tx.style.fill = S.Tp > 25 ? "#c0392b" : S.Tp < 25 ? "#117f9f" : "#31404d";
+  // Panel çubuğu (sahnenin altı): değer, kaydırıcı ve 25 °C'ye göre en yüksek güç
+  const bv = $("#tBarVal"); bv.textContent = `${S.Tp} °C`; bv.classList.toggle("hot", S.Tp > 25); bv.classList.toggle("cold", S.Tp < 25);
+  if (document.activeElement !== $("#tBarRng")) $("#tBarRng").value = S.Tp;
+  const base = S.pv === "r" ? PVR : PV, lv = S.level || 8;
+  const pm = (Tc) => { const Q = pvAt(base, Tc); return pvMpp(iphAt(lv, Q, 0), Q).P; };
+  const rel = S.Tp === 25 ? 100 : Math.round(pm(S.Tp) / pm(25) * 100); pvAt(base, S.Tp);
+  $("#tInfo").textContent = lang === "tr" ? `25 °C'ye göre en yüksek güç: ${pct(rel, 0)}` : `max. power vs 25 °C: ${rel}%`;
   const tv = $("#tVal"); if (!tv) return;
   tv.textContent = `${S.Tp} °C`; tv.classList.toggle("hot", S.Tp > 25); tv.classList.toggle("cold", S.Tp < 25);
   $("#tRng").value = S.Tp;
@@ -1841,6 +1880,9 @@ function updateCalc(force) {
     : `<p class="calc-note">${T("Toplam verim için ışık açık olmalı ve yakıt hücresi H₂ harcamalı.", "For the overall efficiency the light must be on and the fuel cell must be using H₂.")}</p>`;
 }
 // sekme içi olaylar (içerik dil değişince yeniden çizildiği için olay yetkilendirme)
+// Panel çubuğundaki sıcaklık kontrolü
+$("#angBar").addEventListener("click", (e) => { const b = e.target.closest("button[data-dt]"); if (b) setTemp(S.Tp + +b.dataset.dt); });
+$("#tBarRng").addEventListener("input", (e) => setTemp(e.target.value));
 // ⚡ Verim alt sekmeleri
 function setEffSub(k) {
   document.querySelectorAll("#effSub button").forEach((b) => b.setAttribute("aria-selected", b.dataset.sp === k));
@@ -2011,7 +2053,7 @@ function applyLang() {
 }
 
 /* ---------- events ---------- */
-function setLevel(l) { S.level = Math.max(0, Math.min(NLV, l)); if (S.sw.run) S.sw.level = S.level; updateUi(); updateCharts(); buildPvTable(); }
+function setLevel(l) { S.level = Math.max(0, Math.min(NLV, l)); if (S.sw.run) S.sw.level = S.level; updateUi(); updateCharts(); buildPvTable(); updateTempUi(); }
 $("#btnInc").addEventListener("click", () => setLevel(S.level + 1));
 $("#btnDec").addEventListener("click", () => setLevel(S.level - 1));
 document.addEventListener("keydown", (e) => { if (e.target.closest && e.target.closest("input")) return; if ($("#vidDlg").open) return; if (e.key === "+" || e.key === "ArrowUp") setLevel(S.level + 1); if (e.key === "-" || e.key === "ArrowDown") setLevel(S.level - 1); });
@@ -2514,7 +2556,7 @@ LESSONS.unshift({ ic: "🚀", guide: true, t: () => L("Başlarken: sayfa nasıl 
     <p><b>İlk deneyiniz, adım adım:</b></p>
     <ol class="ls-steps">
       <li><span><b>Işığı açın.</b> Kontrol panelindeki <b>Artır</b> düğmesiyle ışık kademesini yükseltin (klavyede + / − tuşları da olur). Her kademe, laboratuvardaki bir ölçüm grubuna karşılık gelir.</span>${showBtn("#pnlLight")}</li>
-      <li><span><b>Panelin açısını deneyin (isteğe bağlı).</b> Sahnenin altındaki <b>Panel açısı θ</b> çubuğuyla paneli lambaya göre döndürün. Açı büyüdükçe panele düşen ışık ve üretilen hidrojen azalır. Laboratuvar ölçümleri 0°'de alındı.</span>${showBtn("#angBar")}</li>
+      <li><span><b>Paneli deneyin (isteğe bağlı).</b> Sahnenin altındaki <b>Panel</b> çubuğunda panel tipini seçin, paneli ısıtın ya da soğutun ve lambaya göre döndürün. Açı ya da sıcaklık arttıkça üretilen hidrojen azalır. Laboratuvar ölçümleri 0° ve 25 °C'de alındı.</span>${showBtn("#angBar")}</li>
       <li><span><b>Sahneyi izleyin.</b> Panel elektrik üretir, elektrolizörde kabarcıklar çıkar, silindirlerde gaz birikir. Ölçü aletlerinden gerilimi (V) ve akımı (A) okuyun.</span>${showBtn(".stage")}</li>
       <li><span><b>Zamanı hızlandırın.</b> Gerçek deney 20 dakika sürer. Beklememek için <b>60×</b> seçin: 20 dakika 20 saniyede geçer.</span>${showBtn("#pnlTime")}</li>
       <li><span><b>Ölçüm alın.</b> Kronometrede <b>Başlat</b>'a basın. 20 dakika dolunca ölçüm kendiliğinden durur ve <b>Ölçüm tablosu</b>na eklenir; laboratuvarda yaptığınızın aynısı.</span>${showBtn("#pnlSw")}</li>
@@ -2527,7 +2569,7 @@ LESSONS.unshift({ ic: "🚀", guide: true, t: () => L("Başlarken: sayfa nasıl 
     <p><b>Your first experiment, step by step:</b></p>
     <ol class="ls-steps">
       <li><span><b>Turn on the light.</b> Raise the light level with the <b>Increase</b> button on the control panel (the + / − keys also work). Each level matches one measurement group from the lab.</span>${showBtn("#pnlLight")}</li>
-      <li><span><b>Try the panel angle (optional).</b> Use the <b>Panel angle θ</b> bar below the scene to turn the panel away from the lamp. The larger the angle, the less light reaches the panel and the less hydrogen is made. The lab measurements were taken at 0°.</span>${showBtn("#angBar")}</li>
+      <li><span><b>Try the panel (optional).</b> In the <b>Panel</b> bar below the scene, choose the panel type, heat or cool the panel and turn it away from the lamp. A larger angle or a higher temperature means less hydrogen. The lab measurements were taken at 0° and 25 °C.</span>${showBtn("#angBar")}</li>
       <li><span><b>Watch the scene.</b> The panel makes electricity, bubbles rise in the electrolyzer and gas collects in the cylinders. Read the voltage (V) and current (A) on the meters.</span>${showBtn(".stage")}</li>
       <li><span><b>Speed up time.</b> The real experiment takes 20 minutes. To avoid waiting, choose <b>60×</b>: 20 minutes pass in 20 seconds.</span>${showBtn("#pnlTime")}</li>
       <li><span><b>Take a measurement.</b> Press <b>Start</b> on the stopwatch. After 20 minutes it stops by itself and the result is added to the <b>Measurements</b> tab, just like in the lab.</span>${showBtn("#pnlSw")}</li>
