@@ -50,7 +50,8 @@ Zincir: **Işık → PV panel → PEM elektrolizör (H₂/O₂) → gaz depolar�
 - [x] Ölçüm verisinin `data/deney_verileri.json` dosyasından dinamik yüklenmesi (yerel sunucu/Live Server veya GitHub Pages gerekir; dosyaya çift tıklanınca gömülü yedek veri kullanılır)
 - [x] Öğrenci deney föyü / quiz modu ("Deney föyü ve quiz" sekmesi: 3 rehberli deney, otomatik kontrol, 10 soruluk quiz, yazdır/PDF)
 - [x] Konu anlatımı ("📘 Konu anlatımı" sekmesi, sayfa açılınca ilk görünen): 8 ders — enerji zinciri, güneş pili ve I–V eğrisi, elektroliz ve Faraday yasası, hidrojen depolama, yakıt hücresi, seri/paralel bağlantı, yük direnci ve en yüksek güç, verim. Her derste çizim, bu düzenekten sayısal örnek ve "Simülasyonda dene" düğmesi var.
-- [x] Başlangıç rehberi (Konu anlatımının ilk sayfası; üstteki "❓ Nasıl kullanılır?" düğmesi): sayfa krokisi, 7 adımlık ilk deney, her adımda ilgili bölümü parlatan "Göster" düğmesi ve "Hızlı başlat"
+- [x] Başlangıç rehberi (Konu anlatımının ilk sayfası; üstteki "❓ Nasıl kullanılır?" düğmesi): sayfa krokisi, 8 adımlık ilk deney, her adımda ilgili bölümü parlatan "Göster" düğmesi ve "Hızlı başlat"
 - [x] Tanıtım videosu düğmesi (üst menü "▶ Tanıtım videosu"; seçili dile göre TR/EN video açılır pencerede oynar)
 - [x] Canlı enerji akışı (Sankey) diyagramı ("Faraday ve verim" sekmesi) ; diyagramın altında açılır "Sankey diyagramı nasıl okunur?" açıklaması
+- [x] Panel açısı (θ, 0–90°): sahnenin altındaki çubuktan hazır açılarla (0/15/…/90°), kaydırıcıyla ya da sayıyla girilir; panel hedef açıya yumuşakça döner; panele düşen ışık cos θ ve camdan yansıma (IAM) ile azalır, akım, H₂ üretimi, verim ve tablolar buna göre hesaplanır. Sahnede panel döner, hüzme daralır ve "Üstten görünüş" şeması açıyı gösterir. 0°'de laboratuvar verisi birebir korunur.
 - [x] Sekme simgesi (`favicon.svg`, `apple-touch-icon.png`) ve paylaşım önizlemesi (`og-image.png`, Open Graph etiketleri)
