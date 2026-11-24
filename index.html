@@ -104,8 +104,13 @@ main.wrap { padding-block: 18px 40px; display: grid; gap: 18px; }
 .meter span.on { background: var(--sun); }
 .lvl-info { display: flex; justify-content: space-between; gap: 8px; font-size: .9rem; color: var(--muted); flex-wrap: wrap; }
 .lvl-info b { color: var(--fg); font-family: var(--font-data); font-weight: 400; font-size: 1rem; }
-/* verim hesabı sekmesi */
-.calc-lead { margin: 0 0 14px; max-width: 90ch; }
+/* ⚡ Verim sekmesi: alt sekmeler ve hesap kartları */
+.subtabs { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
+.subtabs button { font: 600 .9rem var(--font-body); padding: 6px 14px; border-radius: 18px; border: 1px solid var(--line); background: var(--surface-2); color: var(--fg); cursor: pointer; }
+.subtabs button:hover { border-color: var(--accent); }
+.subtabs button[aria-selected="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-fg); }
+.subtabs button:focus-visible { outline: 3px solid var(--sun); outline-offset: 2px; }
+.calc-one { max-width: 980px; margin-top: 16px; }
 .calc { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; align-items: start; }
 @media (max-width: 980px) { .calc { grid-template-columns: minmax(0, 1fr); } }
 .calc-card { border: 1px solid var(--line); border-top: 4px solid var(--c, var(--accent)); border-radius: 10px; padding: 14px 16px; display: grid; gap: 12px; min-width: 0; background: var(--surface); }
@@ -759,8 +764,7 @@ footer.wrap { padding-block: 0 28px; color: var(--muted); font-size: .8rem; }
       <button class="tab" role="tab" aria-selected="true" aria-controls="tp6" id="tb6" data-i18n="tLearn">📘 Konu anlatımı</button>
       <button class="tab" role="tab" aria-selected="false" aria-controls="tp1" id="tb1" data-i18n="tCharts">📈 Grafikler</button>
       <button class="tab" role="tab" aria-selected="false" aria-controls="tp2" id="tb2" data-i18n="tTable">📋 Ölçüm tablosu</button>
-      <button class="tab" role="tab" aria-selected="false" aria-controls="tp3" id="tb3" data-i18n="tEff">⚡ Faraday verimi</button>
-      <button class="tab" role="tab" aria-selected="false" aria-controls="tp7" id="tb7" data-i18n="tCalc">📐 Verim hesabı</button>
+      <button class="tab" role="tab" aria-selected="false" aria-controls="tp3" id="tb3" data-i18n="tEff">⚡ Verim</button>
       <button class="tab" role="tab" aria-selected="false" aria-controls="tp5" id="tb5" data-i18n="tWs">📝 Deney föyü ve quiz</button>
       <button class="tab" role="tab" aria-selected="false" aria-controls="tp4" id="tb4" data-i18n="tNotes">🧮 Model notları</button>
     </div>
@@ -797,6 +801,14 @@ footer.wrap { padding-block: 0 28px; color: var(--muted); font-size: .8rem; }
     </div>
 
     <div class="tabpanel" role="tabpanel" id="tp3" aria-labelledby="tb3" hidden>
+      <!-- ⚡ Verim: dört alt sekme (eski "Faraday verimi" ve "Verim hesabı" sekmeleri birleşti) -->
+      <div class="subtabs" role="tablist" id="effSub">
+        <button type="button" role="tab" data-sp="ov" aria-selected="true" data-i18n="spOv">Genel bakış</button>
+        <button type="button" role="tab" data-sp="far" aria-selected="false" data-i18n="spFar">Faraday</button>
+        <button type="button" role="tab" data-sp="pv" aria-selected="false" data-i18n="spPv">Panel ve sıcaklık</button>
+        <button type="button" role="tab" data-sp="fc" aria-selected="false" data-i18n="spFc">Yakıt hücresi</button>
+      </div>
+      <div class="subpanel" data-sp="ov">
       <div class="sk-wrap">
         <h3 data-i18n="skH">Enerji akışı (Sankey diyagramı)</h3>
         <p class="hint" data-i18n="skP">Panele düşen ışığın yakıt hücresine kadar ne kadarının ulaştığını gösterir. Değerler canlıdır; ışığı ya da yükü değiştirince güncellenir.</p>
@@ -804,7 +816,10 @@ footer.wrap { padding-block: 0 28px; color: var(--muted); font-size: .8rem; }
         <details class="nt-more sk-how"><summary id="skHowSum">📖 Sankey diyagramı nasıl okunur?</summary><div id="skHow"></div></details>
       </div>
       <div class="eff-grid" id="effGrid"></div>
-      <div class="two">
+      <div id="calcTot" style="margin-top:16px"></div>
+      </div>
+      <div class="subpanel" data-sp="far" hidden>
+      <div class="two" style="margin-top:0">
         <div>
           <h3 data-i18n="farTblH">Laboratuvar verisi ve Faraday yasası</h3>
           <p class="hint" data-i18n="farTblP">V<sub>teorik</sub> = I·t/(2F)·V<sub>m</sub>, t = 1200 s, V<sub>m</sub> = 24,45 L/mol (25 °C, 1 atm)</p>
@@ -816,17 +831,23 @@ footer.wrap { padding-block: 0 28px; color: var(--muted); font-size: .8rem; }
           <p data-i18n="howP2">Elektrolizör gerilimi 1,48 V'un (termonötr gerilim) üzerinde olduğu için fark ısıya dönüşür. Bu yüzden enerji verimi Faraday veriminden düşüktür.</p>
         </div>
       </div>
+      <div id="calcEL" class="calc-one"></div>
+      </div>
+      <div class="subpanel" data-sp="pv" hidden>
+      <div class="calc"><div id="calcPV"></div><div id="calcT"></div></div>
       <h3 style="margin-top:18px" data-i18n="cmpH">PV paneli karşılaştırması: model paneli ve üretici paneli</h3>
       <p class="hint" data-i18n="cmpP">Her kademede, ısınmış elektrolizöre bağlanınca panelin verdiği akım ve 20 dakikada üretilen H₂. Üretici panelinin V<sub>oc</sub> değeri (2,3 V), elektrolizörün çalışma gerilimine (≈2,4 V) yetmez.</p>
       <div class="tbl-wrap" style="margin-top:8px"><table>
         <thead><tr><th rowspan="2" data-i18n="thLvl">Kademe</th><th rowspan="2">G (W/m²)</th><th colspan="4" data-i18n="pvM">Model paneli (6 hücre)</th><th colspan="4" data-i18n="pvR">Üretici paneli (4 hücre)</th></tr>
         <tr><th>I (A)</th><th>V (V)</th><th>P (W)</th><th data-i18n="th20">20 dk H₂ (mL)</th><th>I (A)</th><th>V (V)</th><th>P (W)</th><th data-i18n="th20">20 dk H₂ (mL)</th></tr></thead>
         <tbody id="cmpBody"></tbody></table></div>
+      </div>
+      <div class="subpanel" data-sp="fc" hidden>
+      <div id="calcFC" class="calc-one"></div>
+      </div>
     </div>
 
     <div class="tabpanel ws" role="tabpanel" id="tp5" aria-labelledby="tb5" hidden></div>
-
-    <div class="tabpanel" role="tabpanel" id="tp7" aria-labelledby="tb7" hidden></div>
 
     <div class="tabpanel" role="tabpanel" id="tp4" aria-labelledby="tb4" hidden>
       <div class="notes" id="notes"></div>
@@ -874,7 +895,8 @@ const I18N = {
     swH: "Kronometre ölçümü", start: "Başlat", stop: "Durdur", clear: "Sıfırla", record: "Anlık kaydet",
     auto20: "20 dakikada otomatik durdur ve kaydet",
     cLight: "Işık", cPV: "Güneş paneli", cELZ: "Elektrolizör", cTank: "Gaz deposu", cFC: "Yakıt hücresi", cFan: "Pervane",
-    tCharts: "📈 Grafikler", tTable: "📋 Ölçüm tablosu", tEff: "⚡ Faraday verimi", tCalc: "📐 Verim hesabı", tNotes: "🧮 Model notları", tLearn: "📘 Konu anlatımı", tWs: "📝 Deney föyü ve quiz",
+    tCharts: "📈 Grafikler", tTable: "📋 Ölçüm tablosu", tEff: "⚡ Verim", tNotes: "🧮 Model notları",
+    spOv: "Genel bakış", spFar: "Faraday", spPv: "Panel ve sıcaklık", spFc: "Yakıt hücresi", tLearn: "📘 Konu anlatımı", tWs: "📝 Deney föyü ve quiz",
     ch1: "Depodaki gaz hacmi – zaman", ch1p: "Yakıt hücresi tüketimi düşülmüş net hacim.",
     ch2: "PV I–V eğrisi ve çalışma noktası", ch2p: "Panel eğrisinin elektrolizör eğrisini kestiği nokta çalışma noktasıdır.",
     ch3: "Akım – 20 dakikada H₂", ch3p: "Laboratuvar ölçümleri, Faraday doğrusu ve sizin kronometre ölçümleriniz.",
@@ -934,7 +956,8 @@ const I18N = {
     swH: "Stopwatch measurement", start: "Start", stop: "Stop", clear: "Clear", record: "Record now",
     auto20: "Stop and record automatically at 20 minutes",
     cLight: "Light", cPV: "Solar panel", cELZ: "Electrolyzer", cTank: "Gas storage", cFC: "Fuel cell", cFan: "Propeller",
-    tCharts: "📈 Charts", tTable: "📋 Measurements", tEff: "⚡ Faraday efficiency", tCalc: "📐 Efficiency calculator", tNotes: "🧮 Model notes", tLearn: "📘 Lessons", tWs: "📝 Worksheet & quiz",
+    tCharts: "📈 Charts", tTable: "📋 Measurements", tEff: "⚡ Efficiency", tNotes: "🧮 Model notes",
+    spOv: "Overview", spFar: "Faraday", spPv: "Panel and temperature", spFc: "Fuel cell", tLearn: "📘 Lessons", tWs: "📝 Worksheet & quiz",
     ch1: "Stored gas volume vs time", ch1p: "Net volume after fuel cell consumption.",
     ch2: "PV I–V curve and operating point", ch2p: "The operating point is where the panel curve meets the electrolyzer curve.",
     ch3: "Current vs H₂ in 20 minutes", ch3p: "Lab measurements, Faraday line and your stopwatch runs.",
@@ -1082,7 +1105,7 @@ const vEl = (I, c) => 1.89 + 0.06 * Math.log(1 + I / 0.0005) + 0.05 * I + 0.4 * 
 const PVR = { a: 1.7 * 0.025693 * 4, IscRef: 1.0, area: 0.030 };
 PVR.I0 = PVR.IscRef / (Math.exp(2.3 / PVR.a) - 1);
 // Panel boyutu: verim = P / (G · A) olduğu için aktif yüzey alanı gerekir. Varsayılan ölçüler (cm, en × boy)
-// modeldeki alanı verir; kullanıcı "Verim hesabı" sekmesinden kendi ölçtüğü değerleri girebilir.
+// modeldeki alanı verir; kullanıcı ⚡ Verim sekmesinin "Panel ve sıcaklık" bölümünden kendi ölçtüğü değerleri girebilir.
 // Alan akımı değiştirmez (akım laboratuvar ölçümünden gelir), yalnızca verimi değiştirir.
 PV.n = 1.3; PV.Ns = 6; PV.dim0 = [25, 18]; PV.dim = [25, 18];
 PVR.n = 1.7; PVR.Ns = 4; PVR.dim0 = [20, 15]; PVR.dim = [20, 15];
@@ -1448,7 +1471,7 @@ function updateEff(Ppv, Pfc, etaF, G) {
     d.querySelector("i").style.width = `${Math.min(100, v * 100)}%`;
     d.querySelector(".f").textContent = f;
   });
-  // canlı Sankey: yalnızca "Faraday verimi" sekmesi açıkken çizilir
+  // canlı Sankey: yalnızca ⚡ Verim sekmesi açıkken çizilir
   if (!$("#tp3").hidden) {
     $("#sankey").innerHTML = Pin > 0 && Ppv > 0
       ? sankeySvg([Ppv / Pin, pH2 / Ppv, fcIn > 0 ? Pfc / fcIn : null])
@@ -1456,7 +1479,7 @@ function updateEff(Ppv, Pfc, etaF, G) {
   }
 }
 
-/* Sankey açıklaması: Faraday verimi sekmesinde diyagramın altındaki açılır kutu */
+/* Sankey açıklaması: ⚡ Verim sekmesinde (Genel bakış) diyagramın altındaki açılır kutu */
 const SK_HOW = {
   tr: { sum: "📖 Sankey diyagramı nasıl okunur?", body: `<ul>
     <li>Diyagram <b>soldan sağa</b> okunur: ışık → panel → hidrojen → yakıt hücresi.</li>
@@ -1474,7 +1497,7 @@ const SK_HOW = {
 /* ---------- Sankey diyagramı ----------
    eta = [η_PV, η_elektrolizör (HHV), η_yakıt hücresi (HHV)]; η_YH null ise yakıt hücresi H₂ harcamıyordur.
    Panele düşen ışık 100 birimdir; bant kalınlığı enerjiyle orantılı, aşağı kıvrılan bantlar kayıptır.
-   Hem "Faraday verimi" sekmesinde (canlı) hem "Verim" dersinde (örnek değerlerle) kullanılır. */
+   Hem ⚡ Verim sekmesinde (canlı) hem "Verim" dersinde (örnek değerlerle) kullanılır. */
 function sankeySvg(eta) {
   const T = (tr, en) => (lang === "en" ? en : tr);
   const names = [T("Panele düşen ışık", "Light on the panel"), T("Panelden elektrik", "Electricity from panel"), T("H₂'de saklanan enerji", "Energy stored in H₂"), T("Yakıt hücresinden elektrik", "Electricity from fuel cell")];
@@ -1580,7 +1603,7 @@ $("#angPre").addEventListener("click", (e) => { const b = e.target.closest("butt
 $("#angRng").addEventListener("input", (e) => setAngle(e.target.value));
 $("#angNum").addEventListener("input", (e) => { if (e.target.value !== "" && isFinite(+e.target.value)) setAngle(e.target.value); });
 $("#angNum").addEventListener("change", (e) => { setAngle(e.target.value); e.target.value = S.ang; });
-/* ---------- 📐 Verim hesabı sekmesi ----------
+/* ---------- ⚡ Verim sekmesinin hesapları (alt sekmelere dağıtılır) ----------
    Verimleri adım adım, simülasyonun o anki sayılarıyla hesaplar:
    (1) PV verimi + panel boyutu + MPP/dolum faktörü, (2) sıcaklığın etkisi (sanal ısıtma),
    (3) elektrolizör Faraday ve enerji verimi (elle girilebilen hesap makinesi), (4) yakıt hücresi, (5) toplam. */
@@ -1642,11 +1665,10 @@ const TEMPX = {
 function renderCalc() {
   const T = (tr, en) => (lang === "en" ? en : tr), P = S.pv === "r" ? PVR : PV;
   const inp = (id, v, step, min = 0) => `<input type="number" id="${id}" value="${v}" step="${step}" min="${min}" inputmode="decimal">`;
-  $("#tp7").innerHTML = `
-  <p class="calc-lead">${T("Bu sekme verimleri adım adım, simülasyonun o anki değerleriyle hesaplar. Işığı, panel açısını, sıcaklığı ya da yükü değiştirdiğinizde sayılar kendiliğinden güncellenir.", "This tab works out the efficiencies step by step with the simulation's current values. The numbers update by themselves when you change the light, the panel angle, the temperature or the load.")}</p>
-  <div class="calc">
+  // bölümler ⚡ Verim sekmesinin alt sekmelerine dağıtılır (Panel ve sıcaklık · Faraday · Yakıt hücresi · Genel bakış)
+  $("#calcPV").innerHTML = `
     <section class="calc-card" style="--c:var(--sun)">
-      <h3>☀️ 1. ${T("Güneş paneli verimi", "Solar panel efficiency")}</h3>
+      <h3>☀️ ${T("Güneş paneli verimi", "Solar panel efficiency")}</h3>
       <div class="k-tiles" id="kPVt"></div>
       <h4>📏 ${T("Panel boyutu", "Panel size")} · ${t(S.pv === "r" ? "pvLblR" : "pvLblM")}</h4>
       <div class="calc-in">
@@ -1660,9 +1682,10 @@ function renderCalc() {
       <h4>${T("En yüksek güç noktası ve dolum faktörü", "Maximum power point and fill factor")}</h4>
       <ol class="calc-steps" id="kMPP"></ol>
       <details class="nt-more"><summary>📖 ${T("Fotovoltaik sistemin verimi nasıl hesaplanır?", "How is the efficiency of a PV system calculated?")}</summary>${PVSYS[lang]}</details>
-    </section>
+    </section>`;
+  $("#calcT").innerHTML = `
     <section class="calc-card" style="--c:var(--o2)">
-      <h3>🌡️ 2. ${T("Sıcaklık ve panel verimi", "Temperature and panel efficiency")}</h3>
+      <h3>🌡️ ${T("Sıcaklık ve panel verimi", "Temperature and panel efficiency")}</h3>
       <p class="hint">${T("Paneli sanal olarak ısıtın ya da soğutun; sıcaklık bütün simülasyona uygulanır. Laboratuvar ölçümleri 25 °C kabul edildi.", "Heat or cool the panel virtually; the temperature applies to the whole simulation. The lab measurements are taken as 25 °C.")}</p>
       <div class="temp-ctl">
         <button class="btn" type="button" data-dt="-5">❄️ −5 °C</button>
@@ -1675,9 +1698,10 @@ function renderCalc() {
       <div class="ls-fig" id="tChart"></div>
       <ol class="calc-steps" id="tSteps"></ol>
       <details class="nt-more"><summary>📖 ${T("Sıcaklık verimi neden düşürür?", "Why does temperature lower efficiency?")}</summary>${TEMPX[lang]}</details>
-    </section>
+    </section>`;
+  $("#calcEL").innerHTML = `
     <section class="calc-card" style="--c:var(--h2)">
-      <h3>💧 3. ${T("Elektrolizör: Faraday ve enerji verimi", "Electrolyzer: Faraday and energy efficiency")}</h3>
+      <h3>💧 ${T("Elektrolizör: Faraday ve enerji verimi", "Electrolyzer: Faraday and energy efficiency")}</h3>
       <div class="k-tiles" id="kELt"></div>
       <h4>🧮 ${T("Hesap makinesi", "Calculator")}</h4>
       <p class="hint">${T("Simülasyonu izler. Kendi laboratuvar ölçümünüz için kutulara yazın.", "Follows the simulation. Type into the boxes for your own lab measurement.")}</p>
@@ -1690,25 +1714,26 @@ function renderCalc() {
       </div>
       <h4>${T("Adım adım hesap", "Step by step")}</h4>
       <ol class="calc-steps" id="kEL"></ol>
-    </section>
+    </section>`;
+  $("#calcFC").innerHTML = `
     <section class="calc-card" style="--c:var(--ok)">
-      <h3>⚡ 4. ${T("Yakıt hücresi verimi", "Fuel cell efficiency")}</h3>
+      <h3>⚡ ${T("Yakıt hücresi verimi", "Fuel cell efficiency")}</h3>
       <div class="k-tiles" id="kFCt"></div>
       <h4>${T("Adım adım hesap", "Step by step")}</h4>
       <ol class="calc-steps" id="kFC"></ol>
-    </section>
-    <section class="calc-card calc-wide" style="--c:var(--accent)">
-      <h3>🔗 5. ${T("Toplam verim: ışıktan yakıt hücresi elektriğine", "Overall efficiency: from light to fuel-cell electricity")}</h3>
+    </section>`;
+  $("#calcTot").innerHTML = `
+    <section class="calc-card" style="--c:var(--accent)">
+      <h3>🔗 ${T("Toplam verim: ışıktan yakıt hücresi elektriğine", "Overall efficiency: from light to fuel-cell electricity")}</h3>
       <div id="kTot"></div>
-    </section>
-  </div>`;
+    </section>`;
   updateTempUi(); updateCalc(true);
 }
 const li = (txt, f, cls = "") => `<li${cls ? ` class="${cls}"` : ""}><span class="d">${txt}</span>${f ? `<span class="f">${f}</span>` : ""}</li>`;
 const tile = (label, val, main) => `<div class="k-tile${main ? " main" : ""}"><span>${label}</span><b>${val}</b></div>`;
 const rs = (s) => `<span class="res">${s}</span>`;
 function updateCalc(force) {
-  if (!force && $("#tp7").hidden) return;
+  if (!force && $("#tp3").hidden) return;
   if (!$("#kPV")) return;
   const T = (tr, en) => (lang === "en" ? en : tr), Pn = curPV();
   // ---- 1. PV ----
@@ -1812,11 +1837,18 @@ function updateCalc(force) {
   const ePV = Pin > 0 ? Pout / Pin : 0, eEl = Pout > 0 ? (S.rate / 60 / VM * HHV) / Pout : 0, eFC = PH > 0 ? Pel / PH : 0;
   $("#kTot").innerHTML = ePV > 0 && eFC > 0
     ? `<div class="tot-row">η<sub>${T("toplam", "total")}</sub> = η<sub>PV</sub> · η<sub>E</sub> · η<sub>${T("YH", "FC")}</sub> = ${pct(ePV * 100, 1)} <span class="op">×</span> ${pct(eEl * 100, 1)} <span class="op">×</span> ${pct(eFC * 100, 1)} <span class="op">=</span> <span class="res">${pct(ePV * eEl * eFC * 100, 2)}</span></div>
-       <p class="calc-note">${T(`Panele düşen her 100 birim ışık enerjisinden yaklaşık ${num(ePV * eEl * eFC * 100, 1)} birimi yakıt hücresinden elektrik olarak geri alınır. Elektrolizör verimi burada simülasyonun anlık değeridir (3. bölümdeki hesap makinesinden bağımsız). Enerjinin nerede kaybolduğu ⚡ Faraday verimi sekmesindeki Sankey diyagramında görülür.`, `Of every 100 units of light energy on the panel, about ${num(ePV * eEl * eFC * 100, 1)} come back as electricity from the fuel cell. The electrolyzer efficiency here is the simulation's live value (independent of the calculator in section 3). Where the energy is lost is shown by the Sankey diagram in the ⚡ Faraday efficiency tab.`)}</p>`
+       <p class="calc-note">${T(`Panele düşen her 100 birim ışık enerjisinden yaklaşık ${num(ePV * eEl * eFC * 100, 1)} birimi yakıt hücresinden elektrik olarak geri alınır. Elektrolizör verimi burada simülasyonun anlık değeridir (Faraday alt sekmesindeki hesap makinesinden bağımsız). Enerjinin nerede kaybolduğu yukarıdaki Sankey diyagramında görülür.`, `Of every 100 units of light energy on the panel, about ${num(ePV * eEl * eFC * 100, 1)} come back as electricity from the fuel cell. The electrolyzer efficiency here is the simulation's live value (independent of the calculator in the Faraday sub-tab). Where the energy is lost is shown by the Sankey diagram above.`)}</p>`
     : `<p class="calc-note">${T("Toplam verim için ışık açık olmalı ve yakıt hücresi H₂ harcamalı.", "For the overall efficiency the light must be on and the fuel cell must be using H₂.")}</p>`;
 }
 // sekme içi olaylar (içerik dil değişince yeniden çizildiği için olay yetkilendirme)
-$("#tp7").addEventListener("input", (e) => {
+// ⚡ Verim alt sekmeleri
+function setEffSub(k) {
+  document.querySelectorAll("#effSub button").forEach((b) => b.setAttribute("aria-selected", b.dataset.sp === k));
+  document.querySelectorAll("#tp3 .subpanel").forEach((p) => { p.hidden = p.dataset.sp !== k; });
+  updateUi();
+}
+$("#effSub").addEventListener("click", (e) => { const b = e.target.closest("button[data-sp]"); if (b) setEffSub(b.dataset.sp); });
+$("#tp3").addEventListener("input", (e) => {
   const id = e.target.id, v = +e.target.value;
   if (id === "pW" || id === "pH") { if (v > 0) { const P = S.pv === "r" ? PVR : PV; P.dim[id === "pW" ? 0 : 1] = v; updateUi(); } }
   else if (id === "tRng") setTemp(v);
@@ -1824,7 +1856,7 @@ $("#tp7").addEventListener("input", (e) => {
     elc.follow = false; elc.I = +$("#eI").value || 0; elc.t = +$("#eT").value || 0; elc.vol = +$("#eV").value || 0; elc.U = +$("#eU").value || 0; updateCalc();
   }
 });
-$("#tp7").addEventListener("click", (e) => {
+$("#tp3").addEventListener("click", (e) => {
   const b = e.target.closest("button"); if (!b) return;
   if (b.dataset.dt) setTemp(S.Tp + +b.dataset.dt);
   else if (b.dataset.t) setTemp(b.dataset.t);
@@ -2457,20 +2489,20 @@ const LESSONS = [
       <li><b>Elektrolizör:</b> iki verimi vardır. <b>Faraday verimi</b>, akımın ne kadarının gerçekten H₂ ürettiğidir (≈ %90–99). <b>Enerji verimi</b>, H₂'de saklanan enerjinin harcanan elektriğe oranıdır: ≈ 1,48 V / 2,4 V ≈ %60.</li>
       <li><b>Yakıt hücresi:</b> çıkan elektriğin, harcanan H₂'nin enerjisine oranı; hücre başına ≈ U / 1,48 V. Motorla seride ≈ %58.</li></ul>
       <p>Zincirdeki toplam verim bunların çarpımıdır: 0,12 × 0,60 × 0,58 ≈ <b>%4</b>. Düşük görünse de hidrojenin değeri, enerjiyi uzun süre saklayıp başka bir yerde ve zamanda kullanabilmesindedir.</p>
-      <p>Bu verimlerin zincir boyunca enerjiyi adım adım nasıl azalttığını <b>Faraday verimi</b> sekmesindeki canlı <b>Sankey diyagramı</b> gösterir; nasıl okunduğu diyagramın hemen altında anlatılıyor. Her verimin sayılarla adım adım hesabı, panel boyutunun ve sıcaklığın etkisi ise <b>📐 Verim hesabı</b> sekmesinde.</p>
+      <p>Bu verimlerin zincir boyunca enerjiyi adım adım nasıl azalttığını <b>⚡ Verim</b> sekmesindeki canlı <b>Sankey diyagramı</b> gösterir; nasıl okunduğu diyagramın hemen altında anlatılıyor. Her verimin sayılarla adım adım hesabı, panel boyutunun ve sıcaklığın etkisi de aynı sekmenin alt sekmelerinde.</p>
       <p class="hint">Not: Hidrojenin enerjisi burada üst ısıl değerle (HHV, 286 kJ/mol) hesaplanmıştır; 1,48 V bu değere karşılık gelir.</p>`,
       `<p>Each conversion has its own efficiency:</p>
       <ul><li><b>Solar panel:</b> η<sub>PV</sub> = P<sub>electrical</sub> / (G · A). Most of the light becomes heat; ≈ 12% in this kit.</li>
       <li><b>Electrolyzer:</b> two efficiencies. <b>Faraday efficiency</b> is how much of the current really makes H₂ (≈ 90–99%). <b>Energy efficiency</b> is the energy stored in H₂ divided by the electricity used: ≈ 1.48 V / 2.4 V ≈ 60%.</li>
       <li><b>Fuel cell:</b> electricity out divided by the energy of the H₂ used; per cell ≈ U / 1.48 V. In series with the motor ≈ 58%.</li></ul>
       <p>The total efficiency of the chain is the product: 0.12 × 0.60 × 0.58 ≈ <b>4%</b>. It looks low, but hydrogen's value is that it can store energy for a long time and deliver it at another place and time.</p>
-      <p>The live <b>Sankey diagram</b> in the <b>Faraday efficiency</b> tab shows how these efficiencies shrink the energy step by step along the chain; how to read it is explained right below the diagram. The step-by-step working of each efficiency with numbers, and the effect of panel size and temperature, are in the <b>📐 Efficiency calculator</b> tab.</p>
+      <p>The live <b>Sankey diagram</b> in the <b>⚡ Efficiency</b> tab shows how these efficiencies shrink the energy step by step along the chain; how to read it is explained right below the diagram. The step-by-step working of each efficiency with numbers, and the effect of panel size and temperature, are in the sub-tabs of the same tab.</p>
       <p class="hint">Note: hydrogen's energy is counted here with the higher heating value (HHV, 286 kJ/mol); 1.48 V corresponds to this value.</p>`),
     d: () => D.eff(),
-    e: () => L(`Kademe 8'de: panele düşen ışık ≈ 549 W/m² × 0,045 m² ≈ 24,7 W; panel ≈ 2,9 W elektrik verir (%12). Elektrolizör ≈ 1,7 W'lık hidrojen üretir (%60). Yakıt hücresi 228 mW'lık hidrojenden 132 mW elektrik üretir (%58). Canlı Sankey diyagramı ve değerler <b>Faraday verimi</b> sekmesinde: ışığı ya da yükü değiştirip bantların nasıl değiştiğini izleyin.`,
-      `At level 8: light on the panel ≈ 549 W/m² × 0.045 m² ≈ 24.7 W; the panel delivers ≈ 2.9 W (12%). The electrolyzer turns that into ≈ 1.7 W of hydrogen (60%). The fuel cell makes 132 mW of electricity from 228 mW of hydrogen (58%). The live Sankey diagram and values are in the <b>Faraday efficiency</b> tab: change the light or the load and watch the bands change.`),
+    e: () => L(`Kademe 8'de: panele düşen ışık ≈ 549 W/m² × 0,045 m² ≈ 24,7 W; panel ≈ 2,9 W elektrik verir (%12). Elektrolizör ≈ 1,7 W'lık hidrojen üretir (%60). Yakıt hücresi 228 mW'lık hidrojenden 132 mW elektrik üretir (%58). Canlı Sankey diyagramı ve değerler <b>⚡ Verim</b> sekmesinde: ışığı ya da yükü değiştirip bantların nasıl değiştiğini izleyin.`,
+      `At level 8: light on the panel ≈ 549 W/m² × 0.045 m² ≈ 24.7 W; the panel delivers ≈ 2.9 W (12%). The electrolyzer turns that into ≈ 1.7 W of hydrogen (60%). The fuel cell makes 132 mW of electricity from 228 mW of hydrogen (58%). The live Sankey diagram and values are in the <b>⚡ Efficiency</b> tab: change the light or the load and watch the bands change.`),
     f: () => `η = P<sub>${L("çıkış", "out")}</sub> / P<sub>${L("giriş", "in")}</sub> &nbsp;·&nbsp; η<sub>${L("toplam", "total")}</sub> = η<sub>PV</sub> · η<sub>${L("elz", "ely")}</sub> · η<sub>${L("YH", "FC")}</sub>`,
-    a: () => { setLevel(8); $("#tb3").click(); $("#tb3").scrollIntoView({ behavior: REC ? "auto" : "smooth", block: "start" }); }, noScroll: true },
+    a: () => { setLevel(8); $("#tb3").click(); setEffSub("ov"); $("#tb3").scrollIntoView({ behavior: REC ? "auto" : "smooth", block: "start" }); }, noScroll: true },
 ];
 // --- başlarken rehberi: sayfaya ilk giren kişi için, derslerin önünde (numarasız) ---
 const showBtn = (sel) => `<button class="btn" type="button" data-show="${sel}">👁 ${L("Göster", "Show")}</button>`;
@@ -2487,7 +2519,7 @@ LESSONS.unshift({ ic: "🚀", guide: true, t: () => L("Başlarken: sayfa nasıl 
       <li><span><b>Zamanı hızlandırın.</b> Gerçek deney 20 dakika sürer. Beklememek için <b>60×</b> seçin: 20 dakika 20 saniyede geçer.</span>${showBtn("#pnlTime")}</li>
       <li><span><b>Ölçüm alın.</b> Kronometrede <b>Başlat</b>'a basın. 20 dakika dolunca ölçüm kendiliğinden durur ve <b>Ölçüm tablosu</b>na eklenir; laboratuvarda yaptığınızın aynısı.</span>${showBtn("#pnlSw")}</li>
       <li><span><b>Hidrojeni kullanın.</b> Yakıt hücresini <b>seri</b> ya da <b>paralel</b> bağlayın, yük olarak motoru ya da bir direnci seçin. Pervanenin hızı ve ölçülen güç değişir.</span>${showBtn("#pnlLoad")}</li>
-      <li><span><b>Sonuçları okuyun.</b> Enerji zinciri satırı her aşamanın anlık değerini gösterir. Ayrıntılar sekmelerde: <b>Grafikler</b>, <b>Ölçüm tablosu</b> (CSV indirilebilir), <b>Faraday verimi</b> (Sankey diyagramı), <b>Verim hesabı</b> (adım adım hesap, panel boyutu ve sıcaklığın etkisi).</span>${showBtn(".chain")}</li>
+      <li><span><b>Sonuçları okuyun.</b> Enerji zinciri satırı her aşamanın anlık değerini gösterir. Ayrıntılar sekmelerde: <b>Grafikler</b>, <b>Ölçüm tablosu</b> (CSV indirilebilir), <b>⚡ Verim</b> (Sankey diyagramı, Faraday verimi, adım adım hesap, panel boyutu ve sıcaklığın etkisi).</span>${showBtn(".chain")}</li>
       <li><span><b>Öğrenin ve kendinizi sınayın.</b> Soldaki listeden dersleri sırayla okuyun; her dersin sonundaki “Simülasyonda dene” düğmesi konuyu sahnede gösterir. Sonra <b>Deney föyü ve quiz</b> sekmesini deneyin.</span>${showBtn(".tablist")}</li>
     </ol>
     <p class="hint">İpuçları: <b>Sıfırla</b> deneyi baştan başlatır. <b>H₂ vanası</b> kapatılırsa gaz yalnızca depoda birikir. Üstteki <b>▶ Tanıtım videosu</b> 30 saniyelik bir özet gösterir; <b>❓ Nasıl kullanılır?</b> sizi bu sayfaya geri getirir. Dili ve temayı (açık/koyu) sol üstteki <b>☰</b> menüsünden değiştirebilirsiniz.</p>`,
@@ -2500,7 +2532,7 @@ LESSONS.unshift({ ic: "🚀", guide: true, t: () => L("Başlarken: sayfa nasıl 
       <li><span><b>Speed up time.</b> The real experiment takes 20 minutes. To avoid waiting, choose <b>60×</b>: 20 minutes pass in 20 seconds.</span>${showBtn("#pnlTime")}</li>
       <li><span><b>Take a measurement.</b> Press <b>Start</b> on the stopwatch. After 20 minutes it stops by itself and the result is added to the <b>Measurements</b> tab, just like in the lab.</span>${showBtn("#pnlSw")}</li>
       <li><span><b>Use the hydrogen.</b> Connect the fuel cells in <b>series</b> or <b>parallel</b> and choose the motor or a resistor as the load. The propeller speed and the measured power change.</span>${showBtn("#pnlLoad")}</li>
-      <li><span><b>Read the results.</b> The energy chain row shows the live value of each stage. Details are in the tabs: <b>Charts</b>, <b>Measurements</b> (CSV download), <b>Faraday efficiency</b> (Sankey diagram), <b>Efficiency calculator</b> (step-by-step working, panel size and the effect of temperature).</span>${showBtn(".chain")}</li>
+      <li><span><b>Read the results.</b> The energy chain row shows the live value of each stage. Details are in the tabs: <b>Charts</b>, <b>Measurements</b> (CSV download), <b>⚡ Efficiency</b> (Sankey diagram, Faraday efficiency, step-by-step working, panel size and the effect of temperature).</span>${showBtn(".chain")}</li>
       <li><span><b>Learn and test yourself.</b> Read the lessons in the list on the left in order; the “Try it in the simulation” button at the end of each lesson shows the topic in the scene. Then try the <b>Worksheet &amp; quiz</b> tab.</span>${showBtn(".tablist")}</li>
     </ol>
     <p class="hint">Tips: <b>Reset</b> starts the experiment again. If the <b>H₂ valve</b> is closed, gas only collects in storage. The <b>▶ Intro video</b> at the top is a 30-second summary; <b>❓ How to use</b> brings you back here. Change the language and the theme (light/dark) from the <b>☰</b> menu at the top left.</p>`),
@@ -2564,7 +2596,7 @@ $("#btnCopy").addEventListener("click", () => {
 document.querySelectorAll(".tab").forEach((tb) => tb.addEventListener("click", () => {
   document.querySelectorAll(".tab").forEach((x) => { const on = x === tb; x.setAttribute("aria-selected", on); document.getElementById(x.getAttribute("aria-controls")).hidden = !on; });
   if (tb.id === "tb1") { [c0, c1, c2, c3, c4].forEach((c) => c && c.resize()); }
-  if (tb.id === "tb7") updateCalc();
+  if (tb.id === "tb3") updateUi();
 }));
 /* ---------- sol üst menü: dil ve tema ---------- */
 function curTheme() { const c = document.documentElement.getAttribute("data-theme"); return c || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"); }
