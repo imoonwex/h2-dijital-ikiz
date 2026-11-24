@@ -129,6 +129,8 @@ main.wrap { padding-block: 18px 40px; display: grid; gap: 18px; }
 .k-tile b { font: 1.4rem var(--font-data); font-weight: 400; color: var(--fg); font-variant-numeric: tabular-nums; white-space: nowrap; }
 .k-tile.main { background: color-mix(in srgb, var(--c, var(--accent)) 12%, var(--surface)); border-color: color-mix(in srgb, var(--c, var(--accent)) 50%, var(--line)); }
 .k-tile.main b { font-weight: 400; font-size: 1.6rem; }
+.k-tile small { font: .72rem var(--font-data); color: var(--muted); overflow-wrap: anywhere; }
+.k-tiles.five { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); margin-bottom: 4px; }
 /* adım adım hesap: numara rozeti · açıklama · formül · sonuç etiketi */
 .calc-steps { list-style: none; counter-reset: cs; margin: 0; padding: 0; display: grid; }
 .calc-steps li { counter-increment: cs; display: grid; grid-template-columns: 24px minmax(0, 1fr); column-gap: 10px; row-gap: 3px; padding: 9px 6px; border-top: 1px dashed var(--line); line-height: 1.4; }
@@ -284,6 +286,9 @@ label.chk { display: flex; gap: 6px; align-items: center; font-size: .88rem; col
 .ws-exp ol { margin: 0; padding-left: 20px; display: grid; gap: 3px; font-size: .92rem; }
 .ws-exp table td, .ws-exp table th { padding: 6px 8px; }
 .ws-res { font-size: .88rem; font-weight: 600; }
+.ws-warn { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 16px; border: 1px solid var(--warn); background: color-mix(in srgb, var(--warn) 12%, var(--surface)); border-radius: 10px; padding: 10px 14px; margin-bottom: 14px; font-size: .92rem; }
+.ws-warn[hidden] { display: none; }
+.ws-warn span { flex: 1 1 320px; }
 .ws-q { border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; margin-bottom: 12px; display: grid; gap: 8px; }
 .ws-q p { margin: 0; font-weight: 600; }
 .ws-q .opt { display: flex; gap: 8px; align-items: flex-start; padding: 6px 8px; border-radius: 6px; border: 1px solid transparent; cursor: pointer; font-size: .92rem; }
@@ -689,6 +694,7 @@ footer.wrap { padding-block: 0 28px; color: var(--muted); font-size: .8rem; }
             <button class="btn" type="button" data-dt="5" aria-label="+5 °C">🔥 +5</button>
             <input type="range" id="tBarRng" min="0" max="100" step="1" value="25" aria-label="T (°C)">
           </div>
+          <label class="chk"><input type="checkbox" id="tAuto"> <span data-i18n="autoHeat">Lamba paneli ısıtsın (otomatik ısınma)</span></label>
           <span class="hint" data-i18n="tempHint">25 °C = laboratuvar koşulu. Ayrıntılı hesap: ⚡ Verim › Panel ve sıcaklık</span>
         </div>
         <div class="sb-grp sb-ang">
@@ -817,6 +823,7 @@ footer.wrap { padding-block: 0 28px; color: var(--muted); font-size: .8rem; }
         <button class="btn primary" id="btnCsv" type="button" data-i18n="csv">CSV indir</button>
         <button class="btn" id="btnCopy" type="button" data-i18n="copy">Tabloyu kopyala</button>
         <button class="btn" id="btnClearRec" type="button" data-i18n="clearRec">Tabloyu temizle</button>
+        <span class="hint" data-i18n="recKept">Ölçümler bu tarayıcıda saklanır; sayfa yenilense de kaybolmaz.</span>
       </div>
       <div class="tbl-wrap">
         <table>
@@ -845,8 +852,7 @@ footer.wrap { padding-block: 0 28px; color: var(--muted); font-size: .8rem; }
         <div id="sankey"></div>
         <details class="nt-more sk-how"><summary id="skHowSum">📖 Sankey diyagramı nasıl okunur?</summary><div id="skHow"></div></details>
       </div>
-      <div class="eff-grid" id="effGrid"></div>
-      <div id="calcTot" style="margin-top:16px"></div>
+      <div id="calcTot"></div>
       </div>
       <div class="subpanel" data-sp="far" hidden>
       <div class="two" style="margin-top:0">
@@ -912,6 +918,7 @@ const I18N = {
     skH: "Enerji akışı (Sankey diyagramı)",
     skP: "Panele düşen ışığın yakıt hücresine kadar ne kadarının ulaştığını gösterir. Değerler canlıdır; ışığı ya da yükü değiştirince güncellenir.",
     mLang: "Dil", thLight: "☀️ Açık", thDark: "🌙 Koyu", menuLbl: "Menü: dil ve tema",
+    autoHeat: "Lamba paneli ısıtsın (otomatik ısınma)", recKept: "Ölçümler bu tarayıcıda saklanır; sayfa yenilense de kaybolmaz.",
     panelH: "Panel", pvType: "Panel tipi", tempH: "Panel sıcaklığı", tempHint: "25 °C = laboratuvar koşulu. Ayrıntılı hesap: ⚡ Verim › Panel ve sıcaklık",
     angH: "Panel açısı θ", angHint: "0° = panel lambaya dik (laboratuvar ölçümleri bu konumda alındı)", topView: "Üstten görünüş", thAng: "Açı θ (°)",
     theme: "Tema", lampLbl: "PAR lamba", chFC: "YH · Motor", meterLbl: "Ölçüm ünitesi · 0–2 / 0–20 A·V",
@@ -974,6 +981,7 @@ const I18N = {
     skH: "Energy flow (Sankey diagram)",
     skP: "Shows how much of the light on the panel reaches the fuel cell. Values are live; they update when you change the light or the load.",
     mLang: "Language", thLight: "☀️ Light", thDark: "🌙 Dark", menuLbl: "Menu: language and theme",
+    autoHeat: "Let the lamp heat the panel (auto heating)", recKept: "Measurements are kept in this browser; they survive a page reload.",
     panelH: "Panel", pvType: "Panel type", tempH: "Panel temperature", tempHint: "25 °C = lab condition. Detailed working: ⚡ Efficiency › Panel and temperature",
     angH: "Panel angle θ", angHint: "0° = panel facing the lamp (the lab measurements were taken here)", topView: "Top view", thAng: "Angle θ (°)",
     theme: "Theme", lampLbl: "PAR lamp", chFC: "FC · Motor", meterLbl: "Measuring unit · 0–2 / 0–20 A·V",
@@ -1216,7 +1224,7 @@ function solveFc(s, conn = S.conn, load = S.load) {
 const S = {};
 function resetState() {
   Object.assign(S, {
-    level: 4, t: 0, speed: S.speed || 1, conn: S.conn || "s", pv: S.pv || "m", ang: S.ang || 0, angNow: S.angNow || 0, Tp: S.Tp ?? 25, load: S.load ?? "motor", paused: false, valve: true, ch: S.ch || "fc",
+    level: 4, t: 0, speed: S.speed || 1, conn: S.conn || "s", pv: S.pv || "m", ang: S.ang || 0, angNow: S.angNow || 0, Tp: S.Tp ?? 25, autoT: !!S.autoT, load: S.load ?? "motor", paused: false, valve: true, ch: S.ch || "fc",
     vH2: 40, vO2: 20, prod: 0, c: 0.55, fcS: 1, rpm: 0, rpmVis: 0, full: false,
     I: 0, V: 0, rate: 0, fcI: 0, fcV: 0, cons: 0,
     sw: { run: false, t: 0, h2: 0, level: 4 }, hist: [], lastHist: -1
@@ -1226,6 +1234,8 @@ resetState();
 let records = [];
 
 function step(dt) {
+  // otomatik ısınma: panel, bu ışıkta ulaşacağı sıcaklığa (NOCT yöntemi, ortam 25 °C) birinci dereceden yaklaşır
+  if (S.autoT) { const tgt = 25 + (NOCT - 20) / 800 * levelG(S.level) * cosD(S.angNow); S.Tp += (tgt - S.Tp) * (1 - Math.exp(-dt / HEAT_TAU)); }
   const Iph = iphAt(S.level, curPV(), S.angNow);   // panelin o anki açısı
   const I = solveOp(Iph, S.c);
   S.I = I; S.V = I > 0 ? vEl(I, S.c) : (Iph > 0 ? 0 : 0);
@@ -1480,6 +1490,8 @@ function updateUi() {
   $("#valveHandle").setAttribute("fill", S.valve ? "#2f8a4a" : "#c0392b");
   updateEff(Ppv, Pfc, etaF, G);
   updateCalc();
+  if (!$("#tp5").hidden) updateWsWarn();
+  if (Math.round(S.Tp) !== updateUi.tp) { updateUi.tp = Math.round(S.Tp); if ($("#tBarVal")) updateTempUi(); }   // otomatik ısınmada gösterge
 }
 
 function updateEff(Ppv, Pfc, etaF, G) {
@@ -1487,22 +1499,7 @@ function updateEff(Ppv, Pfc, etaF, G) {
   const Pin = Gp * curPV().area;
   const pH2 = S.rate / 60 / VM * HHV;
   const fcIn = S.cons / 60 / VM * HHV;
-  const rows = [
-    ["effF", etaF, `${num(S.rate, 2)} / ${num(faradayRate(S.I), 2)} mL/${lang === "tr" ? "dk" : "min"}`],
-    ["effE", Ppv > 0 ? pH2 / Ppv : 0, `${num(pH2, 2)} W / ${num(Ppv, 2)} W`],
-    ["effPV", Pin > 0 ? Ppv / Pin : 0, `${num(Ppv, 2)} W / (${Math.round(Gp)} W/m² × ${num(curPV().area, 3)} m²)`],
-    ["effFC", fcIn > 0 ? Pfc / fcIn : 0, `${num(Pfc * 1000, 0)} mW / ${num(fcIn * 1000, 0)} mW`],
-    ["effTot", Pin > 0 ? Pfc / Pin : 0, `${num(Pfc * 1000, 0)} mW / ${num(Pin, 1)} W`]
-  ];
-  const grid = $("#effGrid");
-  if (!grid.children.length) rows.forEach(() => { const d = document.createElement("div"); d.className = "eff"; d.innerHTML = '<span class="lbl"></span><span class="num"></span><div class="bar"><i></i></div><span class="f"></span>'; grid.appendChild(d); });
-  rows.forEach(([k, v, f], i) => {
-    const d = grid.children[i];
-    d.querySelector(".lbl").textContent = t(k);
-    d.querySelector(".num").textContent = pct(v * 100, v < 0.1 ? 2 : 1);
-    d.querySelector("i").style.width = `${Math.min(100, v * 100)}%`;
-    d.querySelector(".f").textContent = f;
-  });
+  // verim kutuları artık "Verimler ve toplam" kartında (updateCalc → #kTot)
   // canlı Sankey: yalnızca ⚡ Verim sekmesi açıkken çizilir
   if (!$("#tp3").hidden) {
     $("#sankey").innerHTML = Pin > 0 && Ppv > 0
@@ -1647,25 +1644,27 @@ function pvMpp(Iph, P) {             // en yüksek güç noktası (üçe bölme 
 }
 const TEMP_PRE = [25, 45, 65, 85, 100];
 const NOCT = 45;                       // °C, tipik kristal Si paneli
+const HEAT_TAU = 420;                  // s, panelin ısınma/soğuma zaman sabiti (gerçek paneller: birkaç dakika)
 const elc = { follow: true, I: 0, t: 20, vol: 0, U: 0 };   // elektrolizör hesap makinesi; follow → simülasyonu izler
 function setTemp(v) {
   S.Tp = Math.round(Math.max(0, Math.min(100, isFinite(+v) ? +v : 25)));
+  S.autoT = false; const ca = $("#tAuto"); if (ca) ca.checked = false;   // elle ayar otomatik ısınmayı kapatır
   updateTempUi(); updateUi(); updateCharts(); buildPvTable();
 }
 function updateTempUi() {
-  const tx = $("#pvTemp"); tx.textContent = `🌡 ${S.Tp} °C`;
-  tx.style.fill = S.Tp > 25 ? "#c0392b" : S.Tp < 25 ? "#117f9f" : "#31404d";
+  const tx = $("#pvTemp"); tx.textContent = `🌡 ${Math.round(S.Tp)} °C`;
+  tx.style.fill = Math.round(S.Tp) > 25 ? "#c0392b" : Math.round(S.Tp) < 25 ? "#117f9f" : "#31404d";
   // Panel çubuğu (sahnenin altı): değer, kaydırıcı ve 25 °C'ye göre en yüksek güç
-  const bv = $("#tBarVal"); bv.textContent = `${S.Tp} °C`; bv.classList.toggle("hot", S.Tp > 25); bv.classList.toggle("cold", S.Tp < 25);
-  if (document.activeElement !== $("#tBarRng")) $("#tBarRng").value = S.Tp;
+  const bv = $("#tBarVal"); bv.textContent = `${Math.round(S.Tp)} °C`; bv.classList.toggle("hot", Math.round(S.Tp) > 25); bv.classList.toggle("cold", Math.round(S.Tp) < 25);
+  if (document.activeElement !== $("#tBarRng")) $("#tBarRng").value = Math.round(S.Tp);
   const base = S.pv === "r" ? PVR : PV, lv = S.level || 8;
   const pm = (Tc) => { const Q = pvAt(base, Tc); return pvMpp(iphAt(lv, Q, 0), Q).P; };
-  const rel = S.Tp === 25 ? 100 : Math.round(pm(S.Tp) / pm(25) * 100); pvAt(base, S.Tp);
+  const rel = Math.round(S.Tp) === 25 ? 100 : Math.round(pm(S.Tp) / pm(25) * 100); pvAt(base, S.Tp);
   $("#tInfo").textContent = lang === "tr" ? `25 °C'ye göre en yüksek güç: ${pct(rel, 0)}` : `max. power vs 25 °C: ${rel}%`;
   const tv = $("#tVal"); if (!tv) return;
-  tv.textContent = `${S.Tp} °C`; tv.classList.toggle("hot", S.Tp > 25); tv.classList.toggle("cold", S.Tp < 25);
-  $("#tRng").value = S.Tp;
-  document.querySelectorAll("#tPre button").forEach((b) => { const on = +b.dataset.t === S.Tp; b.classList.toggle("on", on); b.setAttribute("aria-pressed", on); });
+  tv.textContent = `${Math.round(S.Tp)} °C`; tv.classList.toggle("hot", Math.round(S.Tp) > 25); tv.classList.toggle("cold", Math.round(S.Tp) < 25);
+  $("#tRng").value = Math.round(S.Tp);
+  document.querySelectorAll("#tPre button").forEach((b) => { const on = +b.dataset.t === Math.round(S.Tp); b.classList.toggle("on", on); b.setAttribute("aria-pressed", on); });
 }
 const PVSYS = {
   tr: `<p>Bir güneş panelinin verimi, verdiği elektrik gücünün üzerine düşen ışık gücüne oranıdır:</p>
@@ -1732,7 +1731,7 @@ function renderCalc() {
         <button class="btn primary" type="button" data-dt="5">🔥 +5 °C ${T("ısıt", "heat")}</button>
       </div>
       <div class="seg" id="tPre" role="group" aria-label="T">${TEMP_PRE.map((x) => `<button type="button" data-t="${x}">${x} °C</button>`).join("")}</div>
-      <input type="range" id="tRng" min="0" max="100" step="1" value="${S.Tp}" aria-label="${T("Panel sıcaklığı", "Panel temperature")} (°C)">
+      <input type="range" id="tRng" min="0" max="100" step="1" value="${Math.round(S.Tp)}" aria-label="${T("Panel sıcaklığı", "Panel temperature")} (°C)">
       <div class="temp-res" id="tRes"></div>
       <div class="ls-fig" id="tChart"></div>
       <ol class="calc-steps" id="tSteps"></ol>
@@ -1763,13 +1762,13 @@ function renderCalc() {
     </section>`;
   $("#calcTot").innerHTML = `
     <section class="calc-card" style="--c:var(--accent)">
-      <h3>🔗 ${T("Toplam verim: ışıktan yakıt hücresi elektriğine", "Overall efficiency: from light to fuel-cell electricity")}</h3>
+      <h3>📊 ${T("Verimler ve toplam", "Efficiencies and total")}</h3>
       <div id="kTot"></div>
     </section>`;
   updateTempUi(); updateCalc(true);
 }
 const li = (txt, f, cls = "") => `<li${cls ? ` class="${cls}"` : ""}><span class="d">${txt}</span>${f ? `<span class="f">${f}</span>` : ""}</li>`;
-const tile = (label, val, main) => `<div class="k-tile${main ? " main" : ""}"><span>${label}</span><b>${val}</b></div>`;
+const tile = (label, val, main, sub) => `<div class="k-tile${main ? " main" : ""}"><span>${label}</span><b>${val}</b>${sub ? `<small>${sub}</small>` : ""}</div>`;
 const rs = (s) => `<span class="res">${s}</span>`;
 function updateCalc(force) {
   if (!force && $("#tp3").hidden) return;
@@ -1810,8 +1809,8 @@ function updateCalc(force) {
   pvAt(base, S.Tp);                    // önbelleği simülasyonun sıcaklığına geri al
   const rel = (a, b) => (b > 0 ? Math.round(a / b * 100) : 0);
   $("#tRes").innerHTML =
-    `<div class="tr-box"><span>${T("Panelin en yüksek gücü", "Panel's maximum power")}</span><span class="tr-n">25 °C: 100 → <span class="${S.Tp > 25 ? "hot" : ""}">${S.Tp} °C: ${rel(rT.P, r25.P)}</span></span><span>${num(r25.P, 2)} W → ${num(rT.P, 2)} W</span></div>
-     <div class="tr-box"><span>${T("Elektrolizöre giden akım (H₂ üretimi)", "Current into the electrolyzer (H₂ production)")}</span><span class="tr-n">25 °C: 100 → <span class="${S.Tp > 25 ? "hot" : ""}">${S.Tp} °C: ${rel(rT.Iop, r25.Iop)}</span></span><span>${num(r25.Iop, 2)} A → ${num(rT.Iop, 2)} A</span></div>`;
+    `<div class="tr-box"><span>${T("Panelin en yüksek gücü", "Panel's maximum power")}</span><span class="tr-n">25 °C: 100 → <span class="${Math.round(S.Tp) > 25 ? "hot" : ""}">${Math.round(S.Tp)} °C: ${rel(rT.P, r25.P)}</span></span><span>${num(r25.P, 2)} W → ${num(rT.P, 2)} W</span></div>
+     <div class="tr-box"><span>${T("Elektrolizöre giden akım (H₂ üretimi)", "Current into the electrolyzer (H₂ production)")}</span><span class="tr-n">25 °C: 100 → <span class="${Math.round(S.Tp) > 25 ? "hot" : ""}">${Math.round(S.Tp)} °C: ${rel(rT.Iop, r25.Iop)}</span></span><span>${num(r25.Iop, 2)} A → ${num(rT.Iop, 2)} A</span></div>`;
   const pts = (k) => { const o = []; for (let Tc = 0; Tc <= 100; Tc += 5) o.push([Tc, at(Tc)[k] * 100]); return o; };
   const sMax = pts("eMax"), sOp = pts("eOp");
   pvAt(base, S.Tp);
@@ -1819,14 +1818,14 @@ function updateCalc(force) {
   $("#tChart").innerHTML = plot(520, 280, 100, ymax, T("Panel sıcaklığı (°C)", "Panel temperature (°C)"), T("Verim (%)", "Efficiency (%)"), [
     { pts: sMax, color: "var(--o2)", label: T("en yüksek verim (MPP)", "max. efficiency (MPP)"), lab: [32, sMax[6][1] + ymax * 0.05] },
     { pts: sOp, color: "var(--h2)", dash: true, label: T("elektrolizörle çalışırken", "running the electrolyzer"), lab: [4, Math.max(sOp[1][1] - ymax * 0.1, ymax * 0.08)] }],
-    [{ x: S.Tp, y: rT.eMax * 100, label: `${S.Tp} °C`, color: "var(--o2)", dx: 8, dy: -8 }]);
-  const beta = S.Tp !== 25 && r25.P > 0 ? (1 - rT.P / r25.P) / (S.Tp - 25) : null;
+    [{ x: S.Tp, y: rT.eMax * 100, label: `${Math.round(S.Tp)} °C`, color: "var(--o2)", dx: 8, dy: -8 }]);
+  const beta = Math.abs(S.Tp - 25) >= 0.5 && r25.P > 0 ? (1 - rT.P / r25.P) / (S.Tp - 25) : null;
   const tNoct = 25 + (NOCT - 20) / 800 * levelG(lv) * cosD(S.angNow);
   $("#tSteps").innerHTML =
-    li(T("Açık devre gerilimi düşer", "The open-circuit voltage falls"), `V<sub>oc</sub>: ${num(r25.Voc, 2)} V (25 °C) → ${rs(num(rT.Voc, 2) + " V")} (${S.Tp} °C)`) +
+    li(T("Açık devre gerilimi düşer", "The open-circuit voltage falls"), `V<sub>oc</sub>: ${num(r25.Voc, 2)} V (25 °C) → ${rs(num(rT.Voc, 2) + " V")} (${Math.round(S.Tp)} °C)`) +
     li(T("Kısa devre akımı çok az artar", "The short-circuit current rises very slightly"), `I<sub>sc</sub>: ${num(r25.Isc, 3)} A → ${rs(num(rT.Isc, 3) + " A")}`) +
     li(T("En yüksek güç ve verim", "Maximum power and efficiency"), `P<sub>mpp</sub>: ${num(r25.P, 2)} W → ${rs(num(rT.P, 2) + " W")} · η<sub>max</sub>: ${pct(r25.eMax * 100, 1)} → ${rs(pct(rT.eMax * 100, 1))}`) +
-    (beta != null ? li(T("Bu modelin sıcaklık katsayısı", "This model's temperature coefficient"), `β = (1 − P<sub>T</sub>/P<sub>25</sub>) / (T − 25) = (1 − ${num(rT.P / r25.P, 3)}) / ${S.Tp - 25} = ${rs(pct(beta * 100, 2) + "/°C")}`) : "") +
+    (beta != null ? li(T("Bu modelin sıcaklık katsayısı", "This model's temperature coefficient"), `β = (1 − P<sub>T</sub>/P<sub>25</sub>) / (T − 25) = (1 − ${num(rT.P / r25.P, 3)}) / ${num(S.Tp - 25, S.Tp % 1 ? 1 : 0)} = ${rs(pct(beta * 100, 2) + "/°C")}`) : "") +
     li(T(`Bu ışıkta gerçek bir panel ne kadar ısınırdı? (NOCT = ${NOCT} °C, ortam 25 °C)`, `How hot would a real panel get in this light? (NOCT = ${NOCT} °C, ambient 25 °C)`),
       `T<sub>${T("hücre", "cell")}</sub> ≈ T<sub>${T("ortam", "amb")}</sub> + (NOCT − 20)/800 · G<sub>p</sub> = 25 + ${NOCT - 20}/800 × ${Math.round(levelG(lv) * cosD(S.angNow))} ≈ ${rs(Math.round(tNoct) + " °C")}`) +
     `<li class="calc-note">${T("Bu sıcaklığı uygulamak için:", "To apply this temperature:")} <button class="btn" type="button" data-t="${Math.round(tNoct)}">${Math.round(tNoct)} °C</button>${S.level ? "" : T(" (lamba kapalı; hesap kademe 8 ile yapıldı)", " (lamp off; calculated at level 8)")}</li>`;
@@ -1873,16 +1872,25 @@ function updateCalc(force) {
       li(T("Yakıt hücresi verimi", "Fuel cell efficiency"), `η<sub>${T("YH", "FC")}</sub> = P<sub>el</sub> / P<sub>H₂</sub> = ${num(Pel * 1000, 0)} / ${num(PH * 1000, 0)} = ${rs(pct(Pel / PH * 100, 1))}`, "key") +
       li(T("Sağlama: hücre başına gerilim / 1,48 V", "Check: voltage per cell / 1.48 V"), `η<sub>${T("YH", "FC")}</sub> ≈ U<sub>${T("hücre", "cell")}</sub> / 1,48 = ${num(S.conn === "p" ? S.fcV : S.fcV / 2, 3)} / 1,48 = ${rs(pct((S.conn === "p" ? S.fcV : S.fcV / 2) / 1.4813 * 100, 1))}`.replace(/1,48/g, lang === "en" ? "1.48" : "1,48"));
   // ---- 5. toplam ----
-  const ePV = Pin > 0 ? Pout / Pin : 0, eEl = Pout > 0 ? (S.rate / 60 / VM * HHV) / Pout : 0, eFC = PH > 0 ? Pel / PH : 0;
-  $("#kTot").innerHTML = ePV > 0 && eFC > 0
+  const pH2 = S.rate / 60 / VM * HHV, ePV = Pin > 0 ? Pout / Pin : 0, eEl = Pout > 0 ? pH2 / Pout : 0, eFC = PH > 0 ? Pel / PH : 0;
+  const eFar = S.I > 0 ? S.rate / faradayRate(S.I) : 0, mn = lang === "tr" ? "dk" : "min", dash = "–";
+  // beş verim kutusu (eski verim kartlarının yerini aldı) + toplamın formülü
+  const tiles5 = `<div class="k-tiles five">` +
+    tile(t("effPV"), ePV > 0 ? pct(ePV * 100, 1) : dash, false, Pin > 0 ? `${num(Pout, 2)} W / ${num(Pin, 1)} W` : "") +
+    tile(t("effF"), eFar > 0 ? pct(eFar * 100, 1) : dash, false, S.I > 0 ? `${num(S.rate, 2)} / ${num(faradayRate(S.I), 2)} mL/${mn}` : "") +
+    tile(t("effE"), eEl > 0 ? pct(eEl * 100, 1) : dash, false, Pout > 0 ? `${num(pH2, 2)} W / ${num(Pout, 2)} W` : "") +
+    tile(t("effFC"), eFC > 0 ? pct(eFC * 100, 1) : dash, false, PH > 0 ? `${num(Pel * 1000, 0)} / ${num(PH * 1000, 0)} mW` : "") +
+    tile(t("effTot"), ePV > 0 && eFC > 0 ? pct(ePV * eEl * eFC * 100, 2) : dash, true, "η<sub>PV</sub> · η<sub>E</sub> · η<sub>" + T("YH", "FC") + "</sub>") + `</div>`;
+  $("#kTot").innerHTML = tiles5 + (ePV > 0 && eFC > 0
     ? `<div class="tot-row">η<sub>${T("toplam", "total")}</sub> = η<sub>PV</sub> · η<sub>E</sub> · η<sub>${T("YH", "FC")}</sub> = ${pct(ePV * 100, 1)} <span class="op">×</span> ${pct(eEl * 100, 1)} <span class="op">×</span> ${pct(eFC * 100, 1)} <span class="op">=</span> <span class="res">${pct(ePV * eEl * eFC * 100, 2)}</span></div>
        <p class="calc-note">${T(`Panele düşen her 100 birim ışık enerjisinden yaklaşık ${num(ePV * eEl * eFC * 100, 1)} birimi yakıt hücresinden elektrik olarak geri alınır. Elektrolizör verimi burada simülasyonun anlık değeridir (Faraday alt sekmesindeki hesap makinesinden bağımsız). Enerjinin nerede kaybolduğu yukarıdaki Sankey diyagramında görülür.`, `Of every 100 units of light energy on the panel, about ${num(ePV * eEl * eFC * 100, 1)} come back as electricity from the fuel cell. The electrolyzer efficiency here is the simulation's live value (independent of the calculator in the Faraday sub-tab). Where the energy is lost is shown by the Sankey diagram above.`)}</p>`
-    : `<p class="calc-note">${T("Toplam verim için ışık açık olmalı ve yakıt hücresi H₂ harcamalı.", "For the overall efficiency the light must be on and the fuel cell must be using H₂.")}</p>`;
+    : `<p class="calc-note">${T("Toplam verim için ışık açık olmalı ve yakıt hücresi H₂ harcamalı.", "For the overall efficiency the light must be on and the fuel cell must be using H₂.")}</p>`);
 }
 // sekme içi olaylar (içerik dil değişince yeniden çizildiği için olay yetkilendirme)
 // Panel çubuğundaki sıcaklık kontrolü
-$("#angBar").addEventListener("click", (e) => { const b = e.target.closest("button[data-dt]"); if (b) setTemp(S.Tp + +b.dataset.dt); });
+$("#angBar").addEventListener("click", (e) => { const b = e.target.closest("button[data-dt]"); if (b) setTemp(Math.round(S.Tp) + +b.dataset.dt); });
 $("#tBarRng").addEventListener("input", (e) => setTemp(e.target.value));
+$("#tAuto").addEventListener("change", (e) => { S.autoT = e.target.checked; updateTempUi(); updateWsWarn(); });
 // ⚡ Verim alt sekmeleri
 function setEffSub(k) {
   document.querySelectorAll("#effSub button").forEach((b) => b.setAttribute("aria-selected", b.dataset.sp === k));
@@ -1900,7 +1908,7 @@ $("#tp3").addEventListener("input", (e) => {
 });
 $("#tp3").addEventListener("click", (e) => {
   const b = e.target.closest("button"); if (!b) return;
-  if (b.dataset.dt) setTemp(S.Tp + +b.dataset.dt);
+  if (b.dataset.dt) setTemp(Math.round(S.Tp) + +b.dataset.dt);
   else if (b.dataset.t) setTemp(b.dataset.t);
   else if (b.id === "pDim0") { const P = S.pv === "r" ? PVR : PV; P.dim = P.dim0.slice(); $("#pW").value = P.dim[0]; $("#pH").value = P.dim[1]; updateUi(); }
   else if (b.id === "eSim") { elc.follow = true; updateCalc(); }
@@ -1914,15 +1922,15 @@ function toast(msg, ms = 2600) { const el2 = $("#toast"); el2.textContent = msg;
 
 /* records */
 function addRecord(kind) {
-  const r = { kind, t: kind === "sw" ? S.sw.t : S.t, level: kind === "sw" ? S.sw.level : S.level, G: levelG(S.level), ang: S.angNow, Tp: S.Tp,
+  const r = { kind, t: kind === "sw" ? S.sw.t : S.t, level: kind === "sw" ? S.sw.level : S.level, G: levelG(S.level), ang: S.angNow, Tp: Math.round(S.Tp * 10) / 10,
     V: S.V, I: S.I, P: S.V * S.I, dH2: kind === "sw" ? S.sw.h2 : null,
     h20: kind === "sw" && S.sw.t > 0 ? S.sw.h2 * 1200 / S.sw.t : S.rate * 20, fcV: S.fcV, fcI: S.fcI * 1000, rpm: S.rpm, Iavg: kind === "sw" && S.sw.t > 0 ? S.sw.q / S.sw.t : S.I };
-  records.push(r); renderRecords(); updateC3();
+  records.push(r); renderRecords(); updateC3(); saveRec();
 }
 function renderRecords() {
   const body = $("#recBody");
   if (!records.length) { body.innerHTML = `<tr><td class="empty" colspan="15">${t("noRec")}</td></tr>`; return; }
-  body.innerHTML = records.map((r, i) => `<tr><td>${i + 1}</td><td>${r.kind === "sw" ? t("recSw") : t("recSnap")}</td><td>${fmtT(r.t)}</td><td>${r.level}</td><td>${Math.round(r.G)}</td><td>${Math.round(r.ang || 0)}</td><td>${r.Tp ?? 25}</td><td>${num(r.V, 2)}</td><td>${num(r.I, 3)}</td><td>${num(r.P, 2)}</td><td>${r.dH2 == null ? "–" : num(r.dH2, 1)}</td><td>${num(r.h20, 1)}</td><td>${num(r.fcV, 2)}</td><td>${num(r.fcI, 0)}</td><td>${Math.round(r.rpm)}</td></tr>`).join("");
+  body.innerHTML = records.map((r, i) => `<tr><td>${i + 1}</td><td>${r.kind === "sw" ? t("recSw") : t("recSnap")}</td><td>${fmtT(r.t)}</td><td>${r.level}</td><td>${Math.round(r.G)}</td><td>${Math.round(r.ang || 0)}</td><td>${Math.round(r.Tp ?? 25)}</td><td>${num(r.V, 2)}</td><td>${num(r.I, 3)}</td><td>${num(r.P, 2)}</td><td>${r.dH2 == null ? "–" : num(r.dH2, 1)}</td><td>${num(r.h20, 1)}</td><td>${num(r.fcV, 2)}</td><td>${num(r.fcI, 0)}</td><td>${Math.round(r.rpm)}</td></tr>`).join("");
 }
 function csvText(sep) {
   const head = ["#", "type", "duration_s", "level", "G_Wm2", "panel_angle_deg", "panel_temp_C", "V_pv", "I_A", "P_pv_W", "dH2_mL", "H2_20min_mL", "V_fc", "I_fc_mA", "rpm"];
@@ -2093,7 +2101,9 @@ function updateLoadUi() {
   $("#fcRP").textContent = P < 1 ? `${Math.round(P * 1000)} mW` : `${num(P, 2)} W`;
   $("#btnIvSweep").disabled = sweeping;
 }
-function savePoint(q) { ivPts.push(q); updateC4(); }
+function savePoint(q) { ivPts.push(q); updateC4(); saveRec(); }
+// Ölçüm tablosu ve I–V noktaları tarayıcıda saklanır (sayfa yenilenince kaybolmasın)
+function saveRec() { try { localStorage.setItem("h2twin-rec", JSON.stringify({ records, iv: ivPts })); } catch (e) {} }
 $("#pvSeg").addEventListener("click", (e) => { const b = e.target.closest("button"); if (b) setPv(b.dataset.pv); });
 $("#pvCmp").addEventListener("change", updateCharts);
 $("#connSeg").addEventListener("click", (e) => { const b = e.target.closest("button"); if (b && !sweeping) setConn(b.dataset.conn); });
@@ -2102,7 +2112,7 @@ $("#btnIvPt").addEventListener("click", () => {
   if (S.fcS < 0.5) { toast(t("ivNoGas")); return; }
   savePoint({ conn: S.conn, R: S.load, I: S.fcI, V: S.fcV, P: S.fcI * S.fcV }); toast(t("ivSaved"));
 });
-$("#btnIvClr").addEventListener("click", () => { ivPts = []; updateC4(); });
+$("#btnIvClr").addEventListener("click", () => { ivPts = []; updateC4(); saveRec(); });
 // Otomatik tarama: dirençleri büyükten küçüğe sırayla bağlar, her birinde noktayı kaydeder
 $("#btnIvSweep").addEventListener("click", () => {
   if (sweeping) return;
@@ -2252,12 +2262,27 @@ function renderWs() {
       (a !== undefined ? `<p class="exp"><b>${a === q.c ? w.right : w.wrong}</b> ${Q.e}</p>` : "") + "</div>"; }).join("");
   $("#tp5").innerHTML = `<div class="ws-bar ws-noprint"><div class="seg" id="wsSeg"><button type="button" data-v="foy" class="${wsView === "foy" ? "on" : ""}">${w.foy}</button><button type="button" data-v="quiz" class="${wsView === "quiz" ? "on" : ""}">${w.quiz}</button></div>
     <div class="row"><button class="btn" type="button" id="wsPrint">${w.print}</button><button class="btn" type="button" id="wsClear">${wsView === "foy" ? w.clearAll : w.clearQ}</button></div></div>
+    <div class="ws-warn ws-noprint" id="wsWarn" hidden></div>
     <h2 class="ws-ptitle">${t("title")} · ${wsView === "foy" ? w.foy : w.quiz}</h2>
     <div class="ws-info">${info}</div>
     <div ${wsView === "foy" ? "" : "hidden"}>${exp("e1", t1)}${exp("e2", t2)}${exp("e3", t3)}</div>
     <div ${wsView === "quiz" ? "" : "hidden"}>${quiz}</div>`;
-  wsCalc();
+  wsCalc(); updateWsWarn();
 }
+// Föydeki beklenen değerler laboratuvar koşulu içindir (panel 0°, 25 °C, otomatik ısınma kapalı).
+// Koşul farklıysa öğrenciyi uyarır; yoksa doğru ölçümler "yanlış" görünürdü.
+function labCondOk() { return S.ang === 0 && Math.round(S.Tp) === 25 && !S.autoT; }
+function updateWsWarn() {
+  const el = $("#wsWarn"); if (!el) return;
+  const ok = labCondOk(); el.hidden = ok; if (ok) return;
+  const now = `${lang === "tr" ? "açı" : "angle"} ${Math.round(S.ang)}°, ${Math.round(S.Tp)} °C${S.autoT ? (lang === "tr" ? ", otomatik ısınma açık" : ", auto heating on") : ""}`;
+  const html = lang === "tr"
+    ? `<span>⚠️ <b>Föydeki beklenen değerler laboratuvar koşulu içindir</b> (panel açısı 0°, sıcaklık 25 °C). Şu an: ${now}. Bu koşulda ölçümleriniz farklı çıkar ve “Kontrol et” onları yanlış gösterir.</span>`
+    : `<span>⚠️ <b>The worksheet's expected values are for the lab condition</b> (panel angle 0°, 25 °C). Now: ${now}. Your measurements will differ and “Check” will mark them wrong.</span>`;
+  const btn = `<button class="btn primary" type="button" id="wsLab">${lang === "tr" ? "Laboratuvar koşuluna dön" : "Back to lab condition"}</button>`;
+  if (el.dataset.k !== html) { el.innerHTML = html + btn; el.dataset.k = html; }
+}
+function labCondition() { S.autoT = false; $("#tAuto").checked = false; setTemp(25); setAngle(0, true); updateWsWarn(); }
 // öğrencinin değerlerinden hesaplanan sütunlar (teorik hacim, Faraday verimi, güç)
 function wsCalc() {
   const out = (k, v) => { const c = document.querySelector(`[data-out="${k}"]`); if (c) c.innerHTML = v; };
@@ -2279,6 +2304,7 @@ $("#tp5").addEventListener("click", (e) => {
   const b = e.target.closest("button"); if (!b) return;
   if (b.dataset.v) { wsView = b.dataset.v; renderWs(); }
   else if (b.dataset.check) wsCheck(b.dataset.check);
+  else if (b.id === "wsLab") labCondition();
   else if (b.id === "wsPrint") window.print();
   else if (b.id === "wsClear") { Object.keys(ws).forEach((k) => { if (wsView === "quiz" ? /^q\d+$/.test(k) : !/^q\d+$/.test(k) && !k.startsWith("info_")) delete ws[k]; }); wsSave(); renderWs(); }
 });
@@ -2625,7 +2651,7 @@ function setCh(c) { S.ch = c; $("#chPV").classList.toggle("on", c === "pv"); $("
 $("#btnSw").addEventListener("click", () => { S.sw.run ? stopSw(false) : startSw(); updateUi(); });
 $("#btnSwReset").addEventListener("click", () => { resetSw(); updateUi(); });
 $("#btnRec").addEventListener("click", () => { addRecord("snap"); toast(t("tSaved")); });
-$("#btnClearRec").addEventListener("click", () => { records = []; renderRecords(); updateC3(); });
+$("#btnClearRec").addEventListener("click", () => { records = []; renderRecords(); updateC3(); saveRec(); });
 $("#btnCsv").addEventListener("click", () => {
   try { const blob = new Blob(["﻿" + csvText(";")], { type: "text/csv;charset=utf-8" }); const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "h2_dijital_ikiz_olcumler.csv"; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 4000); } catch (e) {}
   toast(t("tCsv"));
@@ -2724,6 +2750,10 @@ async function loadData() {
   }
 }
 
+// saklanan ölçümleri geri yükle (bozuksa yok say)
+try { const d = JSON.parse(localStorage.getItem("h2twin-rec") || "null");
+  if (d && Array.isArray(d.records)) records = d.records.filter((r) => r && isFinite(r.I) && isFinite(r.h20));
+  if (d && Array.isArray(d.iv)) ivPts = d.iv.filter((q) => q && isFinite(q.I) && isFinite(q.V)); } catch (e) {}
 applyLang();
 loadData();
 if (!REC) requestAnimationFrame(frame);
