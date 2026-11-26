@@ -51,7 +51,7 @@ const uint8_t  FAN_PWM_BITS  = 8;
 
 // ESP32 Arduino çekirdeği 3.x ile 2.x arasında PWM işlevleri değişti
 #if defined(ESP_ARDUINO_VERSION_MAJOR) && ESP_ARDUINO_VERSION_MAJOR >= 3
-  #define FAN_PWM_INIT()  ledcAttach(PIN_FAN, FAN_PWM_HZ, FAN_PWM_BITS)
+  #define FAN_PWM_INIT()  Serial.printf("Fan PWM (GPIO%d, %lu Hz): %s\n", PIN_FAN, (unsigned long)FAN_PWM_HZ, ledcAttach(PIN_FAN, FAN_PWM_HZ, FAN_PWM_BITS) ? "hazir" : "BASARISIZ")
   #define FAN_PWM_WRITE(d) ledcWrite(PIN_FAN, (d))
 #else
   #define FAN_PWM_INIT()  do { ledcSetup(0, FAN_PWM_HZ, FAN_PWM_BITS); ledcAttachPin(PIN_FAN, 0); } while (0)
@@ -117,8 +117,27 @@ void applyFan() {
   FAN_PWM_WRITE((uint32_t)fanPct * ((1u << FAN_PWM_BITS) - 1) / 100);
 }
 
+// Teşhis: DS18B20'lerin hangi pine bağlı olduğunu bulur (Seri Monitör'e "tara" yazın).
+// I²C (21, 22), UART (1, 3) ve flaş (6–11) pinleri taranmaz.
+void scanOneWirePins() {
+  const uint8_t pins[] = { 4, 5, 13, 14, 15, 16, 17, 18, 19, 23, 25, 26, 27, 32, 33 };
+  Serial.println("[tara] DS18B20 araniyor...");
+  bool any = false;
+  for (uint8_t p : pins) {
+    OneWire ow(p); uint8_t a[8]; uint8_t n = 0;
+    ow.reset_search();
+    while (n < 4 && ow.search(a)) { if (OneWire::crc8(a, 7) == a[7] && (a[0] == 0x28 || a[0] == 0x10 || a[0] == 0x22)) n++; }
+    if (n) { Serial.printf("[tara] GPIO%u: %u sensor\n", p, n); any = true; }
+  }
+  if (!any) Serial.println("[tara] hicbir pinde sensor bulunamadi: kablo, 4,7 kOhm pull-up ve 3V3/GND baglantisini kontrol edin");
+  Serial.printf("[tara] bitti. Su an kullanilan pin: GPIO%d\n", PIN_ONEWIRE);
+  FAN_PWM_INIT(); applyFan();                // tarama fan pinini de yokladı: PWM'i yeniden kur
+  oneWire.begin(PIN_ONEWIRE);                // asıl 1-Wire hattını geri al
+}
+
 void handleFanCmd(String s) {
   s.trim(); s.toLowerCase();
+  if (s == "tara" || s == "scan") { scanOneWirePins(); return; }
   if (s == "auto" || s == "oto") fanMode = FAN_AUTO;
   else if (s == "on" || s == "ac" || s == "1") fanMode = FAN_ON;
   else if (s == "off" || s == "kapat" || s == "0") fanMode = FAN_OFF;
@@ -198,18 +217,13 @@ void drawOled() {
   oled.display();
 }
 
-// ---------------- kurulum ----------------
-void setup() {
-  Serial.begin(115200); delay(200);
-  Serial.println("\nH2 dijital ikiz - ESP32 olcum dugumu");
-  Wire.begin(PIN_SDA, PIN_SCL);
-  FAN_PWM_INIT(); FAN_PWM_WRITE(0);
-
-  okPV = inaPV.begin(); okFC = inaFC.begin();          // varsayılan kalibrasyon: 32 V, 2 A (0,1 Ω şönt)
-  Serial.printf("INA219 PV (0x40): %s, YH (0x41): %s\n", okPV ? "var" : "YOK", okFC ? "var" : "YOK");
-
+// DS18B20'leri arar; bulamazsa döngüde 10 s'de bir yeniden denenir
+uint32_t tTempScan = 0;
+void scanTemps() {
+  tTempScan = millis();
   ds.begin(); ds.setWaitForConversion(false); ds.setResolution(11);
   nTemp = min<uint8_t>(ds.getDeviceCount(), 2);
+  Serial.printf("DS18B20 (GPIO%d): %u sensor bulundu\n", PIN_ONEWIRE, nTemp);
   for (uint8_t k = 0; k < nTemp; k++) {
     ds.getAddress(addrT[k], k);
     Serial.printf("DS18B20 #%u adres: ", k);
@@ -217,6 +231,20 @@ void setup() {
     Serial.println(k == TEMP_FC_INDEX ? "  (yakit hucresi)" : "  (elektrolizor)");
   }
   ds.requestTemperatures();
+}
+
+// ---------------- kurulum ----------------
+void setup() {
+  Serial.begin(115200); delay(200);
+  Serial.println("\nH2 dijital ikiz - ESP32 olcum dugumu");
+  Serial.printf("Pinler: SDA %d, SCL %d, DS18B20 %d, fan %d\n", PIN_SDA, PIN_SCL, PIN_ONEWIRE, PIN_FAN);
+  Wire.begin(PIN_SDA, PIN_SCL);
+  FAN_PWM_INIT(); FAN_PWM_WRITE(0);
+
+  okPV = inaPV.begin(); okFC = inaFC.begin();          // varsayılan kalibrasyon: 32 V, 2 A (0,1 Ω şönt)
+  Serial.printf("INA219 PV (0x40): %s, YH (0x41): %s\n", okPV ? "var" : "YOK", okFC ? "var" : "YOK");
+
+  scanTemps();
 
   okOled = oled.begin(SSD1306_SWITCHCAPVCC, 0x3C);
   Serial.printf("OLED: %s\n", okOled ? "var" : "YOK");
@@ -229,7 +257,7 @@ void setup() {
   mqtt.setCallback(onMqtt);
   mqtt.setBufferSize(512);
   mqtt.setKeepAlive(30);
-  Serial.println("Seri komutlar: auto | on | off | 0-100 (fan)");
+  Serial.println("Seri komutlar: auto | on | off | 0-100 (fan) | tara (DS18B20 pinini bul)");
 }
 
 // ---------------- döngü ----------------
@@ -238,6 +266,8 @@ void loop() {
 
   // yerel fan kontrolü: Seri Monitör'den komut
   if (Serial.available()) handleFanCmd(Serial.readStringUntil('\n'));
+
+  if (nTemp < 2 && millis() - tTempScan >= 10000) scanTemps();   // eksik sensör varsa yeniden ara
 
   if (millis() - tSensor >= SENSOR_MS) {
     tSensor = millis();

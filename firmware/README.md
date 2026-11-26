@@ -23,6 +23,7 @@ ESP32 ──MQTT (TLS 8883)──▶ Adafruit IO ◀──MQTT (WebSocket 443)�
 
 1. **Dosya → Tercihler → Ek kart yöneticisi adresleri**: `https://espressif.github.io/arduino-esp32/package_esp32_index.json`
 2. **Araçlar → Kart → Kart Yöneticisi**: "esp32" (Espressif) kurun. Kart olarak **ESP32 Dev Module** seçin.
+   > ⚠️ **Sürüm 3.3.x kullanın, 4.0.0 kullanmayın.** 4.0.0 ile OneWire kütüphanesi çalışmıyor: DS18B20'ler bulunamıyor ("0 sensor bulundu"), 1-Wire hattı HIGH olsa bile. 26.11.2026'da denendi; 3.3'e düşünce iki sensör de okundu. Arduino IDE güncelleme önerirse esp32 paketini güncellemeyin.
 3. **Araçlar → Kütüphaneleri Yönet** ile şunları kurun:
    - Adafruit INA219
    - Adafruit SSD1306 ve Adafruit GFX Library
