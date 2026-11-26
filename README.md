@@ -58,4 +58,5 @@ Zincir: **Işık → PV panel → PEM elektrolizör (H₂/O₂) → gaz depolar�
 - [x] Otomatik ısınma: "Lamba paneli ısıtsın" açılınca panel sıcaklığı ışığa göre (NOCT 45 °C, ortam 25 °C) ≈ 7 dk zaman sabitiyle yükselir, lamba kapanınca soğur
 - [x] Deney föyü uyarısı: panel açısı 0° / sıcaklık 25 °C değilse föyün başında uyarı ve "Laboratuvar koşuluna dön" düğmesi
 - [x] Ölçüm tablosu ve yakıt hücresi I–V noktaları tarayıcıda saklanır (sayfa yenilense de kaybolmaz)
+- [x] Yakıt hücresi laboratuvar ölçümü (26.11.2026, Hücre 1, 100 → 0,5 Ω): ölçüme uydurulan model (U = min(0,87; 0,8252 − 0,02197·ln(I/1,081 mA) − 0,3433·I), RMSE 6,4 mV) varsayılan oldu; üreticinin veri sayfası "Hücre modeli" seçimiyle hâlâ kullanılabilir. Ölçülen hücre veri sayfasının ≈ %40'ı kadar güç veriyor (seride en fazla ≈ 0,67 W). ⚡ Verim › Yakıt hücresi'nde ölçüm tablosu, model–ölçüm farkı ve doğrulama grafiği; yakıt kullanım verimi η_F kaydırıcısı (henüz ölçülmedi, 1,0). Derslerdeki yakıt hücresi sayıları artık seçili modelden hesaplanıyor.
 - [x] Sekme simgesi (`favicon.svg`, `apple-touch-icon.png`) ve paylaşım önizlemesi (`og-image.png`, Open Graph etiketleri)

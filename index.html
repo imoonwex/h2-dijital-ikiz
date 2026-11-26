@@ -752,6 +752,11 @@ footer.wrap { padding-block: 0 28px; color: var(--muted); font-size: .8rem; }
           <span><b data-i18n="valveH">H₂ vanası</b><br><span class="hint" data-i18n="valveHint">Kapatınca gaz yalnızca depoda birikir</span></span>
           <button class="toggle" id="btnValve" type="button" aria-pressed="true" aria-label="H2"></button>
         </div>
+        <div class="field"><span data-i18n="fcmH">Hücre modeli</span>
+          <div class="seg" id="fcmSeg" role="group" style="flex:1;max-width:220px">
+            <button type="button" data-fcm="lab" class="on" data-i18n="fcmLab">Ölçülen</button>
+            <button type="button" data-fcm="mfr" data-i18n="fcmMfr">Veri sayfası</button>
+          </div></div>
         <div class="seg" id="connSeg">
           <button type="button" data-conn="s" class="on" data-i18n="series">Seri</button>
           <button type="button" data-conn="p" data-i18n="parallel">Paralel</button>
@@ -918,6 +923,7 @@ const I18N = {
     skH: "Enerji akışı (Sankey diyagramı)",
     skP: "Panele düşen ışığın yakıt hücresine kadar ne kadarının ulaştığını gösterir. Değerler canlıdır; ışığı ya da yükü değiştirince güncellenir.",
     mLang: "Dil", thLight: "☀️ Açık", thDark: "🌙 Koyu", menuLbl: "Menü: dil ve tema",
+    fcmH: "Hücre modeli", fcmLab: "Ölçülen", fcmMfr: "Veri sayfası", fcmToast: "Yakıt hücresi: üreticinin veri sayfası (ölçülen hücreden ≈ 2,5 kat güçlü)",
     autoHeat: "Lamba paneli ısıtsın (otomatik ısınma)", recKept: "Ölçümler bu tarayıcıda saklanır; sayfa yenilense de kaybolmaz.",
     panelH: "Panel", pvType: "Panel tipi", tempH: "Panel sıcaklığı", tempHint: "25 °C = laboratuvar koşulu. Ayrıntılı hesap: ⚡ Verim › Panel ve sıcaklık",
     angH: "Panel açısı θ", angHint: "0° = panel lambaya dik (laboratuvar ölçümleri bu konumda alındı)", topView: "Üstten görünüş", thAng: "Açı θ (°)",
@@ -981,6 +987,7 @@ const I18N = {
     skH: "Energy flow (Sankey diagram)",
     skP: "Shows how much of the light on the panel reaches the fuel cell. Values are live; they update when you change the light or the load.",
     mLang: "Language", thLight: "☀️ Light", thDark: "🌙 Dark", menuLbl: "Menu: language and theme",
+    fcmH: "Cell model", fcmLab: "Measured", fcmMfr: "Data sheet", fcmToast: "Fuel cell: manufacturer's data sheet (≈ 2.5× stronger than the measured cell)",
     autoHeat: "Let the lamp heat the panel (auto heating)", recKept: "Measurements are kept in this browser; they survive a page reload.",
     panelH: "Panel", pvType: "Panel type", tempH: "Panel temperature", tempHint: "25 °C = lab condition. Detailed working: ⚡ Efficiency › Panel and temperature",
     angH: "Panel angle θ", angHint: "0° = panel facing the lamp (the lab measurements were taken here)", topView: "Top view", thAng: "Angle θ (°)",
@@ -1052,8 +1059,8 @@ ${noteCards("tr", [
   ["🔆", "Güneş paneli", "Işığı elektriğe çevirir. Varsayılan panel, elektrolizörünüzü sürebilen 6 hücreli bir eşdeğer paneldir.", ["Model paneli: V<sub>oc</sub> ≈ 3,5 V, I<sub>sc</sub> ≈ 2,2 A", "Üretici paneli (seçilebilir): 4 hücre, V<sub>oc</sub> 2,3 V, I<sub>sc</sub> 1,0 A, ≈1,7 W"], ["mfr", "mod"]],
   ["💧", "Elektrolizör", "Suyu H₂ ve O₂'ye ayırır. Üretilen gaz miktarı doğrudan sizin ölçümlerinizden gelir.", ["20 dakikada 72 mL (0,5 A) … 280 mL (1,9 A)", "Gerilim soğukken 2,6–2,9 V, ısınınca ≈ 2,4 V"], ["lab"]],
   ["🧪", "Gaz deposu", "H₂ ve O₂ ayrı silindirlerde birikir. O₂ her zaman H₂'nin yarısı kadardır.", ["Ölçek 0–400 mL", "Dolunca fazla gaz taşar (DOLU)"], ["lab", "mod"]],
-  ["⚡", "Yakıt hücresi", "H₂'yi yeniden elektriğe çevirir. İki hücre seri veya paralel bağlanabilir.", ["Seri: 0,8–1,96 V, en fazla 1,70 W (≈0,4 Ω yükte)", "Paralel: gerilim yarı, akım iki kat"], ["mfr"]],
-  ["🌀", "Yük ve motor", "Yakıt hücresine motor + pervane, 0,3–100 Ω arası bir direnç ya da hiçbir şey (açık devre) bağlanabilir.", ["Motor sınırı 3 V / 130 mA", "Seride ≈ 2100 rpm, paralelde ≈ 900 rpm"], ["mfr"]],
+  ["⚡", "Yakıt hücresi", "H₂'yi yeniden elektriğe çevirir. İki hücre seri veya paralel bağlanabilir.", ["Ölçülen (Hücre 1, 26.11.2026): boşta 0,87 V, 0,8 A'de 0,40 V; seride en fazla ≈ 0,67 W (≈ 0,7 Ω yükte)", "Veri sayfası: seride en fazla 1,70 W (≈ 0,4 Ω yükte); ölçülen hücre bunun ≈ %40'ını veriyor", "Paralel: gerilim yarı, akım iki kat"], ["lab", "mfr"]],
+  ["🌀", "Yük ve motor", "Yakıt hücresine motor + pervane, 0,3–100 Ω arası bir direnç ya da hiçbir şey (açık devre) bağlanabilir.", ["Motor sınırı 3 V / 130 mA", "Ölçülen hücreyle: seride ≈ 1700 rpm, paralelde ≈ 700 rpm (veri sayfasıyla ≈ 2100 / 900 rpm)"], ["lab", "mfr"]],
 ])}
 <h3>Bilmeniz gereken üç şey</h3>
 <ol class="nt-list">
@@ -1068,7 +1075,7 @@ ${noteCards("tr", [
 <li><b>Panel açısı θ:</b> I<sub>ph</sub>(θ) = I<sub>ph</sub>(0°) · cos θ · IAM(θ), IAM = 1 − 0,05·(1/cos θ − 1) (ASHRAE geliş açısı düzeltmesi, camdan yansıma). Laboratuvar ölçümleri 0°'de (panel lambaya dik) alınmış kabul edildi; bu yüzden 0°'de sonuçlar değişmez. Verimde panele düşen güç G·cos θ·A ile hesaplanır. Panel akımı 0,5 A'in altına inerse H₂ debisi en düşük ölçüm noktasından doğrusal olarak (Faraday orantısıyla) uzatılır.</li>
 <li><b>Işık kademesi:</b> kademe <i>n</i>'deki ışık akımı, ısınmış elektrolizörde grup <i>n</i>'nin akımını (0,5 + 0,1·(n−1) A) verecek şekilde seçildi.</li>
 <li><b>Elektrolizör:</b> H₂ debisi, 20 dakikalık ölçümlerin akıma göre doğrusal ara değerlemesi. Gerilim ≈ 1,89 V + 0,06·ln(1 + I/0,5 mA) + 0,05·I + soğukluk payı (≤ 0,4 V, ısınma zaman sabiti ≈ 200 s).</li>
-<li><b>Yakıt hücresi:</b> U<sub>hücre</sub> = 0,98 − 0,03·ln(1 + I/2 mA) − 0,175·I. Seri: U = 2·U<sub>hücre</sub>(I). Paralel: U = U<sub>hücre</sub>(I/2). H₂ tüketimi = hücre akımları toplamı/(2F).</li>
+<li><b>Yakıt hücresi (ölçülen, varsayılan):</b> U<sub>hücre</sub> = min(0,87 V; 0,8252 − 0,02197·ln(I / 1,081 mA) − 0,3433 Ω·I). 26.11.2026'da Hücre 1'de 100 → 0,5 Ω yüklerle ölçüldü (I = U/R), uyum RMSE ≈ 6,4 mV, geçerli aralık 7,8–800 mA; iki hücrenin aynı olduğu varsayılır. <b>Veri sayfası seçeneği:</b> U<sub>hücre</sub> = 0,98 − 0,03·ln(1 + I/2 mA) − 0,175·I. Seri: U = 2·U<sub>hücre</sub>(I). Paralel: U = U<sub>hücre</sub>(I/2). H₂ tüketimi = hücre akımları toplamı/(2F·η<sub>F</sub>); η<sub>F</sub> henüz ölçülmedi, 1,0 varsayıldı.</li>
 <li><b>Yük:</b> direnç için I = U/R; motor için I = 20 mA + U/30 Ω, devir ≈ 1500 rpm/V (0,3 V üzeri), atalet 0,8 s. Çalışma noktası iki eğrinin kesişimidir.</li>
 </ul></details>
 <h3>Kaynaklar</h3>
@@ -1083,8 +1090,8 @@ ${noteCards("en", [
   ["🔆", "Solar panel", "Turns light into electricity. The default panel is a 6-cell equivalent that can drive your electrolyzer.", ["Model panel: V<sub>oc</sub> ≈ 3.5 V, I<sub>sc</sub> ≈ 2.2 A", "Manufacturer panel (selectable): 4 cells, V<sub>oc</sub> 2.3 V, I<sub>sc</sub> 1.0 A, ≈1.7 W"], ["mfr", "mod"]],
   ["💧", "Electrolyzer", "Splits water into H₂ and O₂. The amount of gas comes straight from your measurements.", ["72 mL (0.5 A) … 280 mL (1.9 A) in 20 minutes", "Voltage 2.6–2.9 V when cold, ≈ 2.4 V when warm"], ["lab"]],
   ["🧪", "Gas storage", "H₂ and O₂ collect in separate cylinders. O₂ is always half of H₂.", ["Scale 0–400 mL", "Excess gas overflows when full (FULL)"], ["lab", "mod"]],
-  ["⚡", "Fuel cell", "Turns H₂ back into electricity. The two cells can be in series or parallel.", ["Series: 0.8–1.96 V, at most 1.70 W (≈0.4 Ω load)", "Parallel: half the voltage, twice the current"], ["mfr"]],
-  ["🌀", "Load and motor", "The fuel cell drives the motor + propeller, a 0.3–100 Ω resistor, or nothing (open circuit).", ["Motor limit 3 V / 130 mA", "≈ 2100 rpm in series, ≈ 900 rpm in parallel"], ["mfr"]],
+  ["⚡", "Fuel cell", "Turns H₂ back into electricity. The two cells can be in series or parallel.", ["Measured (cell 1, 26.11.2026): 0.87 V open circuit, 0.40 V at 0.8 A; at most ≈ 0.67 W in series (≈ 0.7 Ω load)", "Data sheet: at most 1.70 W in series (≈ 0.4 Ω load); the measured cell gives ≈ 40% of that", "Parallel: half the voltage, twice the current"], ["lab", "mfr"]],
+  ["🌀", "Load and motor", "The fuel cell drives the motor + propeller, a 0.3–100 Ω resistor, or nothing (open circuit).", ["Motor limit 3 V / 130 mA", "With the measured cell: ≈ 1700 rpm in series, ≈ 700 rpm in parallel (data sheet: ≈ 2100 / 900 rpm)"], ["lab", "mfr"]],
 ])}
 <h3>Three things to know</h3>
 <ol class="nt-list">
@@ -1099,7 +1106,7 @@ ${noteCards("en", [
 <li><b>Panel angle θ:</b> I<sub>ph</sub>(θ) = I<sub>ph</sub>(0°) · cos θ · IAM(θ), IAM = 1 − 0.05·(1/cos θ − 1) (ASHRAE incidence-angle correction, reflection from the glass). The lab measurements are taken to be at 0° (panel facing the lamp), so results at 0° do not change. For efficiency the power on the panel is G·cos θ·A. If the panel current drops below 0.5 A, the H₂ rate is extended linearly from the lowest measured point (Faraday proportionality).</li>
 <li><b>Light level:</b> the light current at level <i>n</i> is chosen so the warm electrolyzer draws group <i>n</i>'s current (0.5 + 0.1·(n−1) A).</li>
 <li><b>Electrolyzer:</b> H₂ flow is a linear interpolation of the 20-minute measurements over current. Voltage ≈ 1.89 V + 0.06·ln(1 + I/0.5 mA) + 0.05·I + a cold-start term (≤ 0.4 V, warm-up time constant ≈ 200 s).</li>
-<li><b>Fuel cell:</b> U<sub>cell</sub> = 0.98 − 0.03·ln(1 + I/2 mA) − 0.175·I. Series: U = 2·U<sub>cell</sub>(I). Parallel: U = U<sub>cell</sub>(I/2). H₂ use = sum of cell currents/(2F).</li>
+<li><b>Fuel cell (measured, default):</b> U<sub>cell</sub> = min(0.87 V; 0.8252 − 0.02197·ln(I / 1.081 mA) − 0.3433 Ω·I). Measured on 26.11.2026 on cell 1 with 100 → 0.5 Ω loads (I = U/R), fit RMSE ≈ 6.4 mV, valid range 7.8–800 mA; both cells are assumed equal. <b>Data sheet option:</b> U<sub>cell</sub> = 0.98 − 0.03·ln(1 + I/2 mA) − 0.175·I. Series: U = 2·U<sub>cell</sub>(I). Parallel: U = U<sub>cell</sub>(I/2). H₂ use = sum of cell currents/(2F·η<sub>F</sub>); η<sub>F</sub> has not been measured yet, 1.0 is assumed.</li>
 <li><b>Load:</b> I = U/R for a resistor; for the motor I = 20 mA + U/30 Ω, speed ≈ 1500 rpm/V above 0.3 V, lag 0.8 s. The operating point is where the two curves cross.</li>
 </ul></details>
 <h3>Sources</h3>
@@ -1203,7 +1210,17 @@ function solveOp(Iph, c, P = curPV()) {
 // Tek hücre gerilimi: açık devre 0,98 V − aktivasyon kaybı − iç direnç (0,175 Ω).
 // 0,175 Ω, seri bağlantıda en yüksek gücü üreticinin değerine (0,80 V'ta 1,70 W) oturtur.
 const FC_R = 0.175;
-const fcCellV = (I) => 0.98 - 0.03 * Math.log(1 + I / 0.002) - FC_R * I;
+const fcMfrV = (I) => 0.98 - 0.03 * Math.log(1 + I / 0.002) - FC_R * I;   // üretici veri sayfasına göre
+// Laboratuvar ölçümü (26.11.2026, Hücre 1, 100 → 0,5 Ω, I = U/R): U = min(OCV, E0 − A·ln(I/I0) − R·I).
+// Uyum RMSE ≈ 6,4 mV, geçerli aralık 7,8–800 mA; üstü dışa uzatmadır. İki hücrenin aynı olduğu varsayılır.
+const FCLAB = { E0: 0.8252, A: 0.02197, I0: 0.001081, R: 0.3433, OCV: 0.87 };
+const FCLAB_PTS = [[100, 0.78], [50, 0.76], [20, 0.74], [10, 0.71], [5, 0.66], [3, 0.64], [2, 0.60], [1, 0.52], [0.5, 0.40]];   // [R (Ω), U (V)]
+const fcLabV = (I) => (I <= 0 ? FCLAB.OCV : Math.min(FCLAB.OCV, FCLAB.E0 - FCLAB.A * Math.log(I / FCLAB.I0) - FCLAB.R * I));
+// Hangi hücre modeli: S.fcm = "lab" (varsayılan, ölçülen) | "mfr" (veri sayfası)
+const fcCellV = (I) => (S.fcm === "mfr" ? fcMfrV(I) : fcLabV(I));
+// Yakıt kullanım (Faraday) verimi: tüketilen H₂ = ΣI / (2F) / η_F. Henüz ölçülmedi (depodan besleme çalışmadı);
+// literatür 0,95–1,0. Verim › Yakıt hücresi sekmesinden değiştirilebilir.
+let FC_UTIL = 1.0;
 const RES = [0.3, 0.5, 1, 2, 3, 5, 10, 20, 50, 100];   // yük modülündeki dirençler (Ω)
 // Yığın gerilimi: seri → 2 hücrenin gerilimi toplanır, akım aynı;
 // paralel → gerilim tek hücreninki, akım iki hücreye yarı yarıya bölünür.
@@ -1224,7 +1241,7 @@ function solveFc(s, conn = S.conn, load = S.load) {
 const S = {};
 function resetState() {
   Object.assign(S, {
-    level: 4, t: 0, speed: S.speed || 1, conn: S.conn || "s", pv: S.pv || "m", ang: S.ang || 0, angNow: S.angNow || 0, Tp: S.Tp ?? 25, autoT: !!S.autoT, load: S.load ?? "motor", paused: false, valve: true, ch: S.ch || "fc",
+    level: 4, t: 0, speed: S.speed || 1, conn: S.conn || "s", pv: S.pv || "m", ang: S.ang || 0, angNow: S.angNow || 0, Tp: S.Tp ?? 25, autoT: !!S.autoT, fcm: S.fcm || "lab", load: S.load ?? "motor", paused: false, valve: true, ch: S.ch || "fc",
     vH2: 40, vO2: 20, prod: 0, c: 0.55, fcS: 1, rpm: 0, rpmVis: 0, full: false,
     I: 0, V: 0, rate: 0, fcI: 0, fcV: 0, cons: 0,
     sw: { run: false, t: 0, h2: 0, level: 4 }, hist: [], lastHist: -1
@@ -1252,7 +1269,7 @@ function step(dt) {
   S.fcI = fc.I; S.fcV = fc.V;
   // H₂ tüketimi hücre akımlarının toplamıyla orantılı: seride 2·I, paralelde I (iki yarım akım)
   const cellSum = S.conn === "p" ? S.fcI : 2 * S.fcI;
-  S.cons = S.valve ? cellSum * 60 / (2 * F) * VM : 0;
+  S.cons = S.valve ? cellSum * 60 / (2 * F) / FC_UTIL * VM : 0;   // η_F < 1 ise daha çok H₂ harcanır
 
   const before = S.vH2;
   S.vH2 = S.vH2 + prod - S.cons * dt / 60;
@@ -1515,13 +1532,13 @@ const SK_HOW = {
     <li>Panele düşen ışık <b>100 birim</b> kabul edilir. <b>Bandın kalınlığı, taşıdığı enerjiyle orantılıdır.</b></li>
     <li>Her aşamada bant ikiye ayrılır: sağa devam eden <b>renkli kısım</b> bir sonraki aşamaya geçen enerjidir, aşağı kıvrılan <b>gri kısım</b> kayıptır (çoğunlukla ısı).</li>
     <li>Bandın <b>en çok inceldiği yer</b>, kaybın en büyük olduğu yerdir. Bu düzenekte bu yer güneş panelidir: ışığın yaklaşık %88'i elektriğe dönüşmez.</li></ul>
-    <p><b>Enerji korunur:</b> yok olmaz, yalnızca işe yaramayan bir biçime (ısıya) dönüşür. Bu yüzden gri kayıpların ve sona ulaşan enerjinin toplamı her zaman 100'dür. Örnek (kademe 8, motor seride): 88 + 4,8 + 3,0 + 4,2 = 100.</p>` },
+    <p><b>Enerji korunur:</b> yok olmaz, yalnızca işe yaramayan bir biçime (ısıya) dönüşür. Bu yüzden gri kayıpların ve sona ulaşan enerjinin toplamı her zaman 100'dür. Örnek (kademe 8, motor seride, ölçülen hücre): 88 + 4,8 + 3,7 + 3,5 = 100.</p>` },
   en: { sum: "📖 How to read the Sankey diagram", body: `<ul>
     <li>Read the diagram <b>from left to right</b>: light → panel → hydrogen → fuel cell.</li>
     <li>The light on the panel counts as <b>100 units</b>. <b>The thickness of a band is proportional to the energy it carries.</b></li>
     <li>At each stage the band splits in two: the <b>coloured part</b> going on to the right is the energy passed to the next stage, the <b>grey part</b> curving down is the loss (mostly heat).</li>
     <li>Where the band <b>gets thinnest</b> is where the biggest loss is. In this kit that is the solar panel: about 88% of the light does not become electricity.</li></ul>
-    <p><b>Energy is conserved:</b> it is not destroyed, it only turns into a form we cannot use (heat). So the grey losses plus the energy reaching the end always add up to 100. Example (level 8, motor in series): 88 + 4.8 + 3.0 + 4.2 = 100.</p>` },
+    <p><b>Energy is conserved:</b> it is not destroyed, it only turns into a form we cannot use (heat). So the grey losses plus the energy reaching the end always add up to 100. Example (level 8, motor in series, measured cell): 88 + 4.8 + 3.7 + 3.5 = 100.</p>` },
 };
 /* ---------- Sankey diyagramı ----------
    eta = [η_PV, η_elektrolizör (HHV), η_yakıt hücresi (HHV)]; η_YH null ise yakıt hücresi H₂ harcamıyordur.
@@ -1759,13 +1776,63 @@ function renderCalc() {
       <div class="k-tiles" id="kFCt"></div>
       <h4>${T("Adım adım hesap", "Step by step")}</h4>
       <ol class="calc-steps" id="kFC"></ol>
+    </section>
+    <section class="calc-card" style="--c:var(--ok);margin-top:16px">
+      <h3>🧪 ${T("Laboratuvar ölçümü: Hücre 1 (26.11.2026)", "Lab measurement: cell 1 (26 Nov 2026)")}</h3>
+      <div class="k-tiles" id="kLabT"></div>
+      <p class="hint">${T("Yük direnci 100 Ω'dan 0,5 Ω'a indirildi; gerilim hücre uçlarından ölçüldü, akım I = U/R ile hesaplandı. Ölçüm sırasında elektrolizör çalışıyordu (sürekli H₂ beslemesi). Noktalar ölçüm, çizgiler model.", "The load was lowered from 100 Ω to 0.5 Ω; voltage was measured at the cell terminals and current worked out as I = U/R. The electrolyzer was running during the test (continuous H₂ supply). Dots are measurements, lines are the model.")}</p>
+      <div class="ls-fig" id="kLabChart"></div>
+      <div class="tbl-wrap"><table id="kLabTbl"></table></div>
+      <h4>${T("Yakıt kullanım (Faraday) verimi", "Fuel utilisation (Faraday) efficiency")} η<sub>F</sub></h4>
+      <div class="calc-in"><label>η<sub>F</sub><span><input type="range" id="fcUtil" min="0.9" max="1" step="0.01" value="${FC_UTIL}" style="width:180px"> <b id="fcUtilV">${num(FC_UTIL, 2)}</b></span></label></div>
+      <p class="hint">${T("Henüz ölçülmedi: depodan besleme çalışmadı. Literatüre göre 0,95–1,0. Değiştirince H₂ tüketimi ve yakıt hücresi verimi bütün simülasyonda güncellenir.", "Not measured yet: feeding from storage did not work. The literature gives 0.95–1.0. Changing it updates H₂ use and fuel cell efficiency across the whole simulation.")}</p>
+      <details class="nt-more"><summary>📖 ${T("Sınırlamalar ve yapılacak ölçümler", "Limitations and measurements still to do")}</summary>${FCLIM[lang]}</details>
     </section>`;
+  renderFcLab();
   $("#calcTot").innerHTML = `
     <section class="calc-card" style="--c:var(--accent)">
       <h3>📊 ${T("Verimler ve toplam", "Efficiencies and total")}</h3>
       <div id="kTot"></div>
     </section>`;
   updateTempUi(); updateCalc(true);
+}
+// Yakıt hücresi laboratuvar ölçümü: tablo, özet kutuları ve doğrulama grafiği (ölçüm sabit olduğu için bir kez çizilir)
+const FCLIM = {
+  tr: `<ul>
+    <li><b>Akım ölçülmedi</b>, I = U/R ile nominal dirençten hesaplandı. 1 Ω ve 0,5 Ω'da kablo ve temas direnci (≈ 0,05–0,1 Ω) akımı olduğundan yüksek gösterebilir.</li>
+    <li>Yalnızca <b>Hücre 1</b> ölçüldü; ikizde iki hücrenin aynı olduğu varsayılır.</li>
+    <li>Tek ölçüm serisi; tekrarlanabilirlik denenmedi. Sıcaklık ölçülmedi (oda sıcaklığı varsayıldı).</li>
+    <li>En yüksek güç noktasına ulaşılmadı (≈ 0,95 A gerekir; ölçüm 0,8 A'de bitti). Model 0,8 A'nin üstünde dışa uzatmadır.</li>
+    <li><b>H₂ tüketimi ölçülemedi:</b> elektrolizör kapalıyken hücre depodan gaz alamadı (depo basıncı birkaç cm su sütunu kadar). Planlanan fark yöntemi: elektrolizör açıkken depo dolma hızını (1) hücre yüksüzken, (2) hücre 2 Ω yükteyken ölçün; aradaki fark hücrenin tüketimidir. Kuramsal tüketim V = I·t/(2F)·V<sub>m</sub>.</li>
+    <li>Elektrolizör depolarına musluk suyu eklendi; membran bundan etkilenmiş olabilir. Ölçülen hücrenin veri sayfasının ≈ %40'ı kadar güç vermesinin nedenlerinden biri bu olabilir.</li></ul>`,
+  en: `<ul>
+    <li><b>Current was not measured</b>; it was worked out from the nominal resistance as I = U/R. At 1 Ω and 0.5 Ω cable and contact resistance (≈ 0.05–0.1 Ω) can make the current look higher than it was.</li>
+    <li>Only <b>cell 1</b> was measured; the twin assumes both cells are the same.</li>
+    <li>A single series; repeatability was not tested. Temperature was not measured (room temperature assumed).</li>
+    <li>The maximum power point was not reached (it needs ≈ 0.95 A; the test stopped at 0.8 A). Above 0.8 A the model is an extrapolation.</li>
+    <li><b>H₂ use could not be measured:</b> with the electrolyzer off the cell could not draw gas from storage (the storage pressure is only a few cm of water). Planned difference method: with the electrolyzer on, measure how fast storage fills (1) with the cell unloaded and (2) with the cell on a 2 Ω load; the difference is the cell's use. Theory: V = I·t/(2F)·V<sub>m</sub>.</li>
+    <li>Tap water was added to the electrolyzer tanks; the membrane may have been affected. This may be one reason the measured cell gives only ≈ 40% of the data-sheet power.</li></ul>`,
+};
+function renderFcLab() {
+  const T = (tr, en) => (lang === "en" ? en : tr);
+  const rows = FCLAB_PTS.map(([R, U]) => { const I = U / R, Um = fcLabV(I); return { R, U, I, P: U * I, Um, d: (Um - U) * 1000 }; });
+  const rmse = Math.sqrt(rows.reduce((a, r) => a + r.d * r.d, 0) / rows.length);
+  let mp = { I: 0, P: 0 }; for (let I = 0.005; I < 3; I += 0.005) { const P = I * fcLabV(I); if (P > mp.P) mp = { I, P }; }
+  let mm = 0; for (let I = 0.005; I < 4; I += 0.005) mm = Math.max(mm, I * fcMfrV(I));
+  $("#kLabT").innerHTML = tile(T("Boşta gerilim (OCV)", "Open-circuit voltage"), `${num(FCLAB.OCV, 2)} V`) +
+    tile(T("İç direnç", "Internal resistance"), `${num(FCLAB.R, 3)} Ω`) +
+    tile(T("Model uyumu (RMSE)", "Model fit (RMSE)"), `${num(rmse, 1)} mV`, true) +
+    tile(T("En yüksek güç / hücre", "Max. power / cell"), `≈ ${num(mp.P, 2)} W`, false, T(`≈ ${num(mp.I, 2)} A, model`, `≈ ${num(mp.I, 2)} A, model`)) +
+    tile(T("Veri sayfasına göre", "Compared with data sheet"), pct(mp.P / mm * 100, 0), false, `${num(mp.P, 2)} / ${num(mm, 2)} W`);
+  $("#kLabTbl").innerHTML = `<thead><tr><th>R (Ω)</th><th>U ${T("ölçülen", "meas.")} (V)</th><th>I = U/R (A)</th><th>P (W)</th><th>U model (V)</th><th>${T("fark", "diff.")} (mV)</th><th>η ≈ U/1,48</th></tr></thead><tbody>` +
+    `<tr><td>${T("açık", "open")}</td><td>${num(FCLAB.OCV, 2)}</td><td>0</td><td>0</td><td>${num(FCLAB.OCV, 3)}</td><td>–</td><td>–</td></tr>` +
+    rows.map((r) => `<tr><td>${num(r.R, r.R < 1 ? 1 : 0)}</td><td>${num(r.U, 2)}</td><td>${num(r.I, 4)}</td><td>${num(r.P, 4)}</td><td>${num(r.Um, 3)}</td><td>${num(r.d, 1)}</td><td>${pct(r.U / 1.4813 * 100, 0)}</td></tr>`).join("") + "</tbody>";
+  const cu = [], cp = [], cm = []; for (let i = 1; i <= 100; i++) { const I = i / 100; cu.push([I, fcLabV(I)]); cp.push([I, I * fcLabV(I)]); cm.push([I, fcMfrV(I)]); }
+  $("#kLabChart").innerHTML = plot(520, 300, 1, 1, T("Akım I (A)", "Current I (A)"), T("U (V) · P (W)", "U (V) · P (W)"), [
+    { pts: cm, color: "var(--muted)", dash: true, label: T("veri sayfası U", "data sheet U"), lab: [0.45, 0.85] },
+    { pts: cu, color: "var(--ok)", label: T("model U", "model U"), lab: [0.04, 0.68] },
+    { pts: cp, color: "var(--h2)", label: T("model P", "model P"), lab: [0.55, 0.2] }],
+    [...rows.map((r) => ({ x: r.I, y: r.U, label: "", color: "var(--ok)" })), ...rows.map((r) => ({ x: r.I, y: r.P, label: "", color: "var(--h2)" }))]);
 }
 const li = (txt, f, cls = "") => `<li${cls ? ` class="${cls}"` : ""}><span class="d">${txt}</span>${f ? `<span class="f">${f}</span>` : ""}</li>`;
 const tile = (label, val, main, sub) => `<div class="k-tile${main ? " main" : ""}"><span>${label}</span><b>${val}</b>${sub ? `<small>${sub}</small>` : ""}</div>`;
@@ -1854,7 +1921,7 @@ function updateCalc(force) {
       li(T("Sağlama: enerji verimi = Faraday verimi × gerilim verimi (1,48 V termonötr gerilim)", "Check: energy efficiency = Faraday efficiency × voltage efficiency (1.48 V thermoneutral voltage)"), `η<sub>E</sub> = η<sub>F</sub> · 1,48 / U = ${num(eF, 3)} × 1,48 / ${num(U, 2)} = ${rs(pct(eF * 1.4813 / U * 100, 1))}`.replace(/1,48/g, lang === "en" ? "1.48" : "1,48")) : "");
   }
   // ---- 4. yakıt hücresi ----
-  const fcSum = S.conn === "p" ? S.fcI : 2 * S.fcI, Pel = S.fcV * S.fcI, nd = S.valve ? fcSum / (2 * F) : 0, PH = nd * HHV;
+  const fcSum = S.conn === "p" ? S.fcI : 2 * S.fcI, Pel = S.fcV * S.fcI, nd = S.valve ? fcSum / (2 * F) / FC_UTIL : 0, PH = nd * HHV;
   const connTxt = S.conn === "p" ? T("paralel", "parallel") : T("seri", "series");
   const loadTxt = S.load === "motor" ? T("motor", "motor") : S.load === "open" ? T("açık devre", "open circuit") : fmtR(S.load);
   $("#kFCt").innerHTML = PH > 0 && Pel > 0
@@ -1867,7 +1934,7 @@ function updateCalc(force) {
     : li(T(`Bağlantı: ${connTxt}, yük: ${loadTxt}`, `Connection: ${connTxt}, load: ${loadTxt}`), `U = ${num(S.fcV, 2)} V · I = ${num(S.fcI * 1000, 0)} mA`) +
       li(T("Yüke verilen elektrik gücü", "Electrical power to the load"), `P<sub>el</sub> = U · I = ${num(S.fcV, 2)} × ${num(S.fcI, 3)} = ${rs(num(Pel * 1000, 0) + " mW")}`) +
       li(T(`Harcanan H₂ (Faraday yasası; ${S.conn === "p" ? "paralelde hücre akımlarının toplamı I" : "seride iki hücreden de I geçer: 2·I"})`, `H₂ used (Faraday's law; ${S.conn === "p" ? "in parallel the cell currents add up to I" : "in series I flows through both cells: 2·I"})`),
-        `ṅ<sub>H₂</sub> = ΣI / (2F) = ${num(fcSum, 3)} / (2 × 96485) = ${rs(num(nd * 1e6, 3) + " µmol/s")} (≈ ${num(nd * VM * 60, 2)} mL/${T("dk", "min")})`) +
+        `ṅ<sub>H₂</sub> = ΣI / (2F · η<sub>F</sub>) = ${num(fcSum, 3)} / (2 × 96485 × ${num(FC_UTIL, 2)}) = ${rs(num(nd * 1e6, 3) + " µmol/s")} (≈ ${num(nd * VM * 60, 2)} mL/${T("dk", "min")})`) +
       li(T("Harcanan hidrojenin gücü (HHV)", "Power of the hydrogen used (HHV)"), `P<sub>H₂</sub> = ṅ<sub>H₂</sub> · HHV = ${num(nd * 1e6, 3)}·10⁻⁶ × 285830 = ${rs(num(PH * 1000, 0) + " mW")}`) +
       li(T("Yakıt hücresi verimi", "Fuel cell efficiency"), `η<sub>${T("YH", "FC")}</sub> = P<sub>el</sub> / P<sub>H₂</sub> = ${num(Pel * 1000, 0)} / ${num(PH * 1000, 0)} = ${rs(pct(Pel / PH * 100, 1))}`, "key") +
       li(T("Sağlama: hücre başına gerilim / 1,48 V", "Check: voltage per cell / 1.48 V"), `η<sub>${T("YH", "FC")}</sub> ≈ U<sub>${T("hücre", "cell")}</sub> / 1,48 = ${num(S.conn === "p" ? S.fcV : S.fcV / 2, 3)} / 1,48 = ${rs(pct((S.conn === "p" ? S.fcV : S.fcV / 2) / 1.4813 * 100, 1))}`.replace(/1,48/g, lang === "en" ? "1.48" : "1,48"));
@@ -1902,6 +1969,7 @@ $("#tp3").addEventListener("input", (e) => {
   const id = e.target.id, v = +e.target.value;
   if (id === "pW" || id === "pH") { if (v > 0) { const P = S.pv === "r" ? PVR : PV; P.dim[id === "pW" ? 0 : 1] = v; updateUi(); } }
   else if (id === "tRng") setTemp(v);
+  else if (id === "fcUtil") { FC_UTIL = Math.max(0.9, Math.min(1, v || 1)); $("#fcUtilV").textContent = num(FC_UTIL, 2); updateUi(); }
   else if (["eI", "eT", "eV", "eU"].includes(id)) {
     elc.follow = false; elc.I = +$("#eI").value || 0; elc.t = +$("#eT").value || 0; elc.vol = +$("#eV").value || 0; elc.U = +$("#eU").value || 0; updateCalc();
   }
@@ -2083,6 +2151,13 @@ function buildLoadSel() {
   sel.value = String(S.load);
 }
 function setLoad(v) { S.load = v === "motor" || v === "open" ? v : +v; $("#loadSel").value = String(S.load); updateUi(); updateC4(); }
+// yakıt hücresi modeli: "lab" (ölçülen, varsayılan) | "mfr" (veri sayfası)
+function setFcm(v) {
+  S.fcm = v; document.querySelectorAll("#fcmSeg button").forEach((b) => b.classList.toggle("on", b.dataset.fcm === v));
+  if (v === "mfr") toast(t("fcmToast"));
+  updateUi(); updateC4(); renderLessons();
+}
+$("#fcmSeg").addEventListener("click", (e) => { const b = e.target.closest("button[data-fcm]"); if (b) { e.preventDefault(); setFcm(b.dataset.fcm); } });
 function setConn(c) { S.conn = c; document.querySelectorAll("#connSeg button").forEach((b) => b.classList.toggle("on", b.dataset.conn === c)); updateUi(); updateC4(); }
 function updateLoadUi() {
   const res = typeof S.load === "number";
@@ -2423,7 +2498,7 @@ const D = {
   },
   eff() {
     // her aşamanın kendi verimi ve toplam (çarpım); ders örneği: kademe 8, motor seride
-    const steps = [[L("Güneş paneli", "Solar panel"), "η<tspan baseline-shift='sub' font-size='9'>PV</tspan>", 12, "var(--sun)"], [L("Elektrolizör", "Electrolyzer"), "η<tspan baseline-shift='sub' font-size='9'>" + L("elz", "ely") + "</tspan>", 60, "var(--h2)"], [L("Yakıt hücresi", "Fuel cell"), "η<tspan baseline-shift='sub' font-size='9'>" + L("YH", "FC") + "</tspan>", 58, "var(--ok)"], [L("Toplam (çarpım)", "Total (product)"), "η<tspan baseline-shift='sub' font-size='9'>" + L("toplam", "total") + "</tspan>", 4.2, "var(--accent)"]];
+    const steps = [[L("Güneş paneli", "Solar panel"), "η<tspan baseline-shift='sub' font-size='9'>PV</tspan>", 12, "var(--sun)"], [L("Elektrolizör", "Electrolyzer"), "η<tspan baseline-shift='sub' font-size='9'>" + L("elz", "ely") + "</tspan>", 60, "var(--h2)"], [L("Yakıt hücresi", "Fuel cell"), "η<tspan baseline-shift='sub' font-size='9'>" + L("YH", "FC") + "</tspan>", Math.round(fcMot("s").eta * 100), "var(--ok)"], [L("Toplam (çarpım)", "Total (product)"), "η<tspan baseline-shift='sub' font-size='9'>" + L("toplam", "total") + "</tspan>", +(0.12 * 0.6 * fcMot("s").eta * 100).toFixed(1), "var(--accent)"]];
     let g = `<line x1="190" y1="8" x2="190" y2="196" stroke="var(--line)"/><line x1="630" y1="8" x2="630" y2="196" stroke="var(--line)" stroke-dasharray="4 4"/><text x="630" y="212" class="ls-t" text-anchor="middle" style="fill:var(--muted)">%100</text>`;
     steps.forEach(([t, e, p, c], i) => { const y = 14 + i * 46, w = Math.max(6, 4.4 * p);
       g += `<rect x="190" y="${y}" width="${w}" height="30" rx="4" fill="${c}" opacity=".85"/><text x="182" y="${y + 14}" class="ls-t" text-anchor="end" style="font-weight:700">${t}</text><text x="182" y="${y + 28}" class="ls-t" text-anchor="end" style="fill:var(--muted)">${e}</text><text x="${196 + w}" y="${y + 20}" class="ls-t" style="font-weight:700">${pct(p, p < 10 ? 1 : 0)}</text>`; });
@@ -2444,6 +2519,11 @@ const D = {
   },
 };
 // --- dersler ---
+// yakıt hücresi örnek değerleri seçili hücre modelinden hesaplanır (derslerde sabit sayı kalmasın)
+const fcMot = (c) => { const f = solveFc(1, c, "motor"), sum = c === "p" ? f.I : 2 * f.I, PH = sum / (2 * F) / FC_UTIL * HHV;
+  return { V: f.V, I: f.I, mA: Math.round(f.I * 1000), rpm: Math.round(Math.max(0, (f.V - 0.3) * 1500)), P: f.V * f.I, PH, eta: PH > 0 ? f.V * f.I / PH : 0 }; };
+const fcMpp = (c) => { let b = { I: 0, P: 0 }; for (let I = 0.005; I < 5; I += 0.005) { const P = I * stackV(I, 1, c); if (P > b.P) b = { I, P }; } const V = stackV(b.I, 1, c); return { P: b.P, V, I: b.I, R: V / b.I }; };
+const fcH2 = (c, load) => { const f = solveFc(1, c, load), sum = c === "p" ? f.I : 2 * f.I; return sum * 60 / (2 * F) / FC_UTIL * VM; };   // mL/dk
 const fcRow = (c, R) => { const f = solveFc(1, c, R); return `<tr><td>${L(c === "s" ? "Seri" : "Paralel", c === "s" ? "Series" : "Parallel")}</td><td>${fmtR(R)}</td><td>${n2(f.V)}</td><td>${n2(f.I)}</td><td>${n2(f.V * f.I)}</td></tr>`; };
 const fcTable = (rows) => `<div class="tbl-wrap"><table><thead><tr><th>${L("Bağlantı", "Connection")}</th><th>${L("Yük", "Load")}</th><th>U (V)</th><th>I (A)</th><th>P (W)</th></tr></thead><tbody>${rows.map(([c, R]) => fcRow(c, R)).join("")}</tbody></table></div>`;
 const goStage = () => { document.querySelector(".stage").scrollIntoView({ behavior: REC ? "auto" : "smooth", block: "start" }); };
@@ -2457,7 +2537,7 @@ const LESSONS = [
       <p>Energy changes form at every step: <b>light</b> → <b>electrical</b> (solar panel) → <b>chemical</b> (electrolyzer, H₂) → <b>electrical</b> (fuel cell) → <b>motion</b> (motor and propeller). Some energy is lost as heat in every conversion; we calculate this in the last lesson.</p>
       <p>Each link has its own meter in the scene: the PV meter sits between panel and electrolyzer, the measuring unit at the top between fuel cell and motor. The gas volume in the cylinders shows the hydrogen produced.</p>`),
     d: () => D.chain(),
-    e: () => L(`Kademe 8'de (1,2 A) panel ≈ 2,9 W elektrik verir, elektrolizör dakikada ≈ 9 mL H₂ üretir, yakıt hücresi motoru 1,71 V ve 77 mA ile ≈ 2100 rpm döndürür.`, `At level 8 (1.2 A) the panel delivers ≈ 2.9 W, the electrolyzer makes ≈ 9 mL of H₂ per minute and the fuel cell drives the motor at 1.71 V and 77 mA, ≈ 2100 rpm.`),
+    e: () => L(`Kademe 8'de (1,2 A) panel ≈ 2,9 W elektrik verir, elektrolizör dakikada ≈ 9 mL H₂ üretir, yakıt hücresi motoru ${n2(fcMot("s").V)} V ve ${fcMot("s").mA} mA ile ≈ ${fcMot("s").rpm} rpm döndürür.`, `At level 8 (1.2 A) the panel delivers ≈ 2.9 W, the electrolyzer makes ≈ 9 mL of H₂ per minute and the fuel cell drives the motor at ${n2(fcMot("s").V)} V and ${fcMot("s").mA} mA, ≈ ${fcMot("s").rpm} rpm.`),
     a: () => { setPv("m"); setAngle(0, true); setConn("s"); setLoad("motor"); S.valve = true; setLevel(8); } },
   { ic: "🔆", t: () => L("Güneş pili ve I–V eğrisi", "Solar cells and the I–V curve"),
     s: () => L("Güneş pili ışıkla akım üretir. Gerilim arttıkça akım önce neredeyse sabit kalır, V_oc'a yaklaşınca hızla sıfıra iner. Hücreler seri bağlanınca gerilimler toplanır.", "A solar cell makes current from light. As voltage rises the current first stays nearly constant, then drops quickly to zero near V_oc. Cells in series add their voltages."),
@@ -2509,8 +2589,8 @@ const LESSONS = [
       <p>The kit's storage tanks are upturned cylinders full of water: gas collects at the top and pushes the water down. The volume is read straight off the scale, just as in your lab.</p>
       <p>The fuel cell draws gas from storage. <b>If production is greater than use, storage fills; if smaller, it empties.</b> Closing the H₂ valve makes gas only collect in storage, and the fuel cell stops. Real systems store hydrogen in pressure tanks, as a liquid or in metal hydrides.</p>`),
     d: () => D.tank(),
-    e: () => L(`En yüksek ışıkta elektrolizör dakikada ≈ 13,8 mL H₂ üretir. Seri bağlı yakıt hücresi motoru sürerken dakikada ≈ 1,2 mL harcar; depo dolar. 0,3 Ω yükte ise dakikada ≈ 36 mL harcar; depo hızla boşalır.`,
-      `At full light the electrolyzer makes ≈ 13.8 mL of H₂ per minute. The series fuel cell driving the motor uses ≈ 1.2 mL per minute, so storage fills. With a 0.3 Ω load it uses ≈ 36 mL per minute and storage empties fast.`),
+    e: () => L(`En yüksek ışıkta elektrolizör dakikada ≈ 13,8 mL H₂ üretir. Seri bağlı yakıt hücresi motoru sürerken dakikada ≈ ${n2(fcH2("s", "motor"), 1)} mL harcar; depo dolar. 0,3 Ω yükte ise dakikada ≈ ${n2(fcH2("s", 0.3), 0)} mL harcar; depo hızla boşalır.`,
+      `At full light the electrolyzer makes ≈ 13.8 mL of H₂ per minute. The series fuel cell driving the motor uses ≈ ${n2(fcH2("s", "motor"), 1)} mL per minute, so storage fills. With a 0.3 Ω load it uses ≈ ${n2(fcH2("s", 0.3), 0)} mL per minute and storage empties fast.`),
     f: () => `2H₂O → 2H₂ + O₂ &nbsp;·&nbsp; V<sub>H₂</sub> : V<sub>O₂</sub> = 2 : 1`,
     a: () => { toggleValve(); } },
   { ic: "⚡", t: () => L("Yakıt hücresi", "The fuel cell"),
@@ -2519,29 +2599,29 @@ const LESSONS = [
       <ul><li><b>Anotta</b> hidrojen H⁺ iyonlarına ve elektronlara ayrılır.</li>
       <li><b>Elektronlar</b> dış devreden, yani yükten (motor, direnç) geçerek iş yapar.</li>
       <li><b>H⁺ iyonları</b> membrandan geçer; <b>katotta</b> oksijen ve elektronlarla birleşip su olur.</li></ul>
-      <p>Bir hücrenin kuramsal gerilimi 1,23 V'tur; boşta ölçülen ≈ 0,95–1 V'tur. Akım çekildikçe gerilim düşer, çünkü (1) tepkimeyi başlatmak için bir miktar gerilim harcanır, (2) hücrenin <b>iç direnci</b> vardır ve U = I·R kadar gerilim kaybettirir. Gerilimin akıma göre bu düşüşüne <b>polarizasyon eğrisi</b> denir.</p>
+      <p>Bir hücrenin kuramsal gerilimi 1,23 V'tur; boşta ölçülen ≈ 0,87–1 V'tur (sizin ölçümünüzde 0,87 V). Akım çekildikçe gerilim düşer, çünkü (1) tepkimeyi başlatmak için bir miktar gerilim harcanır, (2) hücrenin <b>iç direnci</b> vardır ve U = I·R kadar gerilim kaybettirir. Gerilimin akıma göre bu düşüşüne <b>polarizasyon eğrisi</b> denir.</p>
       <p>Tükettiği hidrojen de Faraday yasasına uyar: her 2 elektron için bir H₂ molekülü. Yani <b>ne kadar akım çekilirse o kadar hidrojen harcanır</b>.</p>`,
       `<p>A fuel cell is also a PEM cell, but the reaction runs the other way:</p>
       <ul><li><b>At the anode</b> hydrogen splits into H⁺ ions and electrons.</li>
       <li><b>The electrons</b> do work as they pass through the outside circuit, the load (motor, resistor).</li>
       <li><b>The H⁺ ions</b> cross the membrane and, <b>at the cathode</b>, combine with oxygen and electrons to form water.</li></ul>
-      <p>The theoretical voltage of one cell is 1.23 V; with no load it measures ≈ 0.95–1 V. The voltage falls as current is drawn because (1) some voltage is spent starting the reaction, and (2) the cell has an <b>internal resistance</b> that loses U = I·R. This fall of voltage with current is called the <b>polarisation curve</b>.</p>
+      <p>The theoretical voltage of one cell is 1.23 V; with no load it measures ≈ 0.87–1 V (0.87 V in your measurement). The voltage falls as current is drawn because (1) some voltage is spent starting the reaction, and (2) the cell has an <b>internal resistance</b> that loses U = I·R. This fall of voltage with current is called the <b>polarisation curve</b>.</p>
       <p>The hydrogen it uses also follows Faraday's law: one H₂ molecule for every 2 electrons. So <b>the more current you draw, the more hydrogen is used</b>.</p>`),
     d: () => D.ely(true),
     e: () => fcTable([["s", 100], ["s", 10], ["s", 2], ["s", 0.5]]) + L(`<p class="hint" style="margin-top:6px">Direnç küçüldükçe akım artar, gerilim düşer: polarizasyon eğrisi.</p>`, `<p class="hint" style="margin-top:6px">As the resistance gets smaller, current rises and voltage falls: the polarisation curve.</p>`),
-    f: () => `U<sub>${L("hücre", "cell")}</sub> ≈ 0,98 − 0,03·ln(1 + I/2 mA) − 0,175 Ω · I`,
+    f: () => S.fcm === "mfr" ? `U<sub>${L("hücre", "cell")}</sub> ≈ 0,98 − 0,03·ln(1 + I/2 mA) − 0,175 Ω · I (${L("veri sayfası", "data sheet")})` : `U<sub>${L("hücre", "cell")}</sub> = 0,825 − 0,022·ln(I / 1,08 mA) − 0,343 Ω · I, ${L("en çok", "at most")} 0,87 V (${L("sizin ölçümünüz", "your measurement")})`.replace(/(\d),(\d)/g, lang === "en" ? "$1.$2" : "$1,$2"),
     a: () => { setConn("s"); setLoad(2); S.valve = true; } },
   { ic: "🔋", t: () => L("Seri ve paralel bağlantı", "Series and parallel connection"),
     s: () => L("Seride gerilimler toplanır, akım aynı kalır. Paralelde gerilim tek hücreninki kadardır, akımlar toplanır. Toplam en yüksek güç ikisinde de aynıdır.", "In series the voltages add and the current stays the same. In parallel the voltage is that of one cell and the currents add. The total maximum power is the same either way."),
     b: () => L(`<p>Düzenekte iki yakıt hücresi var. Bunları iki şekilde bağlayabiliriz:</p>
       <ul><li><b>Seri:</b> birinci hücrenin (+) ucu ikincinin (−) ucuna bağlanır. Akımın tek bir yolu vardır, iki hücreden de <b>aynı akım</b> geçer. <b>Gerilimler toplanır</b>: U = U₁ + U₂. Pilleri uç uca dizmek gibidir.</li>
       <li><b>Paralel:</b> iki hücrenin (+) uçları birbirine, (−) uçları birbirine bağlanır. Akım iki yola ayrılır, <b>akımlar toplanır</b>: I = I₁ + I₂. Gerilim tek bir hücreninki kadardır.</li></ul>
-      <p>Hangisi daha iyi? <b>Yüke bağlıdır.</b> Motor çalışmak için gerilime ihtiyaç duyar (0,3 V'un üstünde döner, devri gerilimle artar), bu yüzden seride çok daha hızlı döner. Paralel bağlantı ise düşük gerilimde büyük akım isteyen yükler için uygundur. Her iki bağlantıda da her hücre aynı işi yapar; bu yüzden <b>en yüksek toplam güç aynıdır</b> (≈ 1,7 W), yalnızca farklı gerilim ve akımda elde edilir.</p>
+      <p>Hangisi daha iyi? <b>Yüke bağlıdır.</b> Motor çalışmak için gerilime ihtiyaç duyar (0,3 V'un üstünde döner, devri gerilimle artar), bu yüzden seride çok daha hızlı döner. Paralel bağlantı ise düşük gerilimde büyük akım isteyen yükler için uygundur. Her iki bağlantıda da her hücre aynı işi yapar; bu yüzden <b>en yüksek toplam güç aynıdır</b> (≈ ${n2(fcMpp("s").P)} W), yalnızca farklı gerilim ve akımda elde edilir.</p>
       <p>Aynı kural güneş panelindeki hücreler ve evdeki piller için de geçerlidir.</p>`,
       `<p>The kit has two fuel cells. They can be connected in two ways:</p>
       <ul><li><b>Series:</b> the (+) of the first cell goes to the (−) of the second. There is one path, so <b>the same current</b> flows through both cells. <b>The voltages add</b>: U = U₁ + U₂. Like stacking batteries end to end.</li>
       <li><b>Parallel:</b> both (+) terminals are joined and both (−) terminals are joined. The current splits into two paths and <b>the currents add</b>: I = I₁ + I₂. The voltage is that of one cell.</li></ul>
-      <p>Which is better? <b>It depends on the load.</b> The motor needs voltage (it turns above 0.3 V and speeds up with voltage), so it runs much faster in series. Parallel suits loads that need a large current at low voltage. In both cases each cell does the same work, so <b>the total maximum power is the same</b> (≈ 1.7 W), just at a different voltage and current.</p>
+      <p>Which is better? <b>It depends on the load.</b> The motor needs voltage (it turns above 0.3 V and speeds up with voltage), so it runs much faster in series. Parallel suits loads that need a large current at low voltage. In both cases each cell does the same work, so <b>the total maximum power is the same</b> (≈ ${n2(fcMpp("s").P)} W), just at a different voltage and current.</p>
       <p>The same rule applies to the cells in a solar panel and to batteries at home.</p>`),
     d: () => D.conn(),
     e: () => { const s = solveFc(1, "s", "motor"), p = solveFc(1, "p", "motor");
@@ -2555,35 +2635,35 @@ const LESSONS = [
       <ul><li><b>Büyük direnç</b> (100 Ω): neredeyse açık devre. Gerilim yüksek, akım çok küçük → güç küçük.</li>
       <li><b>Çok küçük direnç</b>: neredeyse kısa devre. Akım büyük ama gerilim düşük → güç yine küçülür.</li>
       <li><b>Arada bir değerde</b> U·I çarpımı en büyük olur. Kural (en yüksek güç aktarımı): yük direnci kaynağın <b>iç direncine</b> eşitken güç en büyüktür.</li></ul>
-      <p>Bu düzenekte seri bağlı yakıt hücresinin en yüksek gücü ≈ 0,4 Ω'luk yükte ≈ 1,7 W'tır. Paralelde iç direnç dörtte birine iner (≈ 0,1 Ω), bu yüzden yük modülündeki en küçük direnç (0,3 Ω) bile en yüksek güce ulaşmak için yetmez.</p>`,
+      <p>Bu düzenekte seri bağlı yakıt hücresinin en yüksek gücü ≈ ${n2(fcMpp("s").R, 1)} Ω'luk yükte ≈ ${n2(fcMpp("s").P)} W'tır. Paralelde iç direnç dörtte birine iner (≈ ${n2(fcMpp("p").R, 2)} Ω), bu yüzden yük modülündeki en küçük direnç (0,3 Ω) bile en yüksek güce ulaşmak için yetmez.</p>`,
       `<p>For a resistor, <b>Ohm's law</b> says I = U / R. On a voltage–current graph this is a straight line with slope R: the <b>load line</b>. The fuel cell must work somewhere on its own curve. The <b>point where they cross</b> is the circuit's real operating point.</p>
       <ul><li><b>Large resistance</b> (100 Ω): nearly open circuit. High voltage, tiny current → small power.</li>
       <li><b>Very small resistance</b>: nearly short circuit. Large current but low voltage → power falls again.</li>
       <li><b>Somewhere in between</b> U·I is largest. The rule (maximum power transfer): power peaks when the load resistance equals the source's <b>internal resistance</b>.</li></ul>
-      <p>In this kit the series fuel cell peaks at ≈ 1.7 W with a ≈ 0.4 Ω load. In parallel the internal resistance drops to a quarter (≈ 0.1 Ω), so even the smallest resistor on the load module (0.3 Ω) is not enough to reach maximum power.</p>`),
+      <p>In this kit the series fuel cell peaks at ≈ ${n2(fcMpp("s").P)} W with a ≈ ${n2(fcMpp("s").R, 1)} Ω load. In parallel the internal resistance drops to a quarter (≈ ${n2(fcMpp("p").R, 2)} Ω), so even the smallest resistor on the load module (0.3 Ω) is not enough to reach maximum power.</p>`),
     d: () => D.load(),
     e: () => fcTable([["s", 10], ["s", 2], ["s", 1], ["s", 0.5], ["s", 0.4], ["s", 0.3]]),
     f: () => `I = U / R &nbsp;·&nbsp; P = U · I = U² / R &nbsp;·&nbsp; P<sub>max</sub> ⇔ R<sub>${L("yük", "load")}</sub> ≈ R<sub>${L("iç", "int")}</sub>`,
     a: () => { setConn("s"); S.valve = true; $("#btnIvSweep").click(); } },
   { ic: "📉", t: () => L("Verim", "Efficiency"),
-    s: () => L("Verim, istenen çıktı enerjisinin giren enerjiye oranıdır. Zincirdeki verimler çarpılır; bu yüzden güneşten yakıt hücresine kadar enerjinin yalnızca ≈ %4'ü elektrik olarak geri alınır.", "Efficiency is the useful output energy divided by the input energy. The efficiencies along the chain multiply, so only ≈ 4% of the sunlight comes back as electricity from the fuel cell."),
+    s: () => L("Verim, istenen çıktı enerjisinin giren enerjiye oranıdır. Zincirdeki verimler çarpılır; bu yüzden güneşten yakıt hücresine kadar enerjinin yalnızca ≈ %3–4'ü elektrik olarak geri alınır.", "Efficiency is the useful output energy divided by the input energy. The efficiencies along the chain multiply, so only ≈ 3–4% of the sunlight comes back as electricity from the fuel cell."),
     b: () => L(`<p>Her dönüşümün kendi verimi vardır:</p>
       <ul><li><b>Güneş paneli:</b> η<sub>PV</sub> = P<sub>elektrik</sub> / (G · A). Işığın çoğu ısıya dönüşür; bu düzenekte ≈ %12.</li>
       <li><b>Elektrolizör:</b> iki verimi vardır. <b>Faraday verimi</b>, akımın ne kadarının gerçekten H₂ ürettiğidir (≈ %90–99). <b>Enerji verimi</b>, H₂'de saklanan enerjinin harcanan elektriğe oranıdır: ≈ 1,48 V / 2,4 V ≈ %60.</li>
-      <li><b>Yakıt hücresi:</b> çıkan elektriğin, harcanan H₂'nin enerjisine oranı; hücre başına ≈ U / 1,48 V. Motorla seride ≈ %58.</li></ul>
-      <p>Zincirdeki toplam verim bunların çarpımıdır: 0,12 × 0,60 × 0,58 ≈ <b>%4</b>. Düşük görünse de hidrojenin değeri, enerjiyi uzun süre saklayıp başka bir yerde ve zamanda kullanabilmesindedir.</p>
+      <li><b>Yakıt hücresi:</b> çıkan elektriğin, harcanan H₂'nin enerjisine oranı; hücre başına ≈ U / 1,48 V. Motorla seride ≈ ${pct(fcMot("s").eta * 100, 0)}.</li></ul>
+      <p>Zincirdeki toplam verim bunların çarpımıdır: 0,12 × 0,60 × ${n2(fcMot("s").eta)} ≈ <b>${pct(0.12 * 0.6 * fcMot("s").eta * 100, 1)}</b>. Düşük görünse de hidrojenin değeri, enerjiyi uzun süre saklayıp başka bir yerde ve zamanda kullanabilmesindedir.</p>
       <p>Bu verimlerin zincir boyunca enerjiyi adım adım nasıl azalttığını <b>⚡ Verim</b> sekmesindeki canlı <b>Sankey diyagramı</b> gösterir; nasıl okunduğu diyagramın hemen altında anlatılıyor. Her verimin sayılarla adım adım hesabı, panel boyutunun ve sıcaklığın etkisi de aynı sekmenin alt sekmelerinde.</p>
       <p class="hint">Not: Hidrojenin enerjisi burada üst ısıl değerle (HHV, 286 kJ/mol) hesaplanmıştır; 1,48 V bu değere karşılık gelir.</p>`,
       `<p>Each conversion has its own efficiency:</p>
       <ul><li><b>Solar panel:</b> η<sub>PV</sub> = P<sub>electrical</sub> / (G · A). Most of the light becomes heat; ≈ 12% in this kit.</li>
       <li><b>Electrolyzer:</b> two efficiencies. <b>Faraday efficiency</b> is how much of the current really makes H₂ (≈ 90–99%). <b>Energy efficiency</b> is the energy stored in H₂ divided by the electricity used: ≈ 1.48 V / 2.4 V ≈ 60%.</li>
-      <li><b>Fuel cell:</b> electricity out divided by the energy of the H₂ used; per cell ≈ U / 1.48 V. In series with the motor ≈ 58%.</li></ul>
-      <p>The total efficiency of the chain is the product: 0.12 × 0.60 × 0.58 ≈ <b>4%</b>. It looks low, but hydrogen's value is that it can store energy for a long time and deliver it at another place and time.</p>
+      <li><b>Fuel cell:</b> electricity out divided by the energy of the H₂ used; per cell ≈ U / 1.48 V. In series with the motor ≈ ${pct(fcMot("s").eta * 100, 0)}.</li></ul>
+      <p>The total efficiency of the chain is the product: 0.12 × 0.60 × ${n2(fcMot("s").eta)} ≈ <b>${pct(0.12 * 0.6 * fcMot("s").eta * 100, 1)}</b>. It looks low, but hydrogen's value is that it can store energy for a long time and deliver it at another place and time.</p>
       <p>The live <b>Sankey diagram</b> in the <b>⚡ Efficiency</b> tab shows how these efficiencies shrink the energy step by step along the chain; how to read it is explained right below the diagram. The step-by-step working of each efficiency with numbers, and the effect of panel size and temperature, are in the sub-tabs of the same tab.</p>
       <p class="hint">Note: hydrogen's energy is counted here with the higher heating value (HHV, 286 kJ/mol); 1.48 V corresponds to this value.</p>`),
     d: () => D.eff(),
-    e: () => L(`Kademe 8'de: panele düşen ışık ≈ 549 W/m² × 0,045 m² ≈ 24,7 W; panel ≈ 2,9 W elektrik verir (%12). Elektrolizör ≈ 1,7 W'lık hidrojen üretir (%60). Yakıt hücresi 228 mW'lık hidrojenden 132 mW elektrik üretir (%58). Canlı Sankey diyagramı ve değerler <b>⚡ Verim</b> sekmesinde: ışığı ya da yükü değiştirip bantların nasıl değiştiğini izleyin.`,
-      `At level 8: light on the panel ≈ 549 W/m² × 0.045 m² ≈ 24.7 W; the panel delivers ≈ 2.9 W (12%). The electrolyzer turns that into ≈ 1.7 W of hydrogen (60%). The fuel cell makes 132 mW of electricity from 228 mW of hydrogen (58%). The live Sankey diagram and values are in the <b>⚡ Efficiency</b> tab: change the light or the load and watch the bands change.`),
+    e: () => L(`Kademe 8'de: panele düşen ışık ≈ 549 W/m² × 0,045 m² ≈ 24,7 W; panel ≈ 2,9 W elektrik verir (%12). Elektrolizör ≈ 1,7 W'lık hidrojen üretir (%60). Yakıt hücresi ${Math.round(fcMot("s").PH * 1000)} mW'lık hidrojenden ${Math.round(fcMot("s").P * 1000)} mW elektrik üretir (${pct(fcMot("s").eta * 100, 0)}). Canlı Sankey diyagramı ve değerler <b>⚡ Verim</b> sekmesinde: ışığı ya da yükü değiştirip bantların nasıl değiştiğini izleyin.`,
+      `At level 8: light on the panel ≈ 549 W/m² × 0.045 m² ≈ 24.7 W; the panel delivers ≈ 2.9 W (12%). The electrolyzer turns that into ≈ 1.7 W of hydrogen (60%). The fuel cell makes ${Math.round(fcMot("s").P * 1000)} mW of electricity from ${Math.round(fcMot("s").PH * 1000)} mW of hydrogen (${pct(fcMot("s").eta * 100, 0)}). The live Sankey diagram and values are in the <b>⚡ Efficiency</b> tab: change the light or the load and watch the bands change.`),
     f: () => `η = P<sub>${L("çıkış", "out")}</sub> / P<sub>${L("giriş", "in")}</sub> &nbsp;·&nbsp; η<sub>${L("toplam", "total")}</sub> = η<sub>PV</sub> · η<sub>${L("elz", "ely")}</sub> · η<sub>${L("YH", "FC")}</sub>`,
     a: () => { setLevel(8); $("#tb3").click(); setEffSub("ov"); $("#tb3").scrollIntoView({ behavior: REC ? "auto" : "smooth", block: "start" }); }, noScroll: true },
 ];
