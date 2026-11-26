@@ -4,3 +4,6 @@ H2_Dijital_Ikiz_Tanitim.mp4
 .DS_Store
 Thumbs.db
 Yazisma_Arsivi.md
+
+# ESP32 sifreleri (Wi-Fi, MQTT): asla GitHub a gonderilmez
+firmware/**/secrets.h

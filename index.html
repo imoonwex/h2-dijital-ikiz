@@ -353,6 +353,33 @@ tbody tr:last-child td { border-bottom: 0; }
 .pill.ok { background: color-mix(in srgb, var(--ok) 18%, transparent); color: var(--ok); }
 .toast { position: fixed; left: 50%; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--fg); color: var(--bg); padding: 8px 16px; border-radius: 8px; font-size: .9rem; opacity: 0; transition: opacity .25s; pointer-events: none; z-index: 20; }
 .toast.show { opacity: 1; }
+/* 📡 canlı ölçüm */
+.live-dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: rgba(255,255,255,.45); vertical-align: 1px; }
+.live-dot.on { background: #4ade80; box-shadow: 0 0 0 3px rgba(74,222,128,.25); }
+.live-dot.wait { background: #fbbf24; }
+.live-dot.err { background: #f87171; }
+.stage { position: relative; }
+.live-badge { position: absolute; top: 10px; right: 10px; z-index: 2; background: color-mix(in srgb, var(--ok) 90%, #000); color: #fff; font: 600 .82rem var(--font-body); padding: 5px 10px; border-radius: 16px; box-shadow: 0 2px 8px rgba(0,0,0,.25); }
+.live-badge[hidden] { display: none; }
+.live-pnl { border-color: color-mix(in srgb, var(--ok) 55%, var(--line)); }
+.live-pnl[hidden] { display: none; }
+.live-pnl h2 { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.live-age { font: 400 .78rem var(--font-body); text-transform: none; letter-spacing: 0; color: var(--muted); }
+.live-age.stale { color: var(--warn); font-weight: 600; }
+.live-read { display: grid; grid-template-columns: auto repeat(3, minmax(0, 1fr)); gap: 4px 8px; align-items: baseline; font-size: .85rem; }
+.live-read b { font-family: var(--font-data); font-weight: 400; font-size: 1rem; text-align: right; font-variant-numeric: tabular-nums; }
+.live-read .lh { color: var(--muted); font-size: .78rem; text-align: right; }
+.live-warn { margin: 0; padding-left: 18px; color: var(--warn); font-size: .85rem; }
+.live-dlg { width: min(620px, calc(100vw - 32px)); }
+.live-body { padding: 14px 16px 16px; display: grid; gap: 12px; }
+.live-body p { margin: 0; font-size: .9rem; }
+.live-form { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 14px; }
+.live-form label { display: grid; gap: 3px; font-size: .82rem; color: var(--muted); }
+.live-form label.wide { grid-column: 1 / -1; }
+.live-form input[type=text], .live-form input[type=password] { background: var(--surface); color: var(--fg); border: 1px solid var(--line); border-radius: 6px; padding: 7px 8px; font: .92rem var(--font-data); width: 100%; }
+@media (max-width: 560px) { .live-form { grid-template-columns: minmax(0, 1fr); } }
+.live-stat { font-weight: 600; font-size: .9rem; }
+.live-stat.on { color: var(--ok); } .live-stat.err { color: var(--o2); } .live-stat.wait { color: var(--warn); }
 /* sol üst menü (dil ve tema) */
 .hdr-left { display: flex; align-items: center; gap: 14px; min-width: 0; }
 .menu { position: relative; flex: none; }
@@ -412,6 +439,7 @@ footer.wrap { padding-block: 0 28px; color: var(--muted); font-size: .8rem; }
     <div class="hdr-actions">
       <button id="btnHelp" type="button" class="hdr-main" data-i18n="helpBtn">❓ Nasıl kullanılır?</button>
       <button id="btnVid" type="button" data-i18n="vidBtn">▶ Tanıtım videosu</button>
+      <button id="btnLive" type="button"><span class="live-dot" id="liveDot" aria-hidden="true"></span> <span id="liveBtnTxt">📡 Canlı</span></button>
     </div>
   </div>
 </header>
@@ -419,6 +447,7 @@ footer.wrap { padding-block: 0 28px; color: var(--muted); font-size: .8rem; }
 <main class="wrap">
   <section class="lab">
     <div class="stage">
+      <div class="live-badge" id="liveBadge" hidden></div>
       <svg id="scene" viewBox="0 0 1100 840" role="img" aria-labelledby="sceneTitle">
         <title id="sceneTitle">Dr FuelCell Professional deney rafı: lamba, güneş paneli, elektrolizör, gaz depoları, yakıt hücresi, yük modülü ve ölçüm ünitesi</title>
         <defs>
@@ -715,6 +744,8 @@ footer.wrap { padding-block: 0 28px; color: var(--muted); font-size: .8rem; }
     </div>
 
     <aside class="console">
+      <!-- 📡 canlı ölçüm (ESP32 → MQTT): yalnızca bağlanınca görünür -->
+      <div class="panel live-pnl" id="pnlLive" hidden></div>
       <div class="panel" id="pnlLight">
         <h2 data-i18n="lightH">Işık şiddeti</h2>
         <div class="light-ctl">
@@ -897,6 +928,13 @@ footer.wrap { padding-block: 0 28px; color: var(--muted); font-size: .8rem; }
 </main>
 <footer class="wrap"><span data-i18n="foot">Veriler: laboratuvar ölçümleri (Devre_Tasarimi_Veriler.xlsx) ve Heliocentris Dr FuelCell® Professional teknik veri sayfası.</span> · <span id="dataSrc" data-i18n="srcEmb">Veri kaynağı: gömülü yedek (JSON okunamadı)</span></footer>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
+<dialog id="liveDlg" class="vid-dlg live-dlg" aria-labelledby="liveTitle">
+  <div class="vid-head">
+    <h2 id="liveTitle">📡</h2>
+    <button id="liveClose" type="button" class="btn">✕</button>
+  </div>
+  <div id="liveDlgBody" class="live-body"></div>
+</dialog>
 <dialog id="vidDlg" class="vid-dlg" aria-labelledby="vidTitle">
   <div class="vid-head">
     <h2 id="vidTitle" data-i18n="vidTitle">Tanıtım videosu (30 sn)</h2>
@@ -1254,8 +1292,12 @@ function step(dt) {
   // otomatik ısınma: panel, bu ışıkta ulaşacağı sıcaklığa (NOCT yöntemi, ortam 25 °C) birinci dereceden yaklaşır
   if (S.autoT) { const tgt = 25 + (NOCT - 20) / 800 * levelG(S.level) * cosD(S.angNow); S.Tp += (tgt - S.Tp) * (1 - Math.exp(-dt / HEAT_TAU)); }
   const Iph = iphAt(S.level, curPV(), S.angNow);   // panelin o anki açısı
-  const I = solveOp(Iph, S.c);
-  S.I = I; S.V = I > 0 ? vEl(I, S.c) : (Iph > 0 ? 0 : 0);
+  // 📡 gerçek ölçüm varsa (ESP32, taze ve "ölçümleri kullan" açık) PV akımı ve gerilimi ölçümden gelir;
+  // H₂ üretimi aşağıda yine h2Rate() ile, yani ölçülen akımdan laboratuvar verisine göre hesaplanır.
+  const LV = liveUse();
+  let I;
+  if (LV && LV.pv_i != null) { I = Math.max(0, LV.pv_i); S.I = I; S.V = Math.max(0, LV.pv_v ?? vEl(I, S.c)); }
+  else { I = solveOp(Iph, S.c); S.I = I; S.V = I > 0 ? vEl(I, S.c) : 0; }
   S.Voc = pvVoc(Iph);
   S.c += I > 0.01 ? (1 - S.c) * (1 - Math.exp(-dt / 200)) : -S.c * (1 - Math.exp(-dt / 1800));
   S.rate = h2Rate(I);
@@ -1265,8 +1307,8 @@ function step(dt) {
 
   const avail = S.valve && S.vH2 > 1;
   S.fcS += ((avail ? 1 : 0) - S.fcS) * (1 - Math.exp(-dt / (avail ? 2.5 : 7)));
-  const fc = solveFc(S.fcS);
-  S.fcI = fc.I; S.fcV = fc.V;
+  if (LV && LV.fc_i != null) { S.fcI = Math.max(0, LV.fc_i); S.fcV = Math.max(0, LV.fc_v ?? 0); }   // ölçülen yakıt hücresi
+  else { const fc = solveFc(S.fcS); S.fcI = fc.I; S.fcV = fc.V; }
   // H₂ tüketimi hücre akımlarının toplamıyla orantılı: seride 2·I, paralelde I (iki yarım akım)
   const cellSum = S.conn === "p" ? S.fcI : 2 * S.fcI;
   S.cons = S.valve ? cellSum * 60 / (2 * F) / FC_UTIL * VM : 0;   // η_F < 1 ise daha çok H₂ harcanır
@@ -1954,6 +1996,165 @@ function updateCalc(force) {
     : `<p class="calc-note">${T("Toplam verim için ışık açık olmalı ve yakıt hücresi H₂ harcamalı.", "For the overall efficiency the light must be on and the fuel cell must be using H₂.")}</p>`);
 }
 // sekme içi olaylar (içerik dil değişince yeniden çizildiği için olay yetkilendirme)
+/* ---------- 📡 Canlı ölçüm: ESP32 → MQTT → ikiz ----------
+   ESP32 (firmware/h2_ikiz_esp32) her 5 s'de bir JSON yayınlar:
+     pv_v, pv_vl, pv_i, pv_p, fc_v, fc_i, fc_p (V, A, W), t_fc, t_el (°C), fan (0/1), fan_pct, fan_mode, warn[], up (s), rssi (dBm).
+   İkiz, MQTT sunucusuna WebSocket ile bağlanır (varsayılan Adafruit IO; ölçümler orada 30 gün saklanır).
+   ŞİFRE KODDA YOK: kullanıcı adı ve anahtar yalnızca bağlanan kişinin tarayıcısında girilir; anahtar ancak
+   "bu tarayıcıda hatırla" seçilirse localStorage'a yazılır.
+   "Ölçümleri kullan" açıkken ve son mesaj 20 s'den yeniyse step() PV ve yakıt hücresi için ölçülen değerleri kullanır;
+   H₂ üretimi ölçülen akımdan h2Rate() ile hesaplanır. Fan komutu ayrı konuya yazılır: "auto" | "on" | "off". */
+const LIVE_STALE = 20000;
+const LIVE = { client: null, state: "off", msg: "", data: null, at: 0, use: true, lastWarn: [] };
+const LIVE_DEF = { url: "wss://io.adafruit.com:443/mqtt/", user: "", key: "", tele: "{user}/feeds/h2-olcum", cmd: "{user}/feeds/h2-fan", remember: false };
+let liveCfg = { ...LIVE_DEF };
+try { const c = JSON.parse(localStorage.getItem("h2twin-live") || "null"); if (c) liveCfg = { ...LIVE_DEF, ...c }; } catch (e) {}
+const liveTopic = (tpl) => String(tpl).split("{user}").join(liveCfg.user);
+function liveFresh() { return !!LIVE.data && Date.now() - LIVE.at < LIVE_STALE; }
+function liveUse() { return LIVE.use && liveFresh() ? LIVE.data : null; }
+const LIVE_TXT = {
+  tr: { btn: "📡 Canlı", title: "📡 Canlı ölçüm bağlantısı", pnl: "📡 Canlı ölçüm", use: "Simülasyon yerine ölçümleri kullan",
+    intro: "ESP32'deki INA219 ve DS18B20 ölçümleri MQTT üzerinden buraya gelir. Bağlanınca PV ve yakıt hücresinin gerilim ve akımı simülasyon yerine ölçümden alınır; H₂ üretimi ölçülen akımdan modelle hesaplanır.",
+    url: "Sunucu (WebSocket)", user: "Kullanıcı adı", key: "Anahtar / şifre (Adafruit IO Key)", tele: "Ölçüm konusu", cmd: "Fan komut konusu",
+    rem: "Bu tarayıcıda hatırla (anahtar yalnızca bu bilgisayarda saklanır)", conn: "Bağlan", disc: "Bağlantıyı kes",
+    sec: "🔒 Şifreler sayfanın koduna yazılmaz ve GitHub'a gitmez; yalnızca sizin tarayıcınızda kalır. Anahtarı kimseyle paylaşmayın: anahtarı olan biri fanı da kontrol edebilir.",
+    cloud: "Bulutta saklanan ölçümler", guide: "ESP32 kurulum rehberi", needCreds: "Kullanıcı adı ve anahtar gerekli.", libFail: "MQTT kitaplığı yüklenemedi (internet bağlantısını kontrol edin).",
+    st: { off: "Bağlı değil", wait: "Bağlanıyor…", on: "Bağlı, ölçüm bekleniyor…", data: "Bağlı, ölçüm geliyor", stale: "Bağlı, ama 20 s'dir ölçüm gelmedi", err: "Hata" },
+    ago: (s) => `${s} s önce`, none: "henüz ölçüm yok", pv: "PV", fc: "Yakıt h.", temp: "Sıcaklık", tfc: "yakıt h.", tel: "elektrolizör",
+    fan: "Fan", fanOn: "AÇIK", fanOff: "kapalı", modes: { auto: "oto", on: "elle açık", off: "elle kapalı", pct: "yüzde" }, fAuto: "Oto", fOn: "Aç", fOff: "Kapat",
+    fanSent: (c) => `Fan komutu gönderildi: ${c}`, noWarn: "Uyarı yok", badge: "📡 Gerçek ölçüm kullanılıyor · ışık kademesi ve panel ayarları devre dışı", rssi: "Wi-Fi" },
+  en: { btn: "📡 Live", title: "📡 Live measurement connection", pnl: "📡 Live measurement", use: "Use measurements instead of the simulation",
+    intro: "The ESP32's INA219 and DS18B20 readings arrive here over MQTT. Once connected, the PV and fuel cell voltage and current come from the measurements instead of the simulation; H₂ production is worked out by the model from the measured current.",
+    url: "Server (WebSocket)", user: "User name", key: "Key / password (Adafruit IO Key)", tele: "Measurement topic", cmd: "Fan command topic",
+    rem: "Remember in this browser (the key is stored only on this computer)", conn: "Connect", disc: "Disconnect",
+    sec: "🔒 Passwords are not written into the page's code and never go to GitHub; they stay in your browser only. Do not share the key: anyone with it can also control the fan.",
+    cloud: "Measurements stored in the cloud", guide: "ESP32 setup guide", needCreds: "User name and key are required.", libFail: "Could not load the MQTT library (check the internet connection).",
+    st: { off: "Not connected", wait: "Connecting…", on: "Connected, waiting for data…", data: "Connected, data arriving", stale: "Connected, but no data for 20 s", err: "Error" },
+    ago: (s) => `${s} s ago`, none: "no data yet", pv: "PV", fc: "Fuel cell", temp: "Temperature", tfc: "fuel cell", tel: "electrolyzer",
+    fan: "Fan", fanOn: "ON", fanOff: "off", modes: { auto: "auto", on: "manual on", off: "manual off", pct: "percent" }, fAuto: "Auto", fOn: "On", fOff: "Off",
+    fanSent: (c) => `Fan command sent: ${c}`, noWarn: "No warnings", badge: "📡 Using real measurements · light level and panel settings are off", rssi: "Wi-Fi" },
+};
+const LT = () => LIVE_TXT[lang] || LIVE_TXT.tr;
+const WARN_TXT = {
+  tr: { T_FC_HIGH: "Yakıt hücresi sıcaklığı yüksek", T_EL_HIGH: "Elektrolizör sıcaklığı yüksek", PV_I_HIGH: "PV akımı 1,9 A'yı aştı", FC_I_HIGH: "Yakıt hücresi akımı 1,9 A'yı aştı",
+    INA_PV_MISSING: "PV akım sensörü (INA219 0x40) bulunamadı", INA_FC_MISSING: "Yakıt hücresi akım sensörü (INA219 0x41) bulunamadı", T_FC_MISSING: "Yakıt hücresi sıcaklık sensörü okunamıyor", T_EL_MISSING: "Elektrolizör sıcaklık sensörü okunamıyor" },
+  en: { T_FC_HIGH: "Fuel cell temperature high", T_EL_HIGH: "Electrolyzer temperature high", PV_I_HIGH: "PV current above 1.9 A", FC_I_HIGH: "Fuel cell current above 1.9 A",
+    INA_PV_MISSING: "PV current sensor (INA219 0x40) not found", INA_FC_MISSING: "Fuel cell current sensor (INA219 0x41) not found", T_FC_MISSING: "Fuel cell temperature sensor not reading", T_EL_MISSING: "Electrolyzer temperature sensor not reading" },
+};
+const warnTxt = (c) => (WARN_TXT[lang] || WARN_TXT.tr)[c] || c;
+function saveLiveCfg() {
+  const c = { ...liveCfg }; if (!c.remember) c.key = "";
+  try { localStorage.setItem("h2twin-live", JSON.stringify(c)); } catch (e) {}
+}
+function loadMqttLib() {
+  return new Promise((res, rej) => {
+    if (window.mqtt) return res();
+    const s = document.createElement("script"); s.src = "https://unpkg.com/mqtt@4.3.7/dist/mqtt.min.js";
+    s.onload = () => (window.mqtt ? res() : rej(new Error("mqtt"))); s.onerror = () => rej(new Error("mqtt")); document.head.appendChild(s);
+  });
+}
+function setLiveState(st, msg = "") { LIVE.state = st; LIVE.msg = msg; renderLiveStatus(); renderLivePanel(); }
+async function liveConnect() {
+  readLiveForm(); saveLiveCfg();
+  if (!liveCfg.user || !liveCfg.key || !liveCfg.url) { setLiveState("err", LT().needCreds); return; }
+  setLiveState("wait");
+  try { await loadMqttLib(); } catch (e) { setLiveState("err", LT().libFail); return; }
+  liveDisconnect(true);
+  const c = window.mqtt.connect(liveCfg.url, { username: liveCfg.user, password: liveCfg.key,
+    clientId: "h2ikiz-web-" + Math.random().toString(16).slice(2, 10), reconnectPeriod: 5000, connectTimeout: 10000, clean: true });
+  LIVE.client = c;
+  c.on("connect", () => { if (LIVE.client !== c) return; setLiveState("on"); c.subscribe(liveTopic(liveCfg.tele)); });
+  c.on("reconnect", () => { if (LIVE.client === c) setLiveState("wait"); });
+  c.on("error", (err) => { if (LIVE.client === c) setLiveState("err", String((err && err.message) || err)); });
+  c.on("message", (topic, buf) => { if (LIVE.client === c) onLiveMsg(String(buf)); });
+}
+function liveDisconnect(silent) {
+  if (LIVE.client) { const c = LIVE.client; LIVE.client = null; try { c.end(true); } catch (e) {} }
+  if (!silent) { LIVE.data = null; setLiveState("off"); }
+}
+function onLiveMsg(text) {
+  let d; try { d = JSON.parse(text); } catch (e) { return; }
+  if (!d || typeof d !== "object") return;
+  const n = (x) => (x === null || x === undefined || x === "" || !isFinite(+x) ? null : +x);
+  LIVE.data = { pv_v: n(d.pv_v), pv_i: n(d.pv_i), pv_p: n(d.pv_p), fc_v: n(d.fc_v), fc_i: n(d.fc_i), fc_p: n(d.fc_p), t_fc: n(d.t_fc), t_el: n(d.t_el),
+    fan: !!n(d.fan), fan_pct: n(d.fan_pct), fan_mode: String(d.fan_mode || ""), warn: Array.isArray(d.warn) ? d.warn.map(String) : [], up: n(d.up), rssi: n(d.rssi) };
+  LIVE.at = Date.now();
+  const fresh = LIVE.data.warn.filter((w) => !LIVE.lastWarn.includes(w));
+  if (fresh.length) toast("⚠️ " + fresh.map(warnTxt).join(" · "), 6000);
+  LIVE.lastWarn = LIVE.data.warn;
+  renderLiveStatus(); renderLivePanel();
+}
+function liveFan(cmd) {
+  if (!LIVE.client || LIVE.state !== "on") return;
+  LIVE.client.publish(liveTopic(liveCfg.cmd), cmd); toast(LT().fanSent(cmd));
+}
+// durum: başlıktaki nokta, sahne etiketi, penceredeki yazı
+function liveStateKey() { return LIVE.state === "on" ? (LIVE.data ? (liveFresh() ? "data" : "stale") : "on") : LIVE.state; }
+function renderLiveStatus() {
+  const k = liveStateKey(), dot = $("#liveDot");
+  dot.className = "live-dot" + (k === "data" ? " on" : k === "err" ? " err" : k === "off" ? "" : " wait");
+  $("#liveBtnTxt").textContent = LT().btn;
+  const b = $("#liveBadge"), u = !!liveUse(); b.hidden = !u; if (u) b.textContent = LT().badge;
+  const st = $("#lvStat");
+  if (st) { st.className = "live-stat " + (k === "data" ? "on" : k === "err" ? "err" : k === "off" ? "" : "wait"); st.textContent = LT().st[k] + (LIVE.msg ? ` · ${LIVE.msg}` : ""); }
+}
+function renderLivePanel() {
+  const p = $("#pnlLive"), T = LT();
+  if (LIVE.state === "off" && !LIVE.data) { p.hidden = true; return; }
+  p.hidden = false;
+  const d = LIVE.data, age = d ? Math.round((Date.now() - LIVE.at) / 1000) : null;
+  const f = (x, k) => (x == null ? "–" : num(x, k));
+  const row = (h, v, i, pw) => `<span>${h}</span><b>${v}</b><b>${i}</b><b>${pw}</b>`;
+  p.innerHTML = `<h2><span>${T.pnl}</span><span class="live-age${d && !liveFresh() ? " stale" : ""}">${d ? T.ago(age) : T.none}</span></h2>
+    <label class="chk"><input type="checkbox" id="liveUse" ${LIVE.use ? "checked" : ""}> <span>${T.use}</span></label>
+    <div class="live-read"><span></span><span class="lh">U (V)</span><span class="lh">I (A)</span><span class="lh">P (W)</span>
+      ${row(T.pv, f(d && d.pv_v, 2), f(d && d.pv_i, 3), f(d && d.pv_p, 2))}
+      ${row(T.fc, f(d && d.fc_v, 2), f(d && d.fc_i, 3), f(d && d.fc_p, 3))}</div>
+    <div class="lvl-info"><span>${T.temp} ${T.tfc} <b>${f(d && d.t_fc, 1)} °C</b></span><span>${T.tel} <b>${f(d && d.t_el, 1)} °C</b></span>${d && d.rssi != null ? `<span>${T.rssi} <b>${d.rssi} dBm</b></span>` : ""}</div>
+    <div class="field"><span>${T.fan}: <b>${d ? (d.fan ? `${T.fanOn} %${d.fan_pct ?? ""}` : T.fanOff) : "–"}</b>${d && d.fan_mode ? ` (${T.modes[d.fan_mode] || d.fan_mode})` : ""}</span>
+      <div class="seg" style="flex:none">${[["auto", T.fAuto], ["on", T.fOn], ["off", T.fOff]].map(([c, l]) => `<button type="button" data-fan="${c}" class="${d && d.fan_mode === c ? "on" : ""}" ${LIVE.state === "on" ? "" : "disabled"}>${l}</button>`).join("")}</div></div>
+    ${d && d.warn.length ? `<ul class="live-warn">${d.warn.map((w) => `<li>⚠️ ${warnTxt(w)}</li>`).join("")}</ul>` : `<p class="hint" style="margin:0">${d ? T.noWarn : ""}</p>`}`;
+}
+function readLiveForm() {
+  const v = (id) => { const e = $("#" + id); return e ? e.value.trim() : ""; };
+  if (!$("#lvUrl")) return;
+  liveCfg = { url: v("lvUrl") || LIVE_DEF.url, user: v("lvUser"), key: $("#lvKey").value, tele: v("lvTele") || LIVE_DEF.tele, cmd: v("lvCmd") || LIVE_DEF.cmd, remember: $("#lvRem").checked };
+}
+function renderLiveDlg() {
+  const T = LT(), esc = (s) => String(s || "").replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;");
+  $("#liveTitle").textContent = T.title;
+  const feedUrl = liveCfg.user ? `https://io.adafruit.com/${encodeURIComponent(liveCfg.user)}/feeds/${encodeURIComponent(liveTopic(liveCfg.tele).split("/").pop())}` : "https://io.adafruit.com/";
+  $("#liveDlgBody").innerHTML = `<p>${T.intro}</p>
+    <div class="live-form">
+      <label class="wide">${T.url}<input type="text" id="lvUrl" value="${esc(liveCfg.url)}" autocomplete="off" spellcheck="false"></label>
+      <label>${T.user}<input type="text" id="lvUser" value="${esc(liveCfg.user)}" autocomplete="username" spellcheck="false"></label>
+      <label>${T.key}<input type="password" id="lvKey" value="${esc(liveCfg.key)}" autocomplete="current-password"></label>
+      <label>${T.tele}<input type="text" id="lvTele" value="${esc(liveCfg.tele)}" spellcheck="false"></label>
+      <label>${T.cmd}<input type="text" id="lvCmd" value="${esc(liveCfg.cmd)}" spellcheck="false"></label>
+    </div>
+    <label class="chk"><input type="checkbox" id="lvRem" ${liveCfg.remember ? "checked" : ""}> <span>${T.rem}</span></label>
+    <div class="row"><button class="btn primary" type="button" id="lvConn">${T.conn}</button><button class="btn" type="button" id="lvDisc">${T.disc}</button><span class="live-stat" id="lvStat"></span></div>
+    <p class="hint">${T.sec}</p>
+    <p class="hint"><a href="${feedUrl}" target="_blank" rel="noopener">☁️ ${T.cloud}</a> · <a href="https://github.com/imoonwex/h2-dijital-ikiz/tree/main/firmware" target="_blank" rel="noopener">🛠️ ${T.guide}</a></p>`;
+  renderLiveStatus();
+}
+$("#btnLive").addEventListener("click", () => { renderLiveDlg(); const d = $("#liveDlg"); if (d.showModal) d.showModal(); else d.setAttribute("open", ""); });
+$("#liveClose").addEventListener("click", () => $("#liveDlg").close());
+$("#liveDlg").addEventListener("click", (e) => {
+  if (e.target === $("#liveDlg")) { $("#liveDlg").close(); return; }
+  const b = e.target.closest("button"); if (!b) return;
+  if (b.id === "lvConn") liveConnect(); else if (b.id === "lvDisc") liveDisconnect();
+});
+$("#pnlLive").addEventListener("change", (e) => { if (e.target.id === "liveUse") { LIVE.use = e.target.checked; renderLiveStatus(); updateUi(); } });
+$("#pnlLive").addEventListener("click", (e) => { const b = e.target.closest("button[data-fan]"); if (b) liveFan(b.dataset.fan); });
+// her saniye: "x s önce" yazısı ve veri bayatladıysa simülasyona dönüş
+if (!/[?&]record\b/.test(location.search)) setInterval(() => {
+  if (LIVE.state === "off" && !LIVE.data) return;
+  const a = document.querySelector("#pnlLive .live-age");
+  if (a && LIVE.data) { a.textContent = LT().ago(Math.round((Date.now() - LIVE.at) / 1000)); a.classList.toggle("stale", !liveFresh()); }
+  const f = liveFresh(); if (f !== LIVE.wasFresh) { LIVE.wasFresh = f; renderLivePanel(); updateUi(); }   // veri bayatlayınca simülasyona dön
+  renderLiveStatus();
+}, 1000);
 // Panel çubuğundaki sıcaklık kontrolü
 $("#angBar").addEventListener("click", (e) => { const b = e.target.closest("button[data-dt]"); if (b) setTemp(Math.round(S.Tp) + +b.dataset.dt); });
 $("#tBarRng").addEventListener("input", (e) => setTemp(e.target.value));
@@ -1990,7 +2191,7 @@ function toast(msg, ms = 2600) { const el2 = $("#toast"); el2.textContent = msg;
 
 /* records */
 function addRecord(kind) {
-  const r = { kind, t: kind === "sw" ? S.sw.t : S.t, level: kind === "sw" ? S.sw.level : S.level, G: levelG(S.level), ang: S.angNow, Tp: Math.round(S.Tp * 10) / 10,
+  const r = { kind, t: kind === "sw" ? S.sw.t : S.t, level: kind === "sw" ? S.sw.level : S.level, G: levelG(S.level), ang: S.angNow, Tp: Math.round(S.Tp * 10) / 10, live: !!liveUse(),
     V: S.V, I: S.I, P: S.V * S.I, dH2: kind === "sw" ? S.sw.h2 : null,
     h20: kind === "sw" && S.sw.t > 0 ? S.sw.h2 * 1200 / S.sw.t : S.rate * 20, fcV: S.fcV, fcI: S.fcI * 1000, rpm: S.rpm, Iavg: kind === "sw" && S.sw.t > 0 ? S.sw.q / S.sw.t : S.I };
   records.push(r); renderRecords(); updateC3(); saveRec();
@@ -1998,7 +2199,7 @@ function addRecord(kind) {
 function renderRecords() {
   const body = $("#recBody");
   if (!records.length) { body.innerHTML = `<tr><td class="empty" colspan="15">${t("noRec")}</td></tr>`; return; }
-  body.innerHTML = records.map((r, i) => `<tr><td>${i + 1}</td><td>${r.kind === "sw" ? t("recSw") : t("recSnap")}</td><td>${fmtT(r.t)}</td><td>${r.level}</td><td>${Math.round(r.G)}</td><td>${Math.round(r.ang || 0)}</td><td>${Math.round(r.Tp ?? 25)}</td><td>${num(r.V, 2)}</td><td>${num(r.I, 3)}</td><td>${num(r.P, 2)}</td><td>${r.dH2 == null ? "–" : num(r.dH2, 1)}</td><td>${num(r.h20, 1)}</td><td>${num(r.fcV, 2)}</td><td>${num(r.fcI, 0)}</td><td>${Math.round(r.rpm)}</td></tr>`).join("");
+  body.innerHTML = records.map((r, i) => `<tr><td>${i + 1}</td><td>${r.kind === "sw" ? t("recSw") : t("recSnap")}${r.live ? " 📡" : ""}</td><td>${fmtT(r.t)}</td><td>${r.level}</td><td>${Math.round(r.G)}</td><td>${Math.round(r.ang || 0)}</td><td>${Math.round(r.Tp ?? 25)}</td><td>${num(r.V, 2)}</td><td>${num(r.I, 3)}</td><td>${num(r.P, 2)}</td><td>${r.dH2 == null ? "–" : num(r.dH2, 1)}</td><td>${num(r.h20, 1)}</td><td>${num(r.fcV, 2)}</td><td>${num(r.fcI, 0)}</td><td>${Math.round(r.rpm)}</td></tr>`).join("");
 }
 function csvText(sep) {
   const head = ["#", "type", "duration_s", "level", "G_Wm2", "panel_angle_deg", "panel_temp_C", "V_pv", "I_A", "P_pv_W", "dH2_mL", "H2_20min_mL", "V_fc", "I_fc_mA", "rpm"];
@@ -2121,7 +2322,7 @@ function applyLang() {
   document.title = t("title");
   $("#btnMenu").setAttribute("aria-label", t("menuLbl"));
   $("#skHowSum").textContent = SK_HOW[lang].sum; $("#skHow").innerHTML = SK_HOW[lang].body;
-  drawAngle(); updateAngUi(); renderCalc();
+  drawAngle(); updateAngUi(); renderCalc(); renderLiveStatus(); renderLivePanel();
   syncMenu();
   $("#notes").innerHTML = NOTES[lang];
   buildFarTable(); renderRecords(); buildLoadSel(); renderWs(); renderLessons(); makeCharts(); updateUi();
