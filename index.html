@@ -1050,7 +1050,7 @@ const NOTES = {
 ${noteCards("tr", [
   ["☀️", "Işık", "Artır/Azalt butonları 16 kademe arasında geçer. Her kademe bir deney grubunuza karşılık gelir.", ["Kademe 1 → 0,5 A … kademe 16 → 2,0 A", "En yüksek kademe ≈ 914 W/m²"], ["lab"]],
   ["🔆", "Güneş paneli", "Işığı elektriğe çevirir. Varsayılan panel, elektrolizörünüzü sürebilen 6 hücreli bir eşdeğer paneldir.", ["Model paneli: V<sub>oc</sub> ≈ 3,5 V, I<sub>sc</sub> ≈ 2,2 A", "Üretici paneli (seçilebilir): 4 hücre, V<sub>oc</sub> 2,3 V, I<sub>sc</sub> 1,0 A, ≈1,7 W"], ["mfr", "mod"]],
-  ["💧", "Elektrolizör", "Suyu H₂ ve O₂'ye ayırır. Üretilen gaz miktarı doğrudan sizin ölçümlerinizden gelir.", ["20 dakikada 83 mL (0,5 A) … 329 mL (2,0 A)", "Gerilim soğukken 2,6–2,9 V, ısınınca ≈ 2,4 V"], ["lab"]],
+  ["💧", "Elektrolizör", "Suyu H₂ ve O₂'ye ayırır. Üretilen gaz miktarı doğrudan sizin ölçümlerinizden gelir.", ["20 dakikada 72 mL (0,5 A) … 280 mL (1,9 A)", "Gerilim soğukken 2,6–2,9 V, ısınınca ≈ 2,4 V"], ["lab"]],
   ["🧪", "Gaz deposu", "H₂ ve O₂ ayrı silindirlerde birikir. O₂ her zaman H₂'nin yarısı kadardır.", ["Ölçek 0–400 mL", "Dolunca fazla gaz taşar (DOLU)"], ["lab", "mod"]],
   ["⚡", "Yakıt hücresi", "H₂'yi yeniden elektriğe çevirir. İki hücre seri veya paralel bağlanabilir.", ["Seri: 0,8–1,96 V, en fazla 1,70 W (≈0,4 Ω yükte)", "Paralel: gerilim yarı, akım iki kat"], ["mfr"]],
   ["🌀", "Yük ve motor", "Yakıt hücresine motor + pervane, 0,3–100 Ω arası bir direnç ya da hiçbir şey (açık devre) bağlanabilir.", ["Motor sınırı 3 V / 130 mA", "Seride ≈ 2100 rpm, paralelde ≈ 900 rpm"], ["mfr"]],
@@ -1058,7 +1058,7 @@ ${noteCards("tr", [
 <h3>Bilmeniz gereken üç şey</h3>
 <ol class="nt-list">
 <li><b>Model neden 6 hücreli panel kullanıyor?</b> Üreticinin paneli en fazla 2,3 V veriyor, sizin elektrolizörünüz ise ≈ 2,4 V'ta çalışıyor. Bu panelle en yüksek ışıkta bile yalnızca ≈ 0,17 A akar (20 dakikada 28 mL H₂). Ölçümlerinizi yeniden üretebilmek için daha yüksek gerilimli eşdeğer bir panel kullanıldı. İki paneli ışık panelinden değiştirip karşılaştırabilirsiniz.</li>
-<li><b>Bazı ölçümler %100'ü aşıyor.</b> Altı grupta ölçülen hacim Faraday yasasının üst sınırının üstünde: <span class="pill warn">0,5 A · %109</span> <span class="pill warn">0,6 A · %101</span> <span class="pill warn">0,8 A · %112</span> <span class="pill warn">0,9 A · %103</span> <span class="pill warn">1,8 A · %102</span> <span class="pill warn">2,0 A · %108</span>. Bu fiziksel olarak mümkün değildir; okuma hatası, sıcaklık/basınç farkı ya da depoda önceki gruptan kalan gaz olabilir. Diğer gruplar %89–99 arasında <span class="pill ok">tutarlı</span>. Simülasyon ölçümleri olduğu gibi kullanır.</li>
+<li><b>Bütün ölçümler Faraday sınırının altında.</b> İlk ölçümlerde altı grup (0,5 / 0,6 / 0,8 / 0,9 / 1,8 / 2,0 A) %100'ü aşıyordu; bu fiziksel olarak mümkün olmadığı için bu gruplar 26.11.2026'da yeniden ölçüldü. Yeni değerlerle 16 grubun Faraday verimi %89–99 arasında <span class="pill ok">tutarlı</span>. 1,8 ve 2,0 A'de ölçüm 10 dakika sürdü; 20 dakikalık değer iki katı alınarak bulundu. 2,0 A'de ölçülen hacim (276 mL) 1,9 A'dekinden (280 mL) biraz az; bu fark ölçüm belirsizliği içindedir. Simülasyon ölçümleri olduğu gibi kullanır.</li>
 <li><b>0,5 A'in altı tahmindir.</b> Bu akımlar ölçülmedi. Üretici paneliyle elde edilen düşük akımlardaki değerler modelin tahminidir.</li>
 </ol>
 <details class="nt-more"><summary>Formüller ve model ayrıntıları</summary>
@@ -1081,7 +1081,7 @@ ${noteCards("tr", [
 ${noteCards("en", [
   ["☀️", "Light", "The Increase/Decrease buttons step through 16 levels. Each level matches one of your measurement groups.", ["Level 1 → 0.5 A … level 16 → 2.0 A", "Top level ≈ 914 W/m²"], ["lab"]],
   ["🔆", "Solar panel", "Turns light into electricity. The default panel is a 6-cell equivalent that can drive your electrolyzer.", ["Model panel: V<sub>oc</sub> ≈ 3.5 V, I<sub>sc</sub> ≈ 2.2 A", "Manufacturer panel (selectable): 4 cells, V<sub>oc</sub> 2.3 V, I<sub>sc</sub> 1.0 A, ≈1.7 W"], ["mfr", "mod"]],
-  ["💧", "Electrolyzer", "Splits water into H₂ and O₂. The amount of gas comes straight from your measurements.", ["83 mL (0.5 A) … 329 mL (2.0 A) in 20 minutes", "Voltage 2.6–2.9 V when cold, ≈ 2.4 V when warm"], ["lab"]],
+  ["💧", "Electrolyzer", "Splits water into H₂ and O₂. The amount of gas comes straight from your measurements.", ["72 mL (0.5 A) … 280 mL (1.9 A) in 20 minutes", "Voltage 2.6–2.9 V when cold, ≈ 2.4 V when warm"], ["lab"]],
   ["🧪", "Gas storage", "H₂ and O₂ collect in separate cylinders. O₂ is always half of H₂.", ["Scale 0–400 mL", "Excess gas overflows when full (FULL)"], ["lab", "mod"]],
   ["⚡", "Fuel cell", "Turns H₂ back into electricity. The two cells can be in series or parallel.", ["Series: 0.8–1.96 V, at most 1.70 W (≈0.4 Ω load)", "Parallel: half the voltage, twice the current"], ["mfr"]],
   ["🌀", "Load and motor", "The fuel cell drives the motor + propeller, a 0.3–100 Ω resistor, or nothing (open circuit).", ["Motor limit 3 V / 130 mA", "≈ 2100 rpm in series, ≈ 900 rpm in parallel"], ["mfr"]],
@@ -1089,7 +1089,7 @@ ${noteCards("en", [
 <h3>Three things to know</h3>
 <ol class="nt-list">
 <li><b>Why does the model use a 6-cell panel?</b> The manufacturer's panel gives at most 2.3 V, but your electrolyzer runs at ≈ 2.4 V. Even at full light only ≈ 0.17 A flows (28 mL H₂ in 20 minutes). To reproduce your measurements, a higher-voltage equivalent panel is used. You can switch between the two panels in the light panel and compare them.</li>
-<li><b>Some measurements exceed 100%.</b> In six groups the measured volume is above the Faraday limit: <span class="pill warn">0.5 A · 109%</span> <span class="pill warn">0.6 A · 101%</span> <span class="pill warn">0.8 A · 112%</span> <span class="pill warn">0.9 A · 103%</span> <span class="pill warn">1.8 A · 102%</span> <span class="pill warn">2.0 A · 108%</span>. That is physically impossible; it may be a reading error, a temperature or pressure difference, or gas left from the previous group. The other groups fall between 89% and 99% <span class="pill ok">consistent</span>. The simulation uses the measurements as they are.</li>
+<li><b>All measurements are below the Faraday limit.</b> In the first measurements six groups (0.5 / 0.6 / 0.8 / 0.9 / 1.8 / 2.0 A) went above 100%; since that is physically impossible, these groups were measured again on 26.11.2026. With the new values the Faraday efficiency of all 16 groups is between 89% and 99% <span class="pill ok">consistent</span>. At 1.8 and 2.0 A the run lasted 10 minutes; the 20-minute value is twice that. The volume measured at 2.0 A (276 mL) is slightly below the one at 1.9 A (280 mL); the difference is within the measurement uncertainty. The simulation uses the measurements as they are.</li>
 <li><b>Below 0.5 A is an estimate.</b> These currents were not measured. Values at the low currents of the manufacturer panel are model estimates.</li>
 </ol>
 <details class="nt-more"><summary>Formulas and model details</summary>
@@ -1119,13 +1119,13 @@ const pct = (v, d) => lang === "tr" ? `%${num(v, d)}` : `${num(v, d)}%`;
 const F = 96485, VM = 24450, HHV = 285830;      // C/mol, mL/mol (25 °C), J/mol
 // Yedek değerler: JSON dosyası okunamazsa (ör. dosyaya çift tıklayınca) bunlar kullanılır.
 // Asıl kaynak data/deney_verileri.json → "ozet_20dk". Bkz. loadData() en altta.
-const LAB20 = [[0.5, 83], [0.6, 92], [0.7, 101], [0.8, 136], [0.9, 141], [1.0, 150], [1.1, 165], [1.2, 179],
-               [1.3, 190], [1.4, 196], [1.5, 207], [1.6, 230], [1.7, 231], [1.8, 280], [1.9, 280], [2.0, 329]];
+const LAB20 = [[0.5, 72], [0.6, 90], [0.7, 101], [0.8, 118], [0.9, 135], [1.0, 150], [1.1, 165], [1.2, 179],
+               [1.3, 190], [1.4, 196], [1.5, 207], [1.6, 230], [1.7, 231], [1.8, 260], [1.9, 280], [2.0, 276]];
 // Işık kademeleri: kademe 0 = lamba kapalı, kademe n = n. deney grubunun akımı.
 // LEVEL_I ve IPH, calibrate() ile LAB20'den üretilir (JSON yüklenince yeniden hesaplanır).
 const LEVEL_I = [];
 const PV = { a: 1.3 * 0.025693 * 6, I0: 4.4e-8, IscRef: 2.20, area: 0.045 };  // IscRef: 1000 W/m²'deki kısa devre akımı
-const TANK = 400;                              // depo ölçeği (mL); ölçümler 20 dk'da 329 mL'ye çıkıyor
+const TANK = 400;                              // depo ölçeği (mL); ölçümler 20 dk'da en çok 280 mL
 
 function h2Rate(I) {                         // mL/min, from lab data
   if (I <= 0) return 0;
@@ -2496,8 +2496,8 @@ const LESSONS = [
       <p><b>Faraday's law:</b> every 2 electrons through the circuit make one H₂ molecule. So the production rate is <b>proportional to current</b>; whatever the voltage, the same current gives the same amount of hydrogen. The ratio of measured to theoretical volume is the <b>Faraday efficiency</b>; in practice it is a little below 100%.</p>
       <p>In theory 1.23 V is enough to split water; counting heat, 1.48 V is needed. The real cell needs ≈ 2.4 V: the difference is spent starting the electrode reactions and pushing current through the membrane, and turns into heat. These losses are larger in a cold cell, which is why the measured voltage falls from 2.6–2.9 V to 2.4 V.</p>`),
     d: () => D.ely(false),
-    e: () => L(`1,0 A akım 20 dakikada (1200 s): V = 1,0 · 1200 / (2 · 96485) · 24,45 L/mol ≈ <b>152 mL</b> H₂. Ölçümünüz 150 mL, yani Faraday verimi ≈ %99. 2,0 A'de kuram 304 mL der, siz 329 mL ölçtünüz (%108): bu, bir ölçüm hatasına işaret eder.`,
-      `1.0 A for 20 minutes (1200 s): V = 1.0 · 1200 / (2 · 96485) · 24.45 L/mol ≈ <b>152 mL</b> of H₂. You measured 150 mL, so the Faraday efficiency is ≈ 99%. At 2.0 A theory says 304 mL and you measured 329 mL (108%): this points to a measurement error.`),
+    e: () => L(`1,0 A akım 20 dakikada (1200 s): V = 1,0 · 1200 / (2 · 96485) · 24,45 L/mol ≈ <b>152 mL</b> H₂. Ölçümünüz 150 mL, yani Faraday verimi ≈ %99. 2,0 A'de kuram 304 mL der, siz 276 mL ölçtünüz (%91). İlk ölçümde bu grup 329 mL (%108) çıkmıştı; %100'ün üstü fiziksel olarak mümkün olmadığı için grup yeniden ölçüldü.`,
+      `1.0 A for 20 minutes (1200 s): V = 1.0 · 1200 / (2 · 96485) · 24.45 L/mol ≈ <b>152 mL</b> of H₂. You measured 150 mL, so the Faraday efficiency is ≈ 99%. At 2.0 A theory says 304 mL and you measured 276 mL (91%). The first measurement of this group gave 329 mL (108%); since above 100% is physically impossible, the group was measured again.`),
     f: () => `V<sub>H₂</sub> = I · t / (2F) · V<sub>m</sub> &nbsp;·&nbsp; F = 96485 C/mol, V<sub>m</sub> = 24,45 L/mol`,
     a: () => { setPv("m"); setLevel(10); if (!S.sw.run) $("#btnSw").click(); } },
   { ic: "🧪", t: () => L("Hidrojenin depolanması", "Storing hydrogen"),
@@ -2509,8 +2509,8 @@ const LESSONS = [
       <p>The kit's storage tanks are upturned cylinders full of water: gas collects at the top and pushes the water down. The volume is read straight off the scale, just as in your lab.</p>
       <p>The fuel cell draws gas from storage. <b>If production is greater than use, storage fills; if smaller, it empties.</b> Closing the H₂ valve makes gas only collect in storage, and the fuel cell stops. Real systems store hydrogen in pressure tanks, as a liquid or in metal hydrides.</p>`),
     d: () => D.tank(),
-    e: () => L(`En yüksek ışıkta elektrolizör dakikada ≈ 16,5 mL H₂ üretir. Seri bağlı yakıt hücresi motoru sürerken dakikada ≈ 1,2 mL harcar; depo dolar. 0,3 Ω yükte ise dakikada ≈ 36 mL harcar; depo hızla boşalır.`,
-      `At full light the electrolyzer makes ≈ 16.5 mL of H₂ per minute. The series fuel cell driving the motor uses ≈ 1.2 mL per minute, so storage fills. With a 0.3 Ω load it uses ≈ 36 mL per minute and storage empties fast.`),
+    e: () => L(`En yüksek ışıkta elektrolizör dakikada ≈ 13,8 mL H₂ üretir. Seri bağlı yakıt hücresi motoru sürerken dakikada ≈ 1,2 mL harcar; depo dolar. 0,3 Ω yükte ise dakikada ≈ 36 mL harcar; depo hızla boşalır.`,
+      `At full light the electrolyzer makes ≈ 13.8 mL of H₂ per minute. The series fuel cell driving the motor uses ≈ 1.2 mL per minute, so storage fills. With a 0.3 Ω load it uses ≈ 36 mL per minute and storage empties fast.`),
     f: () => `2H₂O → 2H₂ + O₂ &nbsp;·&nbsp; V<sub>H₂</sub> : V<sub>O₂</sub> = 2 : 1`,
     a: () => { toggleValve(); } },
   { ic: "⚡", t: () => L("Yakıt hücresi", "The fuel cell"),

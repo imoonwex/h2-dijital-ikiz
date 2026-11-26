@@ -31,8 +31,8 @@ Zincir: **Işık → PV panel → PEM elektrolizör (H₂/O₂) → gaz depolar�
 - Ayrıntılar: uygulamadaki **Model notları** sekmesi ve `docs/Gelistirme_Notlari.md`.
 
 ## Bilinen notlar
-- Güncel veri: 16 grup, 0,5–2,0 A, 20 dk'da 83–329 mL H₂ (Devre_Tasarimi_Veriler_guncel, 13.11.2026).
-- 0,5 / 0,6 / 0,8 / 0,9 / 1,8 / 2,0 A gruplarında ölçülen hacim Faraday sınırına ulaşıyor veya aşıyor (%109, %101, %112, %103, %102, %108) — derste tartışma konusu. 1,4–1,7 A arasında verim %89–95.
+- Güncel veri: 16 grup, 0,5–2,0 A, 20 dk'da 72–280 mL H₂ (Devre_Tasarimi_Veriler_guncel, 13.11.2026; 6 grup 26.11.2026'da yeniden ölçüldü).
+- İlk ölçümde Faraday sınırını aşan 0,5 / 0,6 / 0,8 / 0,9 / 1,8 / 2,0 A grupları yeniden ölçüldü (yeni: 72, 90, 118, 135, 260, 276 mL; 1,8 ve 2,0 A'de 10 dk × 2). Artık 16 grubun Faraday verimi %89–99 arasında.
 - Depo ölçeği 0–400 mL.
 - Adres sonuna `?record` eklenirse video kaydı için kare kare kayıt modu açılır.
 

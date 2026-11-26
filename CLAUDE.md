@@ -30,7 +30,7 @@ JSON `fetch` ile okunduğu için dosyaya çift tıklamak yetmez: VS Code **Live 
 - Verim › Genel bakış: eski `#effGrid` kartları kaldırıldı; beş verim kutusu + toplam formülü `#kTot`'ta (updateCalc).
 - Elektrolizör: `vEl(I, c)`; soğukluk payı 0,4·(1−c)·min(1, I/0,5). H₂ debisi `h2Rate(I)` = ölçümlerin doğrusal ara değerlemesi. Isınma eşiği I > 0,01 A.
 - Yakıt hücresi: `fcCellV(I)` = 0,98 − 0,03·ln(1+I/2 mA) − 0,175·I (seride 1,70 W @ 0,80 V, üretici değeri). `stackV(I,s,conn)`, `solveFc(s, conn, load)`. `S.conn` = "s"|"p"; `S.load` = "motor" | sayı (Ω) | "open". Dirençler `RES` = 0,3…100 Ω.
-- Doğrulama: model paneli, ısınmış elektrolizörle her kademede ölçülen 20 dk hacmini birebir vermeli (83 … 329 mL). Model değişikliğinden sonra bunu kontrol et.
+- Doğrulama: model paneli, ısınmış elektrolizörle her kademede ölçülen 20 dk hacmini birebir vermeli (72 … 280 mL). Model değişikliğinden sonra bunu kontrol et.
 - Test kancası: `window.__twin` (S, step, setLevel, solveFc, setLoad, setConn …). `?record` → kare kare kayıt modu (`__twin.tick`).
 
 ## Sekmeler (alt bölüm)
@@ -46,7 +46,7 @@ JSON `fetch` ile okunduğu için dosyaya çift tıklamak yetmez: VS Code **Live 
 - **Her metin iki dilli**: arayüz metinleri `I18N.tr` / `I18N.en` (anahtar + `data-i18n`), dersler/föy kendi tr/en nesnelerinde. Birini eklersen ötekini de ekle.
 - Renkler CSS değişkenleri (`--accent`, `--h2`, `--o2`, `--sun`, `--ok`, `--warn` …); koyu temada da kontrol et. Global `.lab` sınıfı sahne düzenidir — yeni sınıflara bu adı verme.
 - Sayılar Türkçede virgüllü: `num(x, d)`, `pct(...)`.
-- Laboratuvar verisinde 6 grup Faraday sınırını aşıyor (0,5/0,6/0,8/0,9/1,8/2,0 A) — bu bilinçli olarak olduğu gibi bırakıldı ve notlarda/derslerde tartışma konusu olarak anlatılıyor; "düzeltme".
+- Laboratuvar verisi: ilk ölçümde 6 grup (0,5/0,6/0,8/0,9/1,8/2,0 A) Faraday sınırını aşıyordu; kullanıcı bu grupları 26.11.2026'da yeniden ölçtü (72, 90, 118, 135, 260, 276 mL; 1,8 ve 2,0 A'de 10 dk ölçülüp ×2). Artık 16 grubun η_F'si %89–99. 2,0 A (276) 1,9 A'den (280) biraz düşük — ölçüm belirsizliği, olduğu gibi bırakıldı. Kullanıcı, yeni bir ölçüm %100'ü aşarsa küçük bir yuvarlamayla düzeltilmesine izin verdi.
 - Değişiklikten sonra: tarayıcı konsolunda hata olmadığını, TR/EN ve açık/koyu temayı, telefon genişliğini kontrol et.
 
 ## Git akışı (kullanıcı için)
